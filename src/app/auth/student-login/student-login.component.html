@@ -1,0 +1,51 @@
+<div class="login-page">
+    <!-- LEFT IMAGE -->
+    <div class="illustration">
+                <img src="/assets/images/student.jpg" alt="Student" />    </div>
+    
+                <div class="login-page">
+
+                    <!-- BACKGROUND ANIMATION -->
+                    <!-- <div class="animation-bg">
+                        <img
+                          *ngFor="let plane of planes; let i = index"
+                          src="assets/images/pplane.png"
+                          alt="Flying plane"
+                          class="plane"
+                          [style.left.%]="(i * 5) % 100"
+                          [style.animationDelay.s]="i * 0.5"
+                          [style.animationDuration.s]="6 + (i % 5)"
+                        />
+                      </div> -->
+                      
+                  
+                   
+  
+    <!-- RIGHT LOGIN CARD -->
+    <div class="form-section">
+      <div class="login-card">
+        <h1>Welcome Back, Student</h1>
+        <p>Login to manage the exam system</p>
+  
+        <label>Email</label>
+        <input type="email" placeholder="Enter Email" [(ngModel)]="loginData.email" name="email">
+
+        <label>Password</label>
+        <input type="password" placeholder="Password" [(ngModel)]="loginData.password" name="password">
+
+
+        <div class="options">
+            <label class="remember">
+              <input type="checkbox" />
+              <span>Remember Password</span>
+            </label>
+          
+            <a href="#" class="forgot">Forgot Password?</a>
+          </div>
+          
+  
+<button class="your-css-class" (click)="handleLogin()">Login</button>      </div>
+        </div>
+    </div>
+  </div>
+  

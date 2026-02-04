@@ -1,0 +1,188 @@
+/* MAIN WRAPPER */
+.login-page {
+    display: flex;
+    height: 100vh;
+    background: #f4f6fb;
+    position: relative; /* REQUIRED for z-index stacking */
+  }
+  
+  /* LEFT IMAGE SECTION */
+  .illustration {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 1;              /* BELOW form */
+    pointer-events: none;   /* PREVENT click blocking */
+  }
+  
+  .illustration img {
+    max-width: 50%;
+    height: auto;
+    animation: float 4s ease-in-out infinite;
+    filter: drop-shadow(0 25px 40px rgba(0, 0, 0, 0.15));
+    transition: transform 0.4s ease;
+  }
+  
+  /* Hover effect */
+  .illustration img:hover {
+    transform: scale(1.03);
+  }
+  
+  /* Floating animation */
+  @keyframes float {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-12px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+  
+  /* RIGHT FORM SECTION */
+  .form-section {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 100px;
+    position: relative;
+    z-index: 10; /* ABOVE image */
+  }
+  
+  /* LOGIN CARD */
+  .login-card {
+    background: #4f6db8;
+    width: 420px;
+    padding: 40px 35px;
+    border-radius: 18px;
+    color: #fff;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* TEXT */
+  .login-card h1 {
+    font-size: 26px;
+    margin-bottom: 8px;
+  }
+  
+  .login-card p {
+    font-size: 14px;
+    margin-bottom: 25px;
+    opacity: 0.9;
+  }
+  
+  /* LABELS */
+  .login-card label {
+    font-size: 13px;
+    margin-bottom: 6px;
+    display: block;
+  }
+  
+  /* INPUTS */
+  .login-card input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+  
+  /* OPTIONS ROW */
+  .options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 18px 0 30px;
+  }
+  
+  /* REMEMBER */
+  .remember {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #fff;
+  }
+  
+  .remember input {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+  }
+  
+  /* FORGOT PASSWORD */
+  .forgot {
+    font-size: 13px;
+    color: #fff;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  
+  /* BUTTON */
+  button {
+    width: 100%;
+    padding: 13px;
+    border-radius: 10px;
+    border: none;
+    background: #ffffff;
+    color: #4f6db8;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background: #e4e8f7;
+  }
+  /* PAGE WRAPPER */
+.login-page {
+    position: relative;
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #eef4ff, #ffffff);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* BACKGROUND ANIMATION LAYER */
+  .animation-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  
+  .plane {
+    position: absolute;
+    bottom: -120px;
+    width: 100px;
+    opacity: 0.85;
+    animation-name: flyUp;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+  
+  @keyframes flyUp {
+    0% {
+      transform: translateY(0) rotate(0deg);
+      opacity: 0;
+    }
+  
+    10% {
+      opacity: 1;
+    }
+  
+    100% {
+      transform: translateY(-130vh) rotate(8deg);
+      opacity: 0;
+    }
+  }
+  
