@@ -8,6 +8,8 @@ import { CommonModule } from '@angular/common';
   template: `
     <h2>Student Dashboard 🎓</h2>
     <p>Welcome Student</p>
+    <p>Dhananjay shete</p>
+
   `,
   styleUrls: ['./student-dashboard.component.scss']
 })
