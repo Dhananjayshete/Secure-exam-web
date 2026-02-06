@@ -1,0 +1,121 @@
+/* Main Container */
+.dashboard-container {
+    padding: 30px;
+    background-color: #f3f4f6; /* Light gray background matching screenshot */
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Page Title (Serif Font) */
+.page-title {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 30px;
+}
+
+/* --- STAT CARDS --- */
+.stat-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 Equal columns */
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.card {
+    background: white;
+    padding: 25px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    /* "Students", "Teachers" text */
+    h3 {
+        font-family: Georgia, 'Times New Roman', Times, serif; /* Match screenshot font */
+        font-size: 1rem;
+        color: #6b7280; /* Gray text */
+        margin: 0;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    /* The Number (Blue/Purple) */
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #4f46e5; /* The specific Indigo color from your screenshot */
+        margin: 0;
+    }
+}
+
+/* --- CHARTS GRID --- */
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 Equal columns */
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.chart-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    min-height: 400px; /* Force height */
+
+    h3 {
+        font-family: Georgia, 'Times New Roman', Times, serif;
+        font-size: 1.2rem;
+        color: #111827;
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-weight: bold;
+    }
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* --- TABLE SECTION --- */
+.table-section {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    
+    h3 {
+        font-family: Georgia, 'Times New Roman', Times, serif;
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
+}
+
+.filter-area {
+    margin-bottom: 20px;
+    select {
+        padding: 8px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        margin-left: 10px;
+    }
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    
+    th { text-align: left; color: #6b7280; padding: 10px; border-bottom: 2px solid #e5e7eb; }
+    td { padding: 10px; border-bottom: 1px solid #f3f4f6; color: #374151; }
+}
+
+/* Responsive Fixes */
+@media (max-width: 1024px) {
+    .stat-cards { grid-template-columns: repeat(2, 1fr); }
+    .charts-grid { grid-template-columns: 1fr; }
+}

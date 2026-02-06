@@ -1,0 +1,60 @@
+<div class="sidebar">
+    <!-- Header / Logo -->
+    <div class="logo">
+        <i class="fa-solid fa-shield-cat"></i>
+        <div class="text-container">
+            <h2>SecureExam</h2>
+            <span class="badge">ADMIN</span>
+        </div>
+    </div>
+
+    <!-- Navigation Area -->
+    <nav class="nav-links custom-scrollbar">
+        
+        <ng-container *ngFor="let item of menuItems">
+            
+            <!-- CASE 1: Single Link (Fixed Alignment) -->
+            <a *ngIf="!item.children" 
+               [routerLink]="item.link" 
+               routerLinkActive="active" 
+               [routerLinkActiveOptions]="{exact: item.link === '/admin-dashboard'}"
+               class="nav-item">
+               <!-- Added this div wrapper to keep text on the left -->
+               <div class="flex-start">
+                   <i [class]="item.icon"></i>
+                   <span>{{ item.label }}</span>
+               </div>
+            </a>
+
+            <!-- CASE 2: Dropdown Menu -->
+            <div *ngIf="item.children" class="menu-group" [class.open]="item.isOpen">
+                <button class="nav-item dropdown-btn" (click)="toggleSubmenu(item)">
+                    <div class="flex-start">
+                        <i [class]="item.icon"></i>
+                        <span>{{ item.label }}</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down arrow" [class.rotate]="item.isOpen"></i>
+                </button>
+
+                <!-- Submenu Items -->
+                <div class="submenu" [style.max-height]="item.isOpen ? '500px' : '0'">
+                    <a *ngFor="let child of item.children" 
+                       [routerLink]="child.link" 
+                       routerLinkActive="active"
+                       class="sub-item">
+                        <i [class]="child.icon"></i> {{ child.label }}
+                    </a>
+                </div>
+            </div>
+
+        </ng-container>
+
+    </nav>
+
+    <!-- Footer -->
+    <div class="footer">
+        <a routerLink="/login/admin" class="logout-btn">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
+    </div>
+</div>

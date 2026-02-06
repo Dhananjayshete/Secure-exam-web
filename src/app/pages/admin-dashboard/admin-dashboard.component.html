@@ -1,87 +1,20 @@
-<div class="admin-layout">
+<div class="admin-layout" style="display: flex; height: 100vh; overflow: hidden;">
 
-  <!-- <app-admin-sidebar></app-admin-sidebar>
+  <!-- 1. SIDEBAR (Fixed) -->
+  <div class="sidebar-wrapper" style="width: 260px; flex-shrink: 0; background: #1f2937;">
+    <app-admin-sidebar></app-admin-sidebar>
+  </div>
 
-  <div class="admin-content"> -->
-
-    <h2>Admin Dashboard</h2>
-
-    <!-- STAT CARDS -->
-    <div class="cards">
-      <div class="card">Students: {{ students.length }}</div>
-      <div class="card">Teachers: {{ teachers.length }}</div>
-      <div class="card">Admins: {{ admins.length }}</div>
-      <div class="card">Total Users: {{ users.length }}</div>
-    </div>
-
-    <!-- CHARTS -->
-    <div class="charts-grid">
-      <div class="chart-card">
-        <h3>User Distribution</h3>
-        <div class="chart-wrapper">
-          <canvas
-            baseChart
-            [type]="'pie'"
-            [data]="pieChartData"
-            [options]="pieChartOptions">
-          </canvas>
-        </div>
-      </div>
-
-      <div class="chart-card">
-        <h3>Registrations Over Time</h3>
-        <div class="chart-wrapper">
-          <canvas
-            baseChart
-            [type]="'line'"
-            [data]="lineChartData"
-            [options]="lineChartOptions">
-          </canvas>
-        </div>
-      </div>
-    </div>
-
-    <!-- USER TABLE -->
-    <h3>User List</h3>
-
-    <div class="user-filter">
-      <label>Filter by role:</label>
-      <select [(ngModel)]="selectedRole" (change)="filterUsers()">
-        <option value="all">All</option>
-        <option value="student">Students</option>
-        <option value="teacher">Teachers</option>
-        <option value="admin">Admins</option>
-      </select>
-    </div>
-
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Registered By</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr *ngFor="let user of filteredUsers">
-            <td>{{ user.name }}</td>
-            <td>{{ user.email }}</td>
-            <td
-              [ngClass]="{
-                'role-student': user.role === 'student',
-                'role-teacher': user.role === 'teacher',
-                'role-admin': user.role === 'admin'
-              }">
-              {{ user.role }}
-            </td>
-            <td>{{ user.registeredBy || '-' }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <!-- 2. CONTENT AREA (Dynamic) -->
+  <div class="admin-content" style="flex-grow: 1; overflow-y: auto; background-color: #f3f4f6; position: relative;">
+    
+    <!-- 
+       This <router-outlet> is a magic placeholder.
+       - When URL is /admin-dashboard -> It shows "FILE 2" (Charts) below.
+       - When URL is /users/students -> It shows "Student ID Cards".
+    -->
+    <router-outlet></router-outlet>
 
   </div>
-<!-- </div> -->
+
+</div>

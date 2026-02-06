@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AdminSidebar } from './admin-sidebar.component';
+import { GroupList } from './group-list.component';
 
-describe('AdminSidebar', () => {
-  let component: AdminSidebar;
-  let fixture: ComponentFixture<AdminSidebar>;
+describe('GroupList', () => {
+  let component: GroupList;
+  let fixture: ComponentFixture<GroupList>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AdminSidebar]
+      imports: [GroupList]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(AdminSidebar);
+    fixture = TestBed.createComponent(GroupList);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

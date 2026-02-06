@@ -1,118 +1,163 @@
-<!-- <h1>h</h1> -->
+<!-- SECTION 1: HERO (Introduction) -->
 <div class="hero-wrapper">
-    <header class="navbar">
-      <div class="logo"><h2>SecureTake</h2></div>
-      
-      <nav class="menu">
-        <a>Home</a>
-        <a>Service</a>
-        <a>Why Us</a>
-        <a>FAQs</a>
-        <a>Reviews</a>
-      </nav>
-    </header>
-  
-    <section class="hero-grid">
-      <div class="hero-text">
-        <span class="badge">Get Help Today – By My Assignment Services</span>
-        <h1>Exam Alert<br />Upcoming Quizzes & Exams!</h1>
-        <p>
-          We have carefully prepared specialization paths so that you can
-          focus on learning a specific topic with expert support.
-        </p>
-        <button routerLink="/register">Get Started</button>      </div>
-  
-      <div class="hero-image">
-        <div class="circle">
-          
-          <img src="/assets/images/women.png" alt="Women" />
-        </div>
-      </div>
-      
-    </section>
-  </div>
-  
-  <section class="how-page">
+  <header class="navbar">
+    <div class="logo">
+      <h2>SecureTake</h2>
+    </div>
 
-    <div class="header">
-      <h1>How Our Online Exam System Works</h1>
-      <p>Three roles. One secure platform.</p>
+    <nav class="menu">
+      <a>Home</a>
+      <a>Service</a>
+      <a>Why Us</a>
+      <a>FAQs</a>
+      <a>Reviews</a>
+    </nav>
+  </header>
+
+  <section class="hero-grid">
+    <div class="hero-text">
+      <span class="badge">Get Help Today – By My Assignment Services</span>
+      <h1>Exam Alert<br />Upcoming Quizzes & Exams!</h1>
+      <p>
+        We have carefully prepared specialization paths so that you can
+        focus on learning a specific topic with expert support.
+      </p>
+      <!-- Angular Router Link -->
+      <button routerLink="/register">Get Started</button>
     </div>
-  
-    <div class="roles">
-  
-      <div class="role-card admin">
-        <div class="role-icon">📮</div>
-        <h2>Admin</h2>
-        <p>Controls and monitors the entire exam system.</p>
-        <ul>
-          <li>Create & manage exams</li>
-          <li>Assign roles</li>
-          <li>Monitor live exams</li>
-          <li>Ensure security</li>
-        </ul>
+
+    <div class="hero-image">
+      <div class="circle">
+        <!-- Ensure this path is correct in your Angular assets folder -->
+        <img src="/assets/images/women.png" alt="Women" class="girl-img" />
       </div>
-  
-      <div class="role-card teacher">
-        <div class="role-icon">👨🏻‍🏫👩🏻‍🏫</div>
-        <h2>Teacher</h2>
-        <p>Designs exams and evaluates students.</p>
-        <ul>
-          <li>Create question papers</li>
-          <li>Schedule exams</li>
-          <li>Evaluate answers</li>
-          <li>Publish results</li>
-        </ul>
-      </div>
-  
-      <div class="role-card student">
-        <div class="role-icon">👨🏻‍🎓👩🏻‍🎓</div>
-        <h2>Student</h2>
-        <p>Attends exams securely from anywhere.</p>
-        <ul>
-          <li>Login securely</li>
-          <li>Attend online exams</li>
-          <li>Auto submission</li>
-          <li>View results</li>
-        </ul>
-      </div>
-  
     </div>
-  
   </section>
-  <!-- HOW IT WORKS SECTION -->
+</div>
+
+<!-- SECTION 2: ROLES OVERVIEW (Who is this for?) -->
+<!-- Using 'how-page' class for the Beige background & Role Cards -->
+<!-- SECTION 2: FEATURES (Why Us?) -->
+<section class="features-section" id="why-us">
+  <div class="header">
+    <h1>Secure Assessment Suite</h1>
+    <p>Everything you need to conduct high-stakes exams confidently.</p>
+  </div>
+
+  <div class="features-grid">
+    <!-- Card 1: AI Proctoring -->
+    <div class="feature-card">
+      <div class="icon-box">
+        <i class="fa-solid fa-robot"></i>
+      </div>
+      <h3>AI Proctoring</h3>
+      <p>Our advanced AI tracks eye movement, detects multiple faces, and flags suspicious audio in real-time.</p>
+    </div>
+
+    <!-- Card 2: Browser Lockdown -->
+    <div class="feature-card">
+      <div class="icon-box">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <h3>Browser Lockdown</h3>
+      <p>Prevents students from opening new tabs, copying text, or using screen sharing applications.</p>
+    </div>
+
+    <!-- Card 3: Instant Results -->
+    <div class="feature-card">
+      <div class="icon-box">
+        <i class="fa-solid fa-bolt"></i>
+      </div>
+      <h3>Instant Results</h3>
+      <p>Automated grading for objective questions and streamlined workflows for essay grading.</p>
+    </div>
+  </div>
+</section>
+<!-- SECTION 3: DETAILED PROCESS (The Zig-Zag Steps) -->
+<!-- Using 'steps-section' class for the Zig-Zag layout -->
+<section id="how-it-works" class="steps-section">
+  <div class="steps-container">
+    <div class="header" style="text-align: center; margin-bottom: 60px;">
+      <h1>How It Works</h1>
+      <p>From setup to submission in three easy steps.</p>
+    </div>
+
+    <!-- STEP 01: Setup (Text Left, Image Right) -->
+    <div class="step-row">
+      <div class="step-text">
+        <span class="step-number">01</span>
+        <h3>Setup & Scheduling</h3>
+        <p>Teachers create exams using our rich text editor or import from question banks. Set strict timings, randomization rules, and assign to specific student batches instantly.</p>
+      </div>
+      <div class="step-image">
+        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop" alt="Setup Exam">
+      </div>
+    </div>
+
+    <!-- STEP 02: Authentication (Image Left, Text Right) -->
+    <div class="step-row reverse">
+      <div class="step-text">
+        <span class="step-number">02</span>
+        <h3>Secure Authentication</h3>
+        <p>Students log in and undergo a 3-step verification process: ID scan, face match, and environment check to ensure the room is clear of unauthorized materials.</p>
+      </div>
+      <div class="step-image">
+        <img src="https://images.unsplash.com/photo-1593642532744-d377ab507dc8?q=80&w=2069&auto=format&fit=crop" alt="Student Verification">
+      </div>
+    </div>
+
+    <!-- STEP 03: Execution (Text Left, Image Right) -->
+    <div class="step-row">
+      <div class="step-text">
+        <span class="step-number">03</span>
+        <h3>The Examination</h3>
+        <p>The exam begins in full-screen mode. Autosave protects answers every 30 seconds. If the internet connection drops, students can resume exactly where they left off.</p>
+      </div>
+      <div class="step-image">
+        <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=2070&auto=format&fit=crop" alt="Taking Exam">
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SECTION 4: LOGIN PORTAL (Call to Action) -->
+<!-- Using 'how-it-works' class for the Gradient Background & Login Cards -->
 <section class="how-it-works">
 
-    <h2>How SecureTake Works</h2>
-    <p class="subtitle">Choose your role to continue</p>
-  
-    <div class="cards">
-      <div class="card">
-        <div class="icon">📮</div>
-        <h3>Admin</h3>
-        <p>Manage exams, users and platform security</p>
-        <button class="enter-btn" routerLink="/login/admin">
-            Enter as Admin
-          </button>
-      </div>
-  
-      <div class="card">
-        <div class="icon">👨🏻‍🏫👩🏻‍🏫</div>
-        <h3>Teacher</h3>
-        <p>Create exams and monitor students</p>
-        <button class="enter-btn" routerLink="/login/teacher">
-          Enter as Teacher
-        </button>     
-       </div>
-  
-      <div class="card">
-        <div class="icon">👨🏻‍🎓👩🏻‍🎓</div>
-        <h3>Student</h3>
-        <p>Attend exams securely</p>
-        <button class="enter-btn" routerLink="/login/student">
-          Enter as Student
-        </button>        </div>
+  <h2>Enter The Portal</h2>
+  <p class="subtitle">Choose your role to continue</p>
+
+  <div class="cards">
+    <!-- Admin Login -->
+    <div class="card">
+      <div class="icon">📮</div>
+      <h3>Admin</h3>
+      <p>Manage exams, users and platform security</p>
+      <button class="enter-btn" routerLink="/login/admin">
+        Enter as Admin
+      </button>
     </div>
-  
-  </section>
-  
+
+    <!-- Teacher Login -->
+    <div class="card">
+      <div class="icon">👨🏻‍🏫👩🏻‍🏫</div>
+      <h3>Teacher</h3>
+      <p>Create exams and monitor students</p>
+      <button class="enter-btn" routerLink="/login/teacher">
+        Enter as Teacher
+      </button>
+    </div>
+
+    <!-- Student Login -->
+    <div class="card">
+      <div class="icon">👨🏻‍🎓👩🏻‍🎓</div>
+      <h3>Student</h3>
+      <p>Attend exams securely</p>
+      <button class="enter-btn" routerLink="/login/student">
+        Enter as Student
+      </button>
+    </div>
+  </div>
+
+</section>

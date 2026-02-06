@@ -1,0 +1,65 @@
+<div class="main-container">
+    
+    <div class="header-area">
+        <h1 class="page-title">{{ pageType === 'admin' ? 'Staff' : 'Student' }} Directory</h1>
+        
+        <!-- Search Bar -->
+        <div class="glass-search">
+            <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+            <input type="text" [(ngModel)]="searchTerm" placeholder="Search by Name or ID...">
+        </div>
+    </div>
+
+    <!-- CARD GRID -->
+    <div class="cards-grid">
+        <div class="id-card" *ngFor="let user of filteredUsers" (click)="openModal(user)">
+            <img [src]="user.photo" class="card-photo">
+            <div class="card-name">{{ user.name }}</div>
+            <div class="card-id">ID: {{ user.id }}</div>
+
+            <div class="card-details">
+                <div class="card-row">
+                    <span>{{ pageType === 'admin' ? 'Role' : 'Batch' }}</span>
+                    <span>{{ user.batch }}</span>
+                </div>
+                <div class="card-row">
+                    <span>Dept</span>
+                    <span>{{ user.dept }}</span>
+                </div>
+                <div class="card-row">
+                    <span>Status</span>
+                    <span [ngClass]="{'text-green-600': user.status === 'Active', 'text-red-600': user.status === 'Blocked'}" class="font-bold">
+                        {{ user.status }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DETAIL POPUP MODAL -->
+    <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <!-- Left Side -->
+            <div class="modal-left">
+                <img [src]="selectedUser.photo" class="modal-photo">
+                <h2 class="text-xl font-bold text-gray-800 text-center">{{ selectedUser.name }}</h2>
+                <span class="text-sm text-gray-500 mb-4 bg-gray-100 px-3 py-1 rounded-full">ID: {{ selectedUser.id }}</span>
+            </div>
+            
+            <!-- Right Side -->
+            <div class="modal-right">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold text-indigo-600">Profile Details</h3>
+                    <button (click)="closeModal()" class="text-gray-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+                </div>
+                <div class="space-y-4 text-sm">
+                    <p class="flex justify-between border-b pb-2"><span class="text-gray-500">Email</span> <span class="font-medium">{{ selectedUser.email }}</span></p>
+                    <p class="flex justify-between border-b pb-2"><span class="text-gray-500">Dept</span> <span class="font-medium">{{ selectedUser.dept }}</span></p>
+                    <div class="mt-8 flex gap-3">
+                        <button class="flex-1 bg-indigo-600 text-white py-2 rounded-lg">View History</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
