@@ -120,6 +120,41 @@
 
   </div>
 </section>
+<!-- SECTION 4: SUPPORTED SUBJECTS -->
+<section class="subjects-section">
+  <div class="container">
+    <h2>Supported Subjects</h2>
+    <p class="subtitle">Our platform handles complex symbols, code snippets, and chemical equations.</p>
+
+    <!-- Grid of Cards -->
+    <div class="subjects-grid">
+      <div 
+        class="subject-card" 
+        *ngFor="let subject of subjects" 
+        (click)="openModal(subject)"
+      >
+        <!-- Use this syntax exactly: -->
+        <i class="fa-solid {{subject.icon}}"></i>
+        
+        <h3>{{ subject.title }}</h3>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- GLASSMORPHISM MODAL (Lives outside the grid, usually at the bottom of the file) -->
+<div class="modal-overlay" *ngIf="selectedSubject" (click)="closeModal()">
+  <!-- (click)="$event.stopPropagation()" prevents the modal from closing when clicking inside the white box -->
+  <div class="glass-card" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+      <i class="fa-solid" [ngClass]="selectedSubject.icon"></i>
+      <h3>{{ selectedSubject.title }}</h3>
+      <p>{{ selectedSubject.description }}</p>
+      <button class="close-btn" (click)="closeModal()">Close Details</button>
+    </div>
+  </div>
+</div>
 
 <!-- SECTION 4: LOGIN PORTAL (Call to Action) -->
 <!-- Using 'how-it-works' class for the Gradient Background & Login Cards -->

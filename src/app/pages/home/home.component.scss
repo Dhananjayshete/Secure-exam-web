@@ -592,6 +592,195 @@
        line-height: 1.6;
        color: #666;
    }
+   /* --- SECTION STYLES --- */
+.subjects-section {
+    /* CHANGED: Using your global variable to match the rest of the page */
+    background-color: var(--main-bg-color, #fde9c9); 
+    font-family: 'Inter', sans-serif;
+    padding: 80px 20px;
+    width: 100%;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  /* Typography */
+  h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 3rem;
+    color: #000;
+    margin-bottom: 15px;
+  }
+  
+  .subtitle {
+    color: #666;
+    font-size: 1rem;
+    margin-bottom: 50px;
+  }
+  
+  /* Grid Layout */
+  .subjects-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  
+  /* Card Styling */
+  .subject-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 35px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+  
+    i {
+      font-size: 2.5rem; /* Made slightly bigger */
+      /* CHANGED: Using your specific orange color */
+      color: #ff7a00; 
+      margin-bottom: 20px;
+    }
+  
+    h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.2rem;
+      color: #000;
+      font-weight: normal;
+      margin: 0;
+    }
+  
+    /* Hover State */
+    &:hover {
+      border-color: #ff7a00; /* Match orange border */
+      background-color: #fffaf7;
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    }
+  }
+  .subject-card i {
+    /* 1. FORCE THE FONT FAMILY (This fixes the empty squares) */
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900 !important;
+    
+    /* 2. Styling */
+    font-size: 2.5rem;
+    color: #ff7a00;
+    margin-bottom: 20px;
+    
+    /* 3. Reset default font styles */
+    font-style: normal;
+    font-variant: normal;
+    line-height: 1;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* --- GLASS MODAL STYLES --- */
+  
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Blur Effect */
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);      
+    -webkit-backdrop-filter: blur(8px); 
+    
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  .glass-card {
+    width: 90%;
+    max-width: 500px;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    position: relative;
+    
+    /* Glassmorphism */
+    background: rgba(255, 255, 255, 0.85); /* Slightly less transparent for readability */
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  
+    transform: scale(0.8);
+    animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+  
+  .modal-content {
+    i {
+      font-size: 3.5rem;
+      color: #ff7a00; /* Match orange color */
+      margin-bottom: 20px;
+      display: block;
+    }
+  
+    h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.2rem;
+      margin-bottom: 15px;
+      color: #222;
+    }
+  
+    p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #444;
+      margin-bottom: 30px;
+    }
+  }
+  
+  .close-btn {
+    background: #ff7a00; /* Match orange color */
+    color: white;
+    border: none;
+    padding: 12px 35px;
+    border-radius: 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+  
+    &:hover {
+      background: #e66e00; /* Slightly darker orange on hover */
+    }
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes popUp {
+    to { transform: scale(1); }
+  }
+  
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .subjects-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  
+  @media (max-width: 600px) {
+    .subjects-grid { grid-template-columns: 1fr; }
+    h2 { font-size: 2.2rem; }
+  }
    
    /* =========================================
       8. RESPONSIVE QUERIES
