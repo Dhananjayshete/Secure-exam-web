@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { Router } from '@angular/router';
+// Make sure this path is correct for your project
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
@@ -18,22 +19,38 @@ export class AdminLoginComponent {
     password: ''
   };
 
+  showPassword = false; // Toggle for password visibility
+  isLoading = false;    // Loading state for button
+
   constructor(private authService: AuthService, private router: Router) {}
 
-  // The function that runs when you click your Login button
-  handleLogin() {
-    // 1. Check with AuthService if this Admin exists
-    const isValid = this.authService.login(
-      this.loginData.email, 
-      this.loginData.password, 
-      'admin' // We strictly check for 'admin' role
-    );
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
 
-    if (isValid) {
-      alert('Login Successful!');
-      this.router.navigate(['/admin-dashboard']); // Go to dashboard
-    } else {
-      alert('Invalid Email or Password! Please register as Admin first.');
+  handleLogin() {
+    if (!this.loginData.email || !this.loginData.password) {
+      alert('Please fill in all fields');
+      return;
     }
+
+    this.isLoading = true; // Start loading animation
+
+    // Simulate a network delay for better UX (optional)
+    setTimeout(() => {
+      const isValid = this.authService.login(
+        this.loginData.email, 
+        this.loginData.password, 
+        'admin'
+      );
+
+      this.isLoading = false; // Stop loading
+
+      if (isValid) {
+        this.router.navigate(['/admin-dashboard']); 
+      } else {
+        alert('Invalid Credentials! Access Denied.');
+      }
+    }, 1000);
   }
 }

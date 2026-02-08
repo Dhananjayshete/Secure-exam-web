@@ -1,31 +1,106 @@
-<div class="login-page">
-    <!-- LEFT IMAGE -->
-    <div class="illustration">
-                <img src="/assets/images/admin1.jpg" alt="Women" />    </div>
-  
-    <!-- RIGHT LOGIN CARD -->
-    <div class="form-section">
-      <div class="login-card">
-        <h1>Welcome Back, Admin</h1>
-        <p>Login to manage the exam system</p>
-  
-        <label>UserEmail</label>
-        <input type="email" placeholder="Enter Email" [(ngModel)]="loginData.email" name="email">
+<div class="admin-login-container">
+    
+  <!-- Decorative Background Shapes -->
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
 
-        <label>Password</label>
-<input type="password" placeholder="Password" [(ngModel)]="loginData.password" name="password">
-
-        <div class="options">
-            <label class="remember">
-              <input type="checkbox" />
-              <span>Remember Password</span>
-            </label>
-          
-            <a href="#" class="forgot">Forgot Password?</a>
+  <div class="login-grid">
+      
+      <!-- LEFT SIDE: Visuals -->
+      <div class="visual-side">
+          <div class="brand-header">
+              <h2>Secure<span>Take</span></h2>
           </div>
           
-  
-<button class="your-css-class" (click)="handleLogin()">Login</button>      </div>
-    </div>
+          <div class="illustration-wrapper">
+              <img src="/assets/images/admin1.jpg" alt="Admin Dashboard" class="hero-img">
+              
+              <!-- Floating Badge -->
+              <div class="floating-badge">
+                  <div class="icon-circle"><i class="fa-solid fa-check"></i></div>
+                  <div class="badge-text">
+                      <span>System Status</span>
+                      <strong>Operational</strong>
+                  </div>
+              </div>
+          </div>
+
+          <div class="visual-text">
+              <h3>Control. Monitor. Secure.</h3>
+              <p>The central hub for managing high-stakes assessments with integrity.</p>
+          </div>
+      </div>
+
+      <!-- RIGHT SIDE: Form -->
+      <div class="form-side">
+          <div class="login-card">
+              
+              <div class="card-header">
+                  <div class="icon-box">
+                      <i class="fa-solid fa-user-shield"></i>
+                  </div>
+                  <h1>Admin Login</h1>
+                  <p>Enter your credentials to access the panel.</p>
+              </div>
+
+              <form (ngSubmit)="handleLogin()">
+                  
+                  <!-- Email -->
+                  <div class="input-wrapper">
+                      <label>Email Address</label>
+                      <div class="input-container">
+                          <i class="fa-solid fa-envelope input-icon"></i>
+                          <input 
+                              type="email" 
+                              placeholder="admin@securetake.com" 
+                              [(ngModel)]="loginData.email" 
+                              name="email" 
+                              required>
+                      </div>
+                  </div>
+
+                  <!-- Password -->
+                  <div class="input-wrapper">
+                      <label>Password</label>
+                      <div class="input-container">
+                          <i class="fa-solid fa-lock input-icon"></i>
+                          <input 
+                              [type]="showPassword ? 'text' : 'password'" 
+                              placeholder="••••••••" 
+                              [(ngModel)]="loginData.password" 
+                              name="password" 
+                              required>
+                          
+                          <i class="fa-solid toggle-password" 
+                             [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+                             (click)="togglePassword()">
+                          </i>
+                      </div>
+                  </div>
+
+                  <!-- Options -->
+                  <div class="form-options">
+                      <label class="custom-checkbox">
+                          <input type="checkbox">
+                          <span class="checkmark"></span>
+                          Remember me
+                      </label>
+                      <a href="#" class="forgot-link">Forgot Password?</a>
+                  </div>
+
+                  <!-- Button -->
+                  <button type="submit" class="submit-btn" [disabled]="isLoading">
+                      <span *ngIf="!isLoading">Login to Dashboard <i class="fa-solid fa-arrow-right"></i></span>
+                      <span *ngIf="isLoading"><i class="fa-solid fa-circle-notch fa-spin"></i> Verifying...</span>
+                  </button>
+
+              </form>
+
+              <div class="card-footer">
+                  <a href="/" class="back-home"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+              </div>
+          </div>
+      </div>
+
   </div>
-  
+</div>

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { Router } from '@angular/router';
+// Ensure path is correct
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -18,22 +19,38 @@ export class StudentLoginComponent {
     password: ''
   };
 
+  showPassword = false;
+  isLoading = false;
+
   constructor(private authService: AuthService, private router: Router) {}
 
-  // The function that runs when you click your Login button
-  handleLogin() {
-    // 1. Check with AuthService if this Admin exists
-    const isValid = this.authService.login(
-      this.loginData.email, 
-      this.loginData.password, 
-      'student' // We strictly check for 'admin' role
-    );
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
 
-    if (isValid) {
-      alert('Login Successful!');
-      this.router.navigate(['/student-dashboard']); // Go to dashboard
-    } else {
-      alert('Invalid Email or Password! Please register as Student first.');
+  handleLogin() {
+    if (!this.loginData.email || !this.loginData.password) {
+      alert('Please fill in all fields');
+      return;
     }
+
+    this.isLoading = true;
+
+    // Simulate network delay
+    setTimeout(() => {
+      const isValid = this.authService.login(
+        this.loginData.email, 
+        this.loginData.password, 
+        'student' 
+      );
+
+      this.isLoading = false;
+
+      if (isValid) {
+        this.router.navigate(['/student-dashboard']); 
+      } else {
+        alert('Invalid Email or Password! Please register first.');
+      }
+    }, 1000);
   }
 }

@@ -1,144 +1,252 @@
-.login-page {
+/* --- VARIABLES --- */
+$bg-cream: #fde9c9;
+$bg-white: #ffffff;
+$primary-orange: #ff7a00;
+$primary-orange-hover: #e66e00;
+$text-dark: #1e293b;
+$text-muted: #64748b;
+$border-light: #e2e8f0;
+
+/* --- MAIN CONTAINER --- */
+.admin-login-container {
+    min-height: 100vh;
+    width: 100%;
+    background-color: $bg-white;
+    position: relative;
+    overflow: hidden;
     display: flex;
-    height: 100vh;
-    background: #f4f6fb;
-  }
-  
-  /* LEFT IMAGE */
-  .image-section {
-    flex: 1;
-    display: flex;
-    align-items: center;
     justify-content: center;
-  }
-  
-  .image-section img {
+    align-items: center;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Background Blobs (Decorative) */
+.shape {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.6;
+    z-index: 0;
+}
+
+.shape-1 {
+    width: 400px; height: 400px;
+    /* FIX: Changed from lighten() to rgba() to fix deprecation warning */
+    background: rgba($primary-orange, 0.15); 
+    top: -100px; right: -100px;
+}
+
+.shape-2 {
+    width: 300px; height: 300px;
+    background: $bg-cream;
+    bottom: -50px; left: -50px;
+}
+
+/* --- THE SPLIT GRID --- */
+.login-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     width: 90%;
-    max-width: 650px;
-  }
-  
-  /* RIGHT SIDE */
-  .form-section {
-    flex: 1;
+    max-width: 1200px;
+    height: 85vh; /* Fixed height card look */
+    background: #ffffff;
+    border-radius: 30px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+/* --- LEFT SIDE (VISUAL) --- */
+.visual-side {
+    background-color: $bg-cream;
     display: flex;
-    justify-content: flex-end; /* 👉 pushes card to right */
-    align-items: center;
-    padding-right: 100px;
-  }
-  
-  /* LOGIN CARD */
-  .login-card {
-    background: #4f6db8;
-    width: 420px;              /* 👈 SMALLER SIZE */
-    padding: 40px 35px;
-    border-radius: 18px;      
-    color: #fff;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  }
-  
-  /* TEXT */
-  .login-card h1 {
-    font-size: 26px;
-    margin-bottom: 8px;
-  }
-  
-  .login-card p {
-    font-size: 14px;
-    margin-bottom: 25px;
-    opacity: 0.9;
-  }
-  
-  /* INPUTS */
-  .login-card label {
-    font-size: 13px;
-    margin-bottom: 6px;
-    display: block;
-  }
-  
-  .login-card input {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    border: none;
-    margin-bottom: 16px;
-    font-size: 14px;
-  }
-  
-  .options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 18px 0 30px;
-  }
-  
-  .remember {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    color: #fff;
-  }
-  
-  .remember input {
-    width: 14px;
-    height: 14px;
-    cursor: pointer;
-  }
-  
-  .forgot {
-    font-size: 13px;
-    color: #fff;
-    text-decoration: underline;
-    cursor: pointer;
-  }
-  .illustration {
-    flex: 1;
+    flex-direction: column;
+    padding: 60px;
+    position: relative;
+    
+    .brand-header h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 28px;
+        color: $text-dark;
+        span { color: $primary-orange; }
+    }
+
+    .illustration-wrapper {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+
+        .hero-img {
+            width: 100%;
+            max-width: 450px;
+            border-radius: 20px;
+            mix-blend-mode: multiply; /* Makes image blend nice with cream bg */
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Floating Badge */
+        .floating-badge {
+            position: absolute;
+            bottom: 40px; right: 20px;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: float 6s ease-in-out infinite reverse;
+
+            .icon-circle {
+                width: 32px; height: 32px; background: #dcfce7; color: #16a34a;
+                border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px;
+            }
+            .badge-text {
+                display: flex; flex-direction: column;
+                span { font-size: 11px; color: $text-muted; text-transform: uppercase; }
+                strong { font-size: 14px; color: $text-dark; }
+            }
+        }
+    }
+
+    .visual-text {
+        h3 { font-family: 'Playfair Display', serif; font-size: 32px; margin-bottom: 10px; color: $text-dark; }
+        p { color: #666; font-size: 16px; line-height: 1.6; }
+    }
+}
+
+/* --- RIGHT SIDE (FORM) --- */
+.form-side {
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-  
-  .illustration img {
-    max-width: 90%;
-    height: auto;
-    animation: float 4s ease-in-out infinite;
-    filter: drop-shadow(0 25px 40px rgba(0, 0, 0, 0.15));
-    transition: transform 0.4s ease;
-  }
-  
-  /* Hover effect */
-  .illustration img:hover {
-    transform: scale(1.03);
-  }
-  
-  /* Floating animation */
-  @keyframes float {
-    0% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-12px);
-    }
-    100% {
-      transform: translateY(0);
-    }
-  }
-  
-  
-  /* BUTTON */
-  button {
+    padding: 60px;
+    background: #fff;
+}
+
+.login-card {
     width: 100%;
-    padding: 13px;
-    border-radius: 10px;
-    border: none;
-    background: #ffffff;
-    color: #4f6db8;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background: #e4e8f7;
-  }
-  
+    max-width: 400px;
+
+    .card-header {
+        text-align: center;
+        margin-bottom: 40px;
+
+        .icon-box {
+            width: 60px; height: 60px;
+            background: #fff7ed;
+            color: $primary-orange;
+            border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 20px;
+        }
+        h1 { font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 8px; color: $text-dark; }
+        p { color: $text-muted; font-size: 14px; }
+    }
+}
+
+/* --- INPUT STYLES --- */
+.input-wrapper {
+    margin-bottom: 24px;
+
+    label {
+        display: block; font-size: 13px; font-weight: 600; 
+        color: $text-dark; margin-bottom: 8px;
+    }
+
+    .input-container {
+        position: relative;
+        
+        .input-icon {
+            position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+            color: #cbd5e1; transition: 0.3s;
+        }
+
+        input {
+            width: 100%; padding: 14px 14px 14px 45px;
+            border: 2px solid $border-light;
+            border-radius: 12px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+            color: $text-dark;
+            background: #f8fafc;
+
+            &:focus {
+                background: #fff;
+                border-color: $primary-orange;
+                box-shadow: 0 0 0 4px rgba(255, 122, 0, 0.1);
+            }
+            
+            &:focus + .input-icon, &:focus ~ .input-icon { color: $primary-orange; }
+        }
+
+        .toggle-password {
+            position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+            color: $text-muted; cursor: pointer; transition: 0.2s;
+            &:hover { color: $text-dark; }
+        }
+    }
+}
+
+/* --- OPTIONS (Checkboxes) --- */
+.form-options {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 30px; font-size: 13px;
+
+    .custom-checkbox {
+        display: flex; align-items: center; gap: 8px; cursor: pointer; color: $text-muted;
+        input { accent-color: $primary-orange; width: 16px; height: 16px; cursor: pointer; }
+    }
+
+    .forgot-link {
+        color: $primary-orange; text-decoration: none; font-weight: 600;
+        &:hover { text-decoration: underline; }
+    }
+}
+
+/* --- BUTTON --- */
+.submit-btn {
+    width: 100%; padding: 16px;
+    background: $primary-orange; color: white;
+    border: none; border-radius: 50px;
+    font-size: 16px; font-weight: 600;
+    cursor: pointer; transition: all 0.3s;
+    box-shadow: 0 10px 20px rgba(255, 122, 0, 0.2);
+    display: flex; justify-content: center; align-items: center; gap: 10px;
+
+    &:hover {
+        background: $primary-orange-hover;
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(255, 122, 0, 0.3);
+    }
+    
+    &:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+}
+
+/* --- CARD FOOTER --- */
+.card-footer {
+    text-align: center; margin-top: 30px;
+    .back-home {
+        color: $text-muted; text-decoration: none; font-size: 13px;
+        &:hover { color: $primary-orange; }
+    }
+}
+
+/* --- ANIMATIONS --- */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 960px) {
+    .login-grid { grid-template-columns: 1fr; height: auto; max-width: 500px; }
+    .visual-side { display: none; } /* Hide image on tablet/mobile */
+    .form-side { padding: 40px; }
+}

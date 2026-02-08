@@ -1,51 +1,107 @@
-<div class="login-page">
-    <!-- LEFT IMAGE -->
-    <div class="illustration">
-                <img src="/assets/images/student.jpg" alt="Student" />    </div>
+<div class="student-login-container">
     
-                <div class="login-page">
+  <!-- Decorative Background Shapes -->
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
 
-                    <!-- BACKGROUND ANIMATION -->
-                    <!-- <div class="animation-bg">
-                        <img
-                          *ngFor="let plane of planes; let i = index"
-                          src="assets/images/pplane.png"
-                          alt="Flying plane"
-                          class="plane"
-                          [style.left.%]="(i * 5) % 100"
-                          [style.animationDelay.s]="i * 0.5"
-                          [style.animationDuration.s]="6 + (i % 5)"
-                        />
-                      </div> -->
-                      
-                  
-                   
-  
-    <!-- RIGHT LOGIN CARD -->
-    <div class="form-section">
-      <div class="login-card">
-        <h1>Welcome Back, Student</h1>
-        <p>Login to manage the exam system</p>
-  
-        <label>Email</label>
-        <input type="email" placeholder="Enter Email" [(ngModel)]="loginData.email" name="email">
-
-        <label>Password</label>
-        <input type="password" placeholder="Password" [(ngModel)]="loginData.password" name="password">
-
-
-        <div class="options">
-            <label class="remember">
-              <input type="checkbox" />
-              <span>Remember Password</span>
-            </label>
-          
-            <a href="#" class="forgot">Forgot Password?</a>
+  <div class="login-grid">
+      
+      <!-- LEFT SIDE: Visuals -->
+      <div class="visual-side">
+          <div class="brand-header">
+              <h2>Secure<span>Take</span></h2>
           </div>
           
-  
-<button class="your-css-class" (click)="handleLogin()">Login</button>      </div>
-        </div>
-    </div>
+          <div class="illustration-wrapper">
+              <img src="/assets/images/student.jpg" alt="Student Learning" class="hero-img">
+              
+              <!-- Floating Badge -->
+              <div class="floating-badge">
+                  <div class="icon-circle"><i class="fa-solid fa-graduation-cap"></i></div>
+                  <div class="badge-text">
+                      <span>Current Exam</span>
+                      <strong>Mathematics 101</strong>
+                  </div>
+              </div>
+          </div>
+
+          <div class="visual-text">
+              <h3>Focus. Achieve. Succeed.</h3>
+              <p>Your secure environment for taking exams and tracking progress.</p>
+          </div>
+      </div>
+
+      <!-- RIGHT SIDE: Form -->
+      <div class="form-side">
+          <div class="login-card">
+              
+              <div class="card-header">
+                  <div class="icon-box">
+                      <i class="fa-solid fa-user-graduate"></i>
+                  </div>
+                  <h1>Student Login</h1>
+                  <p>Enter your details to start your exam.</p>
+              </div>
+
+              <form (ngSubmit)="handleLogin()">
+                  
+                  <!-- Email -->
+                  <div class="input-wrapper">
+                      <label>Student Email</label>
+                      <div class="input-container">
+                          <i class="fa-solid fa-envelope input-icon"></i>
+                          <input 
+                              type="email" 
+                              placeholder="student@university.edu" 
+                              [(ngModel)]="loginData.email" 
+                              name="email" 
+                              required>
+                      </div>
+                  </div>
+
+                  <!-- Password -->
+                  <div class="input-wrapper">
+                      <label>Password</label>
+                      <div class="input-container">
+                          <i class="fa-solid fa-lock input-icon"></i>
+                          <input 
+                              [type]="showPassword ? 'text' : 'password'" 
+                              placeholder="••••••••" 
+                              [(ngModel)]="loginData.password" 
+                              name="password" 
+                              required>
+                          
+                          <i class="fa-solid toggle-password" 
+                             [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+                             (click)="togglePassword()">
+                          </i>
+                      </div>
+                  </div>
+
+                  <!-- Options -->
+                  <div class="form-options">
+                      <label class="custom-checkbox">
+                          <input type="checkbox">
+                          <span class="checkmark"></span>
+                          Remember me
+                      </label>
+                      <a href="#" class="forgot-link">Forgot Password?</a>
+                  </div>
+
+                  <!-- Button -->
+                  <button type="submit" class="submit-btn" [disabled]="isLoading">
+                      <span *ngIf="!isLoading">Enter Exam Portal <i class="fa-solid fa-arrow-right"></i></span>
+                      <span *ngIf="isLoading"><i class="fa-solid fa-circle-notch fa-spin"></i> Verifying...</span>
+                  </button>
+
+              </form>
+
+              <div class="card-footer">
+                  <p>Don't have an account? <a href="/register" class="register-link">Register Here</a></p>
+                  <a href="/" class="back-home"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+              </div>
+          </div>
+      </div>
+
   </div>
-  
+</div>

@@ -17,34 +17,39 @@ export class TeacherLoginComponent {
     email: '',
     password: ''
   };
-  
+
+  showPassword = false;
   isLoading = false;
-  errorMessage = '';
 
   constructor(private authService: AuthService, private router: Router) {}
 
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
+
   handleLogin() {
-    // Basic validation
     if (!this.loginData.email || !this.loginData.password) {
-      this.errorMessage = 'Please fill in all fields';
+      alert('Please fill in all fields');
       return;
     }
 
     this.isLoading = true;
-    this.errorMessage = '';
 
-    const isValid = this.authService.login(
-      this.loginData.email, 
-      this.loginData.password, 
-      'teacher'
-    );
+    // Simulate network delay for smooth UX
+    setTimeout(() => {
+      const isValid = this.authService.login(
+        this.loginData.email, 
+        this.loginData.password, 
+        'teacher' 
+      );
 
-    this.isLoading = false;
+      this.isLoading = false;
 
-    if (isValid) {
-      this.router.navigate(['/teacher-dashboard']);
-    } else {
-      this.errorMessage = 'Invalid Email or Password! Please register as teacher first.';
-    }
+      if (isValid) {
+        this.router.navigate(['/teacher-dashboard']); 
+      } else {
+        alert('Invalid Credentials! Please register as a Teacher first.');
+      }
+    }, 1000);
   }
 }
