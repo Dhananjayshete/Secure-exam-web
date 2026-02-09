@@ -1,1 +1,288 @@
-<p>teacher-dashboard works!</p>
+<!-- MAIN CONTAINER -->
+<div class="dashboard-container">
+
+    <!-- ==================== SIDEBAR (LEFT) ==================== -->
+    <aside class="sidebar">
+      <div class="brand">
+        <i class="fa-solid fa-shield-cat"></i> Secure<span>Take</span>
+      </div>
+  
+      <!-- Navigation Group 1 -->
+      <div class="nav-group">
+        <div class="nav-label">Overview</div>
+        
+        <!-- Dashboard Button -->
+        <a class="nav-item" [class.active]="currentView === 'dashboard'" (click)="switchView('dashboard')">
+          <i class="fa-solid fa-grid-2"></i> Dashboard
+        </a>
+        
+        <!-- Exams Button -->
+        <a class="nav-item" [class.active]="currentView === 'exams'" (click)="switchView('exams')">
+          <i class="fa-solid fa-file-contract"></i> Exam Manager
+        </a>
+        
+        <!-- Analytics Button -->
+        <a class="nav-item" [class.active]="currentView === 'analytics'" (click)="switchView('analytics')">
+          <i class="fa-solid fa-chart-pie"></i> Analytics
+        </a>
+      </div>
+  
+      <!-- Navigation Group 2 -->
+      <div class="nav-group">
+        <div class="nav-label">Proctoring</div>
+        <a class="nav-item" [class.active]="currentView === 'monitor'" (click)="switchView('monitor')">
+          <i class="fa-solid fa-eye"></i> Live Monitor
+          <span class="live-dot"></span>
+        </a>
+      </div>
+  
+      <!-- Navigation Group 3 -->
+      <div class="nav-group">
+        <div class="nav-label">Academics</div>
+        <a class="nav-item" [class.active]="currentView === 'grading'" (click)="switchView('grading')">
+          <i class="fa-solid fa-pen-to-square"></i> Grading Hub
+        </a>
+        <a class="nav-item" [class.active]="currentView === 'students'" (click)="switchView('students')">
+          <i class="fa-solid fa-users"></i> Students
+        </a>
+      </div>
+  
+      <!-- User Profile at Bottom -->
+      <div class="sidebar-footer">
+        <div class="user-card" (click)="logout()">
+          <img src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=100" class="user-avatar" alt="User">
+          <div>
+            <h4>Prof. saniya yadav</h4>
+            <p>Administrator</p>
+          </div>
+          <i class="fa-solid fa-right-from-bracket logout-icon"></i>
+        </div>
+      </div>
+    </aside>
+  
+    <!-- ==================== MAIN CONTENT (RIGHT) ==================== -->
+    <div class="main-content">
+      
+      <!-- TOP BAR (Header) -->
+      <header class="top-bar">
+        <div class="breadcrumbs">
+          Home / <strong>{{ currentView | titlecase }}</strong>
+        </div>
+        <div class="actions">
+          <!-- GLOBAL SEARCH BAR -->
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Search students, IDs, exams..." [(ngModel)]="searchTerm">
+          </div>
+          <button class="icon-btn"><i class="fa-regular fa-bell"></i><div class="badge">3</div></button>
+        </div>
+      </header>
+  
+      <!-- ==================== VIEW 1: DASHBOARD ==================== -->
+      <div *ngIf="currentView === 'dashboard'" class="view-section fade-in">
+        <div class="page-header">
+          <div>
+            <h1>Dashboard Overview</h1>
+            <p>Welcome back. You have <strong>2 exams</strong> running live today.</p>
+          </div>
+          <button class="btn-primary" (click)="openModal()"><i class="fa-solid fa-plus"></i> Quick Exam</button>
+        </div>
+  
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="icon-box orange"><i class="fa-solid fa-calendar-check"></i></div>
+            <div><h2>12</h2><p>Total Exams</p></div>
+          </div>
+          <div class="stat-card">
+            <div class="icon-box green"><i class="fa-solid fa-user-graduate"></i></div>
+            <div><h2>450</h2><p>Students</p></div>
+          </div>
+          <div class="stat-card">
+            <div class="icon-box blue"><i class="fa-solid fa-video"></i></div>
+            <div><h2>02</h2><p>Live Now</p></div>
+          </div>
+          <div class="stat-card">
+            <div class="icon-box red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div><h2>07</h2><p>Alerts</p></div>
+          </div>
+        </div>
+  
+        <!-- Recent Exams Table -->
+        <div class="panel">
+          <div class="panel-header"><h3>Recent Activity</h3></div>
+          <table>
+            <thead><tr><th>Exam</th><th>Date</th><th>Candidates</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let exam of exams">
+                <td><strong>{{ exam.title }}</strong></td>
+                <td>{{ exam.date }}</td>
+                <td>{{ exam.candidates }}</td>
+                <td>
+                  <span class="status-badge" 
+                    [ngClass]="{'live': exam.status === 'Live', 'scheduled': exam.status === 'Scheduled', 'draft': exam.status === 'Draft'}">
+                    {{ exam.status }}
+                  </span>
+                </td>
+                <td><button class="btn-icon" (click)="switchView('monitor')"><i class="fa-solid fa-eye"></i></button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  
+      <!-- ==================== VIEW 2: EXAM MANAGER ==================== -->
+      <div *ngIf="currentView === 'exams'" class="view-section fade-in">
+        <div class="page-header">
+          <div><h1>Exam Manager</h1><p>Create and manage your assessments.</p></div>
+          <button class="btn-primary" (click)="openModal()"><i class="fa-solid fa-plus"></i> New Exam</button>
+        </div>
+        <div class="panel">
+          <table>
+            <thead><tr><th>Title</th><th>Subject</th><th>Security</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let exam of exams">
+                <td>{{ exam.title }}</td>
+                <td>{{ exam.subject }}</td>
+                <td><i class="fa-solid fa-lock text-danger"></i> {{ exam.security }}</td>
+                <td>{{ exam.status }}</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="btn-icon"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn-icon delete"><i class="fa-solid fa-trash"></i></button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  
+      <!-- ==================== VIEW 3: LIVE MONITOR ==================== -->
+      <div *ngIf="currentView === 'monitor'" class="view-section fade-in">
+        <div class="page-header">
+          <div><h1>Live Proctoring</h1><p>Monitoring: <strong>CS101 - Data Structures</strong></p></div>
+          <button class="btn-danger"><i class="fa-solid fa-ban"></i> Terminate Exam</button>
+        </div>
+        
+        <div class="monitor-grid">
+          <!-- Webcams Grid -->
+          <div class="cam-grid">
+            <div class="student-cam" *ngFor="let st of liveStudents" [class.alert]="st.status === 'flagged'">
+              <img [src]="st.img" class="cam-feed">
+              <div class="cam-overlay">
+                <span>{{ st.name }}</span>
+                <span *ngIf="st.status === 'good'" class="text-success"><i class="fa-solid fa-wifi"></i> Good</span>
+                <span *ngIf="st.status === 'flagged'" class="text-danger"><i class="fa-solid fa-triangle-exclamation"></i> Alert</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Log Panel -->
+          <div class="audit-log">
+            <h4>Security Log</h4>
+            <div class="log-item"><span>10:45 AM</span> Sarah J. verified identity.</div>
+            <div class="log-item alert"><span>10:48 AM</span> ⚠️ Multiple Faces (Mike T.)</div>
+            <div class="log-item alert"><span>10:50 AM</span> ⚠️ Tab Switch (John D.)</div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- ==================== VIEW 4: STUDENTS LIST (Your Data) ==================== -->
+      <div *ngIf="currentView === 'students'" class="view-section fade-in">
+        <div class="page-header">
+          <div><h1>Student Roster</h1><p>Manage enrollments and view student status.</p></div>
+          <button class="btn-primary"><i class="fa-solid fa-user-plus"></i> Add Student</button>
+        </div>
+  
+        <div class="panel">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Student Name</th><th>Department</th><th>Batch</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+              <!-- We loop through filteredStudents (search result) -->
+              <tr *ngFor="let s of filteredStudents">
+                <td style="font-family: monospace; font-weight: 600;">#{{ s.id }}</td>
+                <td>
+                  <div style="display:flex; align-items:center; gap:12px;">
+                    <img [src]="s.photo" alt="Avatar" style="width:36px; height:36px; border-radius:50%;">
+                    <div>
+                      <div style="font-weight:600; color:var(--text-main);">{{ s.name }}</div>
+                      <div style="font-size:12px; color:var(--text-muted);">{{ s.email }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span style="background:#f1f5f9; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:600;">{{ s.dept }}</span></td>
+                <td>{{ s.batch }}</td>
+                <td>
+                  <!-- Dynamic Status Color -->
+                  <span [class]="getStatusClass(s.status)">
+                    <i class="fa-solid" [ngClass]="{'fa-circle-check': s.status === 'Active', 'fa-pen-to-square': s.status === 'Examining', 'fa-ban': s.status === 'Blocked'}"></i>
+                    {{ s.status }}
+                  </span>
+                </td>
+                <td>
+                  <div style="display:flex; gap:8px;">
+                    <button class="btn-icon" title="View"><i class="fa-solid fa-eye"></i></button>
+                    <button class="btn-icon" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                </td>
+              </tr>
+              <!-- Show if no results -->
+              <tr *ngIf="filteredStudents.length === 0">
+                <td colspan="6" style="text-align:center; padding:40px; color:#64748b;">
+                  <i class="fa-solid fa-magnifying-glass" style="margin-bottom:10px;"></i>
+                  <p>No students found.</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  
+    </div>
+  </div>
+  
+  <!-- ==================== MODAL (CREATE EXAM) ==================== -->
+  <div class="modal-overlay" *ngIf="isModalOpen">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Create New Exam</h2>
+        <button class="close-btn" (click)="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <label>Exam Title</label>
+        <input type="text" [(ngModel)]="newExam.title" placeholder="e.g. Final Semester Physics">
+        
+        <div class="row">
+          <div>
+            <label>Subject</label>
+            <select [(ngModel)]="newExam.subject">
+              <option>Computer Science</option>
+              <option>Mathematics</option>
+              <option>Physics</option>
+            </select>
+          </div>
+          <div>
+            <label>Duration (Mins)</label>
+            <input type="number" [(ngModel)]="newExam.duration">
+          </div>
+        </div>
+  
+        <h4>Security Settings</h4>
+        <div class="toggle-row">
+          <span>Browser Lockdown</span>
+          <input type="checkbox" [(ngModel)]="newExam.security.browserLock">
+        </div>
+        <div class="toggle-row">
+          <span>AI Proctoring</span>
+          <input type="checkbox" [(ngModel)]="newExam.security.aiProctor">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeModal()">Cancel</button>
+        <button class="btn-primary" (click)="createExam()">Save & Publish</button>
+      </div>
+    </div>
+  </div>

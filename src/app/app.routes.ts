@@ -13,11 +13,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/home/home.component').then(m => m.HomeComponent),
   },
-  {
-    path: 'how-it-works',
-    loadComponent: () =>
-      import('./pages/how-it-works/how-it-works.component').then(m => m.HowItWorksComponent),
-  },
+  // {
+  //   path: 'how-it-works',
+  //   loadComponent: () =>
+  //     import('./pages/how-it-works/how-it-works.component').then(m => m.HowItWorksComponent),
+  // },
   
   // --- AUTH ROUTES ---
   {
