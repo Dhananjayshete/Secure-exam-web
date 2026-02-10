@@ -1,1 +1,257 @@
-<p>student-dashboard works!</p>
+<!-- 1. LEFT SIDEBAR -->
+<aside class="sidebar">
+    <!-- Logo -->
+    <div class="brand">
+        <i class="fa-solid fa-graduation-cap"></i> Secure<span>Take</span>
+    </div>
+
+    <!-- Menu Links -->
+    <div class="nav-title">Menu</div>
+    
+    <a class="nav-item" [class.active]="currentView === 'dashboard'" (click)="switchView('dashboard')">
+        <i class="fa-solid fa-house"></i> Dashboard
+    </a>
+    <a class="nav-item" [class.active]="currentView === 'upcoming'" (click)="switchView('upcoming')">
+        <i class="fa-solid fa-calendar-star"></i> My Exams
+    </a>
+    <a class="nav-item" [class.active]="currentView === 'results'" (click)="switchView('results')">
+        <i class="fa-solid fa-medal"></i> Results
+    </a>
+    <a class="nav-item" [class.active]="currentView === 'admit'" (click)="switchView('admit')">
+        <i class="fa-solid fa-ticket"></i> Admit Card
+    </a>
+
+    <div class="nav-title">Settings</div>
+    <a class="nav-item" [class.active]="currentView === 'profile'" (click)="switchView('profile')">
+        <i class="fa-solid fa-user-circle"></i> Profile
+    </a>
+
+    <!-- Motivation Box -->
+    <div class="motivation-card">
+        <h4>Keep it up! 🚀</h4>
+        <p>You've completed 3 exams this semester.</p>
+    </div>
+</aside>
+
+<!-- 2. MAIN CONTENT (RIGHT SIDE) -->
+<div class="main-wrapper">
+    
+    <!-- Top Header -->
+    <header class="top-bar">
+        <div class="date-badge"><i class="fa-regular fa-calendar"></i> Today's Portal</div>
+        
+        <!-- User Pill (Top Right) -->
+        <div class="user-pill" (click)="switchView('profile')">
+            <div style="text-align: right;">
+                <div style="font-weight: 700; font-size: 13px;">{{ studentProfile.name }}</div>
+                <div style="font-size: 11px; color: var(--text-muted);">{{ studentProfile.course }}</div>
+            </div>
+            <div class="avatar"><img [src]="studentProfile.avatar" alt="User"></div>
+        </div>
+    </header>
+
+    <div class="content">
+
+        <!-- VIEW A: DASHBOARD HOME -->
+        <div *ngIf="currentView === 'dashboard'" class="view-section fade-in">
+            
+            <!-- Welcome Banner -->
+            <div class="hero-banner">
+                <div class="hero-text">
+                    <h1>Hello, {{ studentProfile.name.split(' ')[0] }}! 👋</h1>
+                    <p>You have an exam starting soon. Make sure your webcam is ready.</p>
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-primary" (click)="switchView('upcoming')">Go to Exam Hall</button>
+                    </div>
+                </div>
+                <!-- Decorative Image -->
+                <img src="https://cdn-icons-png.flaticon.com/512/7466/7466140.png" class="hero-img" alt="Study">
+            </div>
+
+            <!-- Stats Boxes -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="icon-circle" style="background:#fff7ed; color:var(--primary);"><i class="fa-solid fa-book-open"></i></div>
+                    <div><div style="font-size:24px; font-weight:700;">05</div><div style="font-size:12px; color:var(--text-muted);">Registered</div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-circle" style="background:#eff6ff; color:var(--accent-blue);"><i class="fa-solid fa-clock"></i></div>
+                    <div><div style="font-size:24px; font-weight:700;">02</div><div style="font-size:12px; color:var(--text-muted);">Upcoming</div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-circle" style="background:#f0fdf4; color:var(--accent-green);"><i class="fa-solid fa-trophy"></i></div>
+                    <div><div style="font-size:24px; font-weight:700;">03</div><div style="font-size:12px; color:var(--text-muted);">Completed</div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-circle" style="background:#f5f3ff; color:var(--accent-purple);"><i class="fa-solid fa-chart-line"></i></div>
+                    <div><div style="font-size:24px; font-weight:700;">88%</div><div style="font-size:12px; color:var(--text-muted);">Avg. Score</div></div>
+                </div>
+            </div>
+
+            <!-- Recent Results Table -->
+            <h3 style="margin-bottom: 20px; font-size: 18px;">Recent Performance</h3>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>Exam Name</th><th>Date</th><th>Score</th><th>Status</th></tr></thead>
+                    <tbody>
+                        <tr *ngFor="let history of examHistory">
+                            <td><strong>{{ history.title }}</strong></td>
+                            <td>{{ history.date }}</td>
+                            <td><span style="font-weight:700; color:var(--accent-green);">{{ history.score }}</span></td>
+                            <td><span class="status-pass">{{ history.status }}</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- VIEW B: UPCOMING EXAMS -->
+        <div *ngIf="currentView === 'upcoming'" class="view-section fade-in">
+            <div class="hero-text" style="margin-bottom: 30px;">
+                <h1>Your Exam Schedule</h1>
+                <p>Click "Start" only when you are ready. The timer starts immediately.</p>
+            </div>
+
+            <div class="exam-cards-grid">
+                <!-- Active Exam Card -->
+                <div class="exam-ticket">
+                    <div class="ticket-header">
+                        <span class="exam-date">TODAY</span>
+                        <i class="fa-solid fa-shield-halved" style="color: var(--primary);"></i>
+                    </div>
+                    <div class="exam-title">Data Structures Midterm</div>
+                    <div class="exam-meta">
+                        <span><i class="fa-regular fa-clock"></i> 10:00 AM</span>
+                        <span><i class="fa-solid fa-hourglass"></i> 60 Mins</span>
+                    </div>
+                    <button class="btn btn-primary" style="width:100%; justify-content:center;" (click)="startExam()">
+                        Start Exam Now <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- Locked Exam Card -->
+                <div class="exam-ticket" style="border-left-color: #e5e7eb;">
+                    <div class="ticket-header">
+                        <span class="exam-date" style="background:#f3f4f6; color:#6b7280;">OCT 15</span>
+                        <i class="fa-solid fa-lock" style="color: #9ca3af;"></i>
+                    </div>
+                    <div class="exam-title" style="color:#6b7280;">Engineering Math II</div>
+                    <div class="exam-meta">
+                        <span><i class="fa-regular fa-clock"></i> 02:00 PM</span>
+                        <span><i class="fa-solid fa-hourglass"></i> 90 Mins</span>
+                    </div>
+                    <button class="btn btn-disabled" style="width:100%; justify-content:center;">Locked</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW C: RESULTS -->
+        <div *ngIf="currentView === 'results'" class="view-section fade-in">
+            <h1 style="font-family:'DM Serif Display'; font-size:32px; margin-bottom:20px;">Exam History</h1>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>Exam</th><th>Date</th><th>Score</th><th>Certificate</th></tr></thead>
+                    <tbody>
+                        <tr *ngFor="let h of examHistory">
+                            <td><strong>{{ h.title }}</strong></td>
+                            <td>{{ h.date }}</td>
+                            <td style="font-weight:700;">{{ h.score }}</td>
+                            <td><button class="btn btn-primary" style="padding:6px 12px; font-size:12px;">Download</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- VIEW D: ADMIT CARD -->
+        <div *ngIf="currentView === 'admit'" class="view-section fade-in">
+            <div class="admit-card-modern">
+                <div class="admit-top">
+                    <h2 style="font-family:'DM Serif Display'; margin-bottom:5px;">SecureTake University</h2>
+                    <p style="font-size:12px; opacity:0.8;">OFFICIAL EXAMINATION TICKET</p>
+                </div>
+                <div class="admit-body">
+                    <div class="info-group"><label>Candidate Name</label><div>{{ studentProfile.name }}</div></div>
+                    <div class="info-group"><label>Roll Number</label><div>CS-2024-001</div></div>
+                    <div class="info-group"><label>Exam Center</label><div>Online (Secure Browser)</div></div>
+                    <div class="info-group"><label>Batch Code</label><div>B-2024-CS</div></div>
+                </div>
+                <div style="background:#f9fafb; padding:20px; text-align:center; border-top:1px dashed #e5e7eb;">
+                    <button class="btn btn-primary"><i class="fa-solid fa-print"></i> Print Admit Card</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW E: PROFILE -->
+        <div *ngIf="currentView === 'profile'" class="view-section fade-in">
+            <h1 style="font-family:'DM Serif Display'; font-size:32px; margin-bottom:20px;">Edit Profile</h1>
+            <div class="table-container" style="max-width:500px;">
+                <form class="profile-form">
+                    <div style="text-align:center; margin-bottom:20px;">
+                        <div style="width:80px; height:80px; background:#e5e7eb; border-radius:50%; margin:0 auto 10px; overflow:hidden;">
+                            <img [src]="studentProfile.avatar" style="width:100%;">
+                        </div>
+                        <span style="color:var(--primary); font-size:13px; font-weight:600; cursor:pointer;">Change Photo</span>
+                    </div>
+                    <label>Full Name</label> <input type="text" [(ngModel)]="studentProfile.name" name="name">
+                    <label>Email Address</label> <input type="email" [value]="studentProfile.email" disabled style="background:#f3f4f6; color:#9ca3af;">
+                    <label>Phone Number</label> <input type="text" [(ngModel)]="studentProfile.phone" name="phone">
+                    <button class="btn btn-primary" style="width:100%; justify-content:center;">Save Changes</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ==========================
+     3. EXAM OVERLAY (Hidden by default)
+     ========================== -->
+<div id="exam-interface" *ngIf="isExamActive" [class.active]="isExamActive">
+    
+    <!-- Exam Header -->
+    <div class="exam-navbar">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <i class="fa-solid fa-shield-cat" style="color:var(--primary); font-size:24px;"></i>
+            <span style="font-weight:700;">CS101: Data Structures</span>
+        </div>
+        <div class="timer-pill">{{ timerDisplay }}</div>
+        <button class="btn" style="background:#ef4444; color:white;" (click)="submitExam()">Submit Exam</button>
+    </div>
+
+    <div class="exam-layout">
+        <!-- Question Area -->
+        <div class="question-panel">
+            <div class="q-card">
+                <div style="color:var(--text-muted); font-size:13px; margin-bottom:10px; font-weight:600;">QUESTION 1 OF 30</div>
+                <div class="q-text">Which data structure is most suitable for implementing a recursive algorithm?</div>
+                
+                <label class="option-box"><input type="radio" name="q1"> <span>Queue</span></label>
+                <label class="option-box"><input type="radio" name="q1"> <span>Stack</span></label>
+                <label class="option-box"><input type="radio" name="q1"> <span>Linked List</span></label>
+                <label class="option-box"><input type="radio" name="q1"> <span>Tree</span></label>
+
+                <div style="display:flex; justify-content:space-between; margin-top:40px;">
+                    <button class="btn btn-disabled">Previous</button>
+                    <button class="btn btn-primary">Save & Next</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Camera Sidebar -->
+        <div class="sidebar-right">
+            <div class="cam-preview">
+                <span class="rec-tag">● REC</span>
+                <img src="https://media.istockphoto.com/id/1364917563/photo/businessman-smiling-with-arms-crossed-on-white-background.jpg?s=612x612&w=0&k=20&c=NtM9WBS1DbFGLBluQqKHTrZItur490kbcqW08mY-CA0=" style="width:100%; height:100%; object-fit:cover; opacity:0.8;">
+            </div>
+            <div style="margin-bottom:10px; font-size:12px; font-weight:700; color:#6b7280; text-transform:uppercase;">Question Palette</div>
+            <div class="q-palette">
+                <div class="q-dot current">1</div>
+                <div class="q-dot">2</div>
+                <div class="q-dot">3</div>
+                <div class="q-dot solved">4</div>
+                <div class="q-dot solved">5</div>
+            </div>
+        </div>
+    </div>
+</div>
