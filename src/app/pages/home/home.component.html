@@ -73,6 +73,65 @@
     </div>
   </div>
 </section>
+<!-- ============================================ -->
+<!-- START: BUILT FOR EVERYONE SECTION            -->
+<!-- ============================================ -->
+<section class="personas-section">
+    
+  <!-- 1. Section Heading -->
+  <div class="personas-header">
+      <h2>Built for Everyone</h2>
+  </div>
+
+  <!-- 2. The Buttons (Tabs) -->
+  <!-- We use (click) to update the variable in TS -->
+  <div class="persona-tabs">
+      <button class="tab-btn" 
+              [class.active]="activePersona === 'admin'" 
+              (click)="setPersona('admin')">
+          Admins
+      </button>
+
+      <button class="tab-btn" 
+              [class.active]="activePersona === 'teacher'" 
+              (click)="setPersona('teacher')">
+          Teachers
+      </button>
+
+      <button class="tab-btn" 
+              [class.active]="activePersona === 'student'" 
+              (click)="setPersona('student')">
+          Students
+      </button>
+  </div>
+
+  <!-- 3. The Dynamic Content Area -->
+  <div class="persona-content-grid">
+      
+      <!-- Left Side: Text Description -->
+      <div class="persona-text-col">
+          <!-- Angular Binding: {{ }} allows the text to change automatically -->
+          <h3>{{ personaData[activePersona].title }}</h3>
+          <p>{{ personaData[activePersona].desc }}</p>
+          
+          <!-- List of Features -->
+          <ul class="persona-list">
+              <!-- *ngFor loops through the features of the selected role -->
+              <li *ngFor="let feature of personaData[activePersona].features">
+                  <i class="fa-solid fa-circle-check"></i> {{ feature }}
+              </li>
+          </ul>
+      </div>
+
+      <!-- Right Side: Image -->
+      <div class="persona-img-col">
+          <!-- [src] binds the image URL dynamically -->
+          <img [src]="personaData[activePersona].img" alt="Dashboard Preview">
+      </div>
+
+  </div>
+
+</section>
 <!-- SECTION 3: DETAILED PROCESS (The Zig-Zag Steps) -->
 <!-- Using 'steps-section' class for the Zig-Zag layout -->
 <section id="how-it-works" class="steps-section">

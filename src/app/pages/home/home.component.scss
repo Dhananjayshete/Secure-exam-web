@@ -803,3 +803,151 @@
        .features-section { padding: 60px 24px; }
        .features-section h1 { font-size: 36px; }
    }
+   /* --- SECTION CONTAINER (Compact) --- */
+.personas-section {
+    padding: 60px 20px;
+    background-color: #ffffff;
+    text-align: center;
+}
+
+/* --- HEADER --- */
+.personas-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px; /* Smaller font */
+    color: #0f172a;
+    margin-bottom: 20px;
+}
+
+/* --- TABS (THE BUTTONS) --- */
+.persona-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 40px;
+}
+
+.tab-btn {
+    padding: 8px 24px; /* Smaller buttons */
+    border-radius: 50px;
+    border: 1px solid #e2e8f0;
+    background: transparent;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #64748b;
+}
+
+.tab-btn:hover {
+    border-color: #0f172a;
+    color: #0f172a;
+}
+
+.tab-btn.active {
+    background-color: #0f172a;
+    color: #ffffff;
+    border-color: #0f172a;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2);
+}
+
+/* --- CONTENT GRID (Tighter Layout) --- */
+.persona-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 40px;
+    max-width: 800px; /* Reduced width to make it compact */
+    margin: 0 auto;
+    text-align: left;
+}
+
+/* --- LEFT TEXT COLUMN --- */
+.persona-text-col h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px; /* Smaller Title */
+    margin-bottom: 10px;
+    color: #0f172a;
+}
+
+.persona-text-col p {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: #64748b;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* --- LIST ITEMS & ICON FIX --- */
+.persona-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.persona-list li {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    color: #334155;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ⬇️ THIS FIXES THE SQUARES ⬇️ */
+.persona-list i {
+    font-family: "Font Awesome 6 Free" !important; /* Forces the Icon Font */
+    font-weight: 900 !important; /* Required for solid icons */
+    color: #10b981; /* Green color */
+    font-size: 16px;
+    min-width: 20px; /* Ensures alignment */
+}
+
+/* --- RIGHT IMAGE COLUMN --- */
+/* --- RIGHT IMAGE COLUMN FIX --- */
+.persona-img-col {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.persona-img-col img {
+    width: 100%;
+    /* Change 1: Remove fixed height, let it be auto */
+    height: auto; 
+    
+    /* Change 2: Limit max height so it doesn't get too huge, but big enough for the photo */
+    max-height: 450px; 
+    
+    /* Change 3: Ensure the face/top of image is always visible */
+    object-fit: cover;
+    object-position: top center; 
+    
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: opacity 0.3s ease;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+    .persona-content-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+        max-width: 100%;
+    }
+    .persona-list {
+        display: inline-block;
+        text-align: left;
+    }
+    .persona-list li {
+        justify-content: flex-start;
+    }
+    .persona-img-col {
+        order: -1;
+        margin-bottom: 20px;
+    }
+    .persona-img-col img {
+        height: 200px;
+    }
+}

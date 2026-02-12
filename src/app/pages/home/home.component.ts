@@ -12,25 +12,67 @@ interface Subject {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule], // Keeping your existing imports
+  imports: [CommonModule, RouterModule], 
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent {
 
-  // --- EXISTING LOGIC ---
-  scrollTo(id: string) {
-    document.getElementById(id)?.scrollIntoView({
-      behavior: 'smooth'
-    });
+  // ============================================
+  // SECTION 1: PERSONA TABS LOGIC
+  // ============================================
+  
+  // Track Active Persona (Default to Admin)
+  activePersona: string = 'admin'; 
+
+  // Data for the 3 Personas
+  personaData: any = {
+    admin: {
+      title: "Manage at Scale",
+      desc: "Control access, manage billing, and generate institution-wide compliance reports.",
+      img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1000&auto=format&fit=crop",
+      features: [
+        "Bulk student import via CSV",
+        "Role-based access control",
+        "LMS Integration (Canvas, Moodle)"
+      ]
+    },
+    teacher: {
+      title: "Create in Minutes",
+      desc: "Use our rich text editor or AI question generator to build exams effortlessly.",
+      img: "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=1000&auto=format&fit=crop",
+      features: [
+        "Question Bank Management",
+        "Auto-shuffling & Randomization",
+        "Manual grading for essays"
+      ]
+    },
+    student: {
+      title: "Focus on Results",
+      desc: "A distraction-free interface that saves progress automatically.",
+      img: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=1000&auto=format&fit=crop",
+      features: [
+        "Resume where you left off",
+        "Instant score feedback",
+        "Offline support"
+      ]
+    }
+  };
+
+  // Function to switch persona
+  setPersona(role: string) {
+    this.activePersona = role;
   }
 
-  // --- NEW LOGIC FOR SUBJECTS MODAL ---
 
-  // 2. Variable to track the currently clicked subject
+  // ============================================
+  // SECTION 2: SUBJECTS MODAL LOGIC
+  // ============================================
+
+  // Variable to track the currently clicked subject
   selectedSubject: Subject | null = null;
 
-  // 3. Data Array for the cards
+  // Data Array for the cards
   subjects: Subject[] = [
     { 
       title: 'Computer Science', 
@@ -45,7 +87,7 @@ export class HomeComponent {
     { 
       title: 'Chemistry', 
       icon: 'fa-flask', 
-      description: 'Assess understanding of chemical principles, reactions, and scientific notation with full support for formulas, equations, and symbolic representation. The system allows clear display of molecular structures, reaction mechanisms, and laboratory-based problem scenarios. Both objective and descriptive formats help evaluate conceptual knowledge and application skills in organic, inorganic, and physical chemistry..' 
+      description: 'Assess understanding of chemical principles, reactions, and scientific notation with full support for formulas, equations, and symbolic representation. The system allows clear display of molecular structures, reaction mechanisms, and laboratory-based problem scenarios. Both objective and descriptive formats help evaluate conceptual knowledge and application skills in organic, inorganic, and physical chemistry.' 
     },
     { 
       title: 'Literature', 
@@ -74,17 +116,25 @@ export class HomeComponent {
     }
   ];
 
-  // 4. Function to Open Modal
+  // Function to Open Modal
   openModal(subject: Subject) {
     this.selectedSubject = subject;
-    // Optional: Prevent background scrolling when modal is open
     document.body.style.overflow = 'hidden'; 
   }
 
-  // 5. Function to Close Modal
+  // Function to Close Modal
   closeModal() {
     this.selectedSubject = null;
-    // Restore scrolling
     document.body.style.overflow = 'auto'; 
+  }
+
+  // ============================================
+  // SECTION 3: UTILS
+  // ============================================
+  
+  scrollTo(id: string) {
+    document.getElementById(id)?.scrollIntoView({
+      behavior: 'smooth'
+    });
   }
 }
