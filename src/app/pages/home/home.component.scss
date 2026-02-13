@@ -951,3 +951,175 @@
         height: 200px;
     }
 }
+/* ===============================
+   SECURITY SECTION (DARK SMALL)
+================================ */
+
+.security-section {
+    background: #0f172a; /* Dark Blue */
+    padding: 70px 5%;
+  }
+  
+  .security-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  /* Heading */
+  .sec-header h2 {
+    font-size: 32px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 10px;
+  }
+  
+  .sec-header p {
+    font-size: 14px;
+    color: #cbd5e1;
+    margin-bottom: 50px;
+  }
+  
+  /* Grid - Force One Line */
+  .sec-grid {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: nowrap;   /* Important → keeps in one line */
+  }
+  
+  /* Small Cards */
+  .sec-card {
+    background: #1e293b;
+    padding: 30px 20px;
+    border-radius: 16px;
+    width: 280px;        /* Fixed width so all fit nicely */
+    transition: 0.3s ease;
+  }
+  
+  .sec-card:hover {
+    transform: translateY(-6px);
+  }
+  
+  /* Icon Box */
+  .sec-icon-box {
+    width: 55px;
+    height: 55px;
+    background: #1d4ed8;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+  }
+  
+  .sec-icon-box svg {
+    width: 22px;
+    height: 22px;
+    color: #ffffff;
+  }
+  
+  /* Card Text */
+  .sec-card h3 {
+    font-size: 16px;
+    color: #ffffff;
+    margin-bottom: 8px;
+  }
+  
+  .sec-card p {
+    font-size: 13px;
+    color: #cbd5e1;
+    line-height: 1.6;
+  }
+  
+/* ================================
+   LOVED BY EDUCATORS (FIXED ROW)
+================================ */
+
+.testimonial-section {
+    background: #f8fafc;
+    padding: 80px 5%;
+    text-align: center;
+  }
+  
+  .heading h2 {
+    font-size: 34px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #0f172a;
+  }
+  
+  .heading p {
+    font-size: 15px;
+    color: #64748b;
+    margin-bottom: 50px;
+  }
+  
+  /* FORCE ONE LINE */
+  .cards {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: nowrap;   /* Important */
+  }
+  
+  /* CARD */
+  .card {
+    background: #ffffff;
+    width: 260px;      /* Fixed equal width */
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    text-align: left;
+    transition: 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-6px);
+  }
+  
+  /* Stars */
+  .stars {
+    color: #f59e0b;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  
+  /* Review */
+  .review {
+    font-size: 13px;
+    color: #475569;
+    line-height: 1.6;
+    margin-bottom: 18px;
+    min-height: 70px;   /* Keeps equal height */
+  }
+  
+  /* Profile */
+  .profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  /* FIX IMAGE SIZE */
+  .profile img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;     /* Prevent stretching */
+    flex-shrink: 0;        /* Prevent shrinking */
+  }
+  
+  /* Name */
+  .profile h4 {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0;
+    color: #0f172a;
+  }
+  
+  .profile span {
+    font-size: 11px;
+    color: #64748b;
+  }
+  
