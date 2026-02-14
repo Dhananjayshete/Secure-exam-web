@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core'; // Added HostListener
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
-// 1. Define the Interface here (Outside the class)
+// 1. Define the Interface here
 interface Subject {
   title: string;
   icon: string;
@@ -22,10 +22,8 @@ export class HomeComponent {
   // SECTION 1: PERSONA TABS LOGIC
   // ============================================
   
-  // Track Active Persona (Default to Admin)
   activePersona: string = 'admin'; 
 
-  // Data for the 3 Personas
   personaData: any = {
     admin: {
       title: "Manage at Scale",
@@ -59,7 +57,6 @@ export class HomeComponent {
     }
   };
 
-  // Function to switch persona
   setPersona(role: string) {
     this.activePersona = role;
   }
@@ -69,72 +66,150 @@ export class HomeComponent {
   // SECTION 2: SUBJECTS MODAL LOGIC
   // ============================================
 
-  // Variable to track the currently clicked subject
   selectedSubject: Subject | null = null;
 
-  // Data Array for the cards
   subjects: Subject[] = [
     { 
       title: 'Computer Science', 
       icon: 'fa-code', 
-      description: 'Master core programming concepts including algorithms, data structures, object-oriented design, and problem-solving techniques within a secure coding environment. Our platform supports multiple programming languages such as Python, Java, C++, and JavaScript with built-in syntax highlighting, real-time code editing, and automated evaluation. Candidates can confidently attempt coding challenges, debugging exercises, and logic-based assessments while the system ensures integrity through anti-cheating mechanisms and controlled execution environments.' 
+      description: 'Master core programming concepts including algorithms, data structures, object-oriented design, and problem-solving techniques within a secure coding environment.' 
     },
     { 
       title: 'Mathematics', 
       icon: 'fa-calculator', 
-      description: 'Develop strong analytical and quantitative skills through assessments that support complex mathematical expressions, equations, and graphical problem solving. The platform enables the use of advanced formula editors, numerical computation, and step-based evaluation methods. From algebra and calculus to logical reasoning and statistics, candidates can solve structured and objective questions with precise formatting and automated scoring.' 
+      description: 'Develop strong analytical and quantitative skills through assessments that support complex mathematical expressions, equations, and graphical problem solving.' 
     },
     { 
       title: 'Chemistry', 
       icon: 'fa-flask', 
-      description: 'Assess understanding of chemical principles, reactions, and scientific notation with full support for formulas, equations, and symbolic representation. The system allows clear display of molecular structures, reaction mechanisms, and laboratory-based problem scenarios. Both objective and descriptive formats help evaluate conceptual knowledge and application skills in organic, inorganic, and physical chemistry.' 
+      description: 'Assess understanding of chemical principles, reactions, and scientific notation with full support for formulas, equations, and symbolic representation.' 
     },
     { 
       title: 'Literature', 
       icon: 'fa-book-open', 
-      description: 'Evaluate reading comprehension, critical analysis, and written communication skills through structured passages, essays, and descriptive responses. The platform provides a distraction-free writing interface that supports long-form answers, grammar-focused questions, and textual interpretation tasks. Optional integrity features help maintain originality and fair assessment standards.' 
+      description: 'Evaluate reading comprehension, critical analysis, and written communication skills through structured passages, essays, and descriptive responses.' 
     },
     { 
       title: 'Law', 
       icon: 'fa-gavel', 
-      description: 'Designed for case-based reasoning and theoretical examination, the platform supports detailed legal analysis, judgment writing, and statutory interpretation. Candidates can respond to complex legal scenarios, long descriptive questions, and timed aptitude tests within a secure environment that ensures confidentiality and structured evaluation workflows.' 
+      description: 'Designed for case-based reasoning and theoretical examination, the platform supports detailed legal analysis, judgment writing, and statutory interpretation.' 
     },
     { 
       title: 'Medical', 
       icon: 'fa-stethoscope', 
-      description: 'Facilitates accurate assessment of clinical knowledge, medical terminology, and diagnostic reasoning through image-based and scenario-driven questions. The system supports anatomy diagrams, case studies, and objective tests that measure practical understanding. Secure monitoring ensures reliable evaluation for healthcare-related examinations.' 
+      description: 'Facilitates accurate assessment of clinical knowledge, medical terminology, and diagnostic reasoning through image-based and scenario-driven questions.' 
     },
     { 
       title: 'Arts & Design', 
       icon: 'fa-palette', 
-      description: 'Encourage creativity and conceptual expression through assessments that allow visual submissions, design theory questions, and portfolio-based evaluation. Candidates can upload artwork, sketches, or digital designs while reviewers can assess originality, technique, and conceptual understanding through structured feedback tools.' 
+      description: 'Encourage creativity and conceptual expression through assessments that allow visual submissions, design theory questions, and portfolio-based evaluation.' 
     },
     { 
       title: 'Languages', 
       icon: 'fa-globe', 
-      description: 'Test communication proficiency across multiple languages with comprehensive support for reading, writing, grammar, and vocabulary evaluation. The platform enables descriptive responses, comprehension passages, and optional audio-based assessments to measure pronunciation and listening skills in a secure testing environment.' 
+      description: 'Test communication proficiency across multiple languages with comprehensive support for reading, writing, grammar, and vocabulary evaluation.' 
     }
   ];
 
-  // Function to Open Modal
+  // Logic for Subject Cards
   openModal(subject: Subject) {
     this.selectedSubject = subject;
     document.body.style.overflow = 'hidden'; 
   }
 
-  // Function to Close Modal
   closeModal() {
     this.selectedSubject = null;
     document.body.style.overflow = 'auto'; 
   }
 
   // ============================================
-  // SECTION 3: UTILS
+  // SECTION 3: FOOTER & ABOUT MODAL LOGIC (New)
   // ============================================
-  
+
+  isFooterModalOpen = false; // Renamed to avoid conflict
+  footerModalTitle = '';
+  footerModalContent = '';
+
+  footerContent: any = {
+    features: `
+      Explore our premium AI monitoring suite.
+      <div class="feature-grid">
+        <div class="f-item"><i class="fa-solid fa-eye"></i> Eye Tracking</div>
+        <div class="f-item"><i class="fa-solid fa-ban"></i> Browser Lock</div>
+        <div class="f-item"><i class="fa-solid fa-id-card"></i> ID Verification</div>
+        <div class="f-item"><i class="fa-solid fa-chart-line"></i> AI Analytics</div>
+        <div class="f-item"><i class="fa-solid fa-microphone"></i> Audio Monitoring</div>
+        <div class="f-item"><i class="fa-solid fa-face-smile"></i> Emotion Detection</div>
+      </div>
+      <div class="stats">
+        <div class="stat"><strong>99.9%</strong>Accuracy</div>
+        <div class="stat"><strong>150+</strong>Institutions</div>
+        <div class="stat"><strong>1M+</strong>Exams</div>
+      </div>`,
+
+    integrations: `
+      <div class="feature-grid">
+        <div class="f-item"><i class="fa-brands fa-google"></i> Google Classroom</div>
+        <div class="f-item"><i class="fa-brands fa-microsoft"></i> Microsoft Teams</div>
+        <div class="f-item"><i class="fa-solid fa-graduation-cap"></i> Moodle LMS</div>
+        <div class="f-item"><i class="fa-solid fa-book"></i> Canvas LMS</div>
+      </div>`,
+
+    roadmap: `
+      <div class="feature-grid">
+        <div class="f-item"><i class="fa-solid fa-robot"></i> Advanced AI Detection</div>
+        <div class="f-item"><i class="fa-solid fa-globe"></i> Global Data Centers</div>
+        <div class="f-item"><i class="fa-solid fa-shield"></i> Biometric Security</div>
+        <div class="f-item"><i class="fa-solid fa-mobile-screen"></i> Mobile App</div>
+      </div>`,
+
+    about: `SecureTake is redefining online examination integrity using cutting-edge AI technology trusted by institutions worldwide.`,
+
+    careers: `
+      Join our mission to secure digital education.<br><br>
+      • AI Engineers<br>
+      • Frontend Developers<br>
+      • Security Analysts`,
+
+    contact: `
+      Email: support@securetake.ai<br>
+      Phone: +1 800 123 4567<br>
+      Headquarters: Silicon Valley, CA`,
+
+    privacy: `We prioritize data protection and compliance with international privacy standards.`,
+    terms: `By using SecureTake, you agree to our compliance policies and fair usage terms.`,
+    gdpr: `We comply with GDPR regulations ensuring transparency and user data protection.`
+  };
+
+  // Renamed to openFooterModal to differentiate from Subject Modal
+  openFooterModal(type: string) {
+    this.footerModalTitle = type.charAt(0).toUpperCase() + type.slice(1);
+    this.footerModalContent = this.footerContent[type];
+    this.isFooterModalOpen = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  // Renamed to closeFooterModal
+  closeFooterModal() {
+    this.isFooterModalOpen = false;
+    document.body.style.overflow = 'auto'; 
+  }
+
+  // ============================================
+  // SECTION 4: GLOBAL UTILS
+  // ============================================
+
   scrollTo(id: string) {
     document.getElementById(id)?.scrollIntoView({
       behavior: 'smooth'
     });
   }
+
+  // Handles Escape key for BOTH Modals
+  @HostListener('document:keydown.escape')
+  handleEscape() {
+    this.closeModal();       // Closes Subject Modal
+    this.closeFooterModal(); // Closes Footer Modal
+  }
+
 }

@@ -368,71 +368,93 @@
    }
    
    /* =========================================
-      5. HOW IT WORKS / LOGIN CARDS
-      ========================================= */
-   .how-it-works {
-       padding: 80px 24px;
-       text-align: center;
-       background: #fde9c9;
-   }
-           
-   .how-it-works h2 {
-       font-family: 'Playfair Display', serif;
-       font-size: 36px;
-       margin-bottom: 8px;
-   }
-     
-   .how-it-works .subtitle {
-       color: #666;
-       margin-bottom: 48px;
-   }
-     
-   .cards {
-       display: grid;
-       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-       gap: 32px;
-       max-width: 1100px;
-       margin: auto;
-   }
-     
-   .card {
-       padding: 32px;
-       border-radius: 20px;
-       background: #fafafa;
-       box-shadow: 0 15px 30px rgba(0,0,0,0.08);
-       transition: transform 0.3s ease;
-   }
-   
-   .card:hover {
-       transform: translateY(-10px);
-   }
-     
-   .card .icon {
-       font-size: 40px;
-       margin-bottom: 16px;
-   }
-     
-   .card h3 {
-       font-size: 22px;
-       margin-bottom: 8px;
-   }
-     
-   .card p {
-       font-size: 14px;
-       color: #555;
-       margin-bottom: 24px;
-   }
-     
-   .card button {
-       padding: 12px 24px;
-       border-radius: 10px;
-       border: none;
-       background: #ff7a00;
-       color: white;
-       font-size: 15px;
-       cursor: pointer;
-   }
-   
+   5. HOW IT WORKS / LOGIN CARDS (FIXED)
+   ========================================= */
+
+/* We target the specific section (.how-it-works) to avoid conflicts */
+.how-it-works {
+    padding: 80px 24px;
+    text-align: center;
+    background: #fde9c9;
+}
+        
+.how-it-works h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    margin-bottom: 8px;
+}
+  
+.how-it-works .subtitle {
+    color: #666;
+    margin-bottom: 48px;
+}
+  
+.how-it-works .cards {
+    display: grid;
+    /* Use auto-fit to make them responsive and equal width */
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 32px;
+    max-width: 1100px;
+    margin: auto;
+    /* Ensures the grid cells stretch to be the same height */
+    align-items: stretch; 
+}
+
+/* We use .how-it-works .card so these styles don't get overwritten by testimonials */
+.how-it-works .card {
+    padding: 32px;
+    border-radius: 20px;
+    background: #fafafa;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease;
+    
+    /* FLEXBOX MAGIC: This forces the layout to stretch */
+    display: flex;
+    flex-direction: column;
+    height: 100%; 
+}
+
+.how-it-works .card:hover {
+    transform: translateY(-10px);
+}
+  
+.how-it-works .card .icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+}
+  
+.how-it-works .card h3 {
+    font-size: 22px;
+    margin-bottom: 8px;
+    color: #000;
+}
+  
+.how-it-works .card p {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 24px;
+    
+    /* This fills the empty space so the button is pushed down */
+    flex-grow: 1; 
+}
+  
+.how-it-works .card button {
+    padding: 12px 24px;
+    border-radius: 10px;
+    border: none;
+    background: #ff7a00;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: 600;
+
+    /* Pushes button to bottom */
+    margin-top: auto;
+    
+    /* Ensures the button is wide and clickable */
+    width: 100%;
+    z-index: 10;
+}
    /* =========================================
       6. ZIG-ZAG STEPS SECTION
       ========================================= */
@@ -682,94 +704,87 @@
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
   }
-  /* --- GLASS MODAL STYLES --- */
-  
-  .modal-overlay {
+ /* --- GLASS MODAL STYLES --- */
+
+.modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 9999;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(6px);
     display: flex;
-    align-items: center;
     justify-content: center;
-    
-    /* Blur Effect */
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(8px);      
-    -webkit-backdrop-filter: blur(8px); 
-    
-    animation: fadeIn 0.3s ease-out;
+    align-items: center;
+    z-index: 1000;
   }
   
-  .glass-card {
-    width: 90%;
-    max-width: 500px;
-    padding: 40px;
-    border-radius: 20px;
+  /* Stable modal card */
+  .modal-overlay .glass-card {
+    width: 85%;
+    max-width: 450px;
+    padding: 30px;
+    border-radius: 18px;
     text-align: center;
     position: relative;
-    
-    /* Glassmorphism */
-    background: rgba(255, 255, 255, 0.85); /* Slightly less transparent for readability */
+  
+    background: rgba(255, 255, 255, 0.95);
     border: 1px solid rgba(255, 255, 255, 0.6);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-    
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   
-    transform: scale(0.8);
-    animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    animation: fadeIn 0.25s ease forwards;
   }
   
-  .modal-content {
-    i {
-      font-size: 3.5rem;
-      color: #ff7a00; /* Match orange color */
-      margin-bottom: 20px;
-      display: block;
-    }
-  
-    h3 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 2.2rem;
-      margin-bottom: 15px;
-      color: #222;
-    }
-  
-    p {
-      font-size: 1.1rem;
-      line-height: 1.6;
-      color: #444;
-      margin-bottom: 30px;
-    }
+  /* Modal Content */
+  .modal-content i {
+    font-size: 3.5rem;
+    color: #ff7a00;
+    margin-bottom: 20px;
+    display: block;
   }
   
+  .modal-content h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    margin-bottom: 15px;
+    color: #222;
+  }
+  
+  .modal-content p {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: #444;
+    margin-bottom: 25px;
+  }
+  
+  /* Close Button */
   .close-btn {
-    background: #ff7a00; /* Match orange color */
-    color: white;
+    background: #ff7a00;
+    color: #ffffff;
     border: none;
-    padding: 12px 35px;
-    border-radius: 30px;
+    padding: 12px 30px;
+    border-radius: 25px;
     font-size: 1rem;
-    cursor: pointer;
     font-weight: 600;
-    transition: background 0.2s;
+    cursor: pointer;
   
-    &:hover {
-      background: #e66e00; /* Slightly darker orange on hover */
-    }
+    display: inline-block;
+    width: auto;
+    height: auto;
+  
+    writing-mode: horizontal-tb;
+    transform: none !important;
+  
+    transition: background 0.2s ease;
   }
   
-  /* Animations */
+  .close-btn:hover {
+    background: #e66e00;
+  }
+  
+  
+  /* Simple Fade Animation */
   @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
-  }
-  
-  @keyframes popUp {
-    to { transform: scale(1); }
   }
   
   /* Responsive */
@@ -781,7 +796,7 @@
     .subjects-grid { grid-template-columns: 1fr; }
     h2 { font-size: 2.2rem; }
   }
-   
+  
    /* =========================================
       8. RESPONSIVE QUERIES
       ========================================= */
@@ -1122,4 +1137,267 @@
     font-size: 11px;
     color: #64748b;
   }
+/* ============================= */
+/* FOOTER SECTION */
+/* ============================= */
+.footer-section {
+    background: #0F172A;
+    color: #94A3B8;
+    padding: 90px 20px 30px;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+  }
   
+  .footer-container {
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 60px;
+  }
+  
+  /* ============================= */
+  /* LOGO */
+  /* ============================= */
+  .footer-logo {
+    font-size: 2rem;
+    font-weight: 900;
+    text-decoration: none;
+    background: linear-gradient(90deg, #fff, #F97316, #fff);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 5s linear infinite;
+    display: block;
+    margin-bottom: 15px;
+    cursor: pointer;
+  }
+  
+  @keyframes shine {
+    to { background-position: 200% center; }
+  }
+  
+  /* ============================= */
+  /* BRAND DESCRIPTION */
+  /* ============================= */
+  .brand-desc {
+    max-width: 320px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    color: #CBD5E1;
+  }
+  
+  /* ============================= */
+  /* SOCIAL LINKS */
+  /* ============================= */
+  .social-links {
+    display: flex;
+    gap: 12px;
+  }
+  
+  .social-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    transition: 0.3s;
+    cursor: pointer;
+  }
+  
+  .social-btn:hover {
+    background: #F97316;
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.7);
+    transform: translateY(-3px);
+  }
+  
+  /* ============================= */
+  /* FOOTER COLUMNS */
+  /* ============================= */
+  .footer-col h4 {
+    color: white;
+    margin-bottom: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1rem;
+    letter-spacing: 1px;
+  }
+  
+  .footer-links {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .footer-links li {
+    margin-bottom: 12px;
+  }
+  
+  .footer-links a {
+    text-decoration: none;
+    color: #94A3B8;
+    transition: 0.3s;
+    cursor: pointer;
+    display: inline-block;
+  }
+  
+  .footer-links a:hover {
+    color: #F97316;
+    transform: translateX(8px);
+    text-shadow: 0 0 20px rgba(249, 115, 22, 0.8);
+  }
+  
+  /* ============================= */
+  /* FOOTER BOTTOM */
+  /* ============================= */
+  .footer-bottom {
+    border-top: 1px solid #1E293B;
+    padding-top: 30px;
+    text-align: center;
+    font-size: 0.85rem;
+  }
+  
+  /* ============================= */
+  /* MODAL */
+  /* ============================= */
+  .glass-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.4s;
+    z-index: 9999;
+  }
+  
+  .glass-modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+  
+  .glass-card {
+    width: 90%;
+    max-width: 650px;
+    background: rgba(30, 41, 59, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 40px;
+    color: white;
+    transform: scale(0.85) translateY(30px);
+    animation: modalFade 0.5s forwards;
+  }
+  
+  @keyframes modalFade {
+    to { transform: scale(1) translateY(0); }
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 15px;
+  }
+  
+  .close-btn {
+    background: none;
+    border: none;
+    color: #94A3B8;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  .close-btn:hover {
+    color: white;
+    transform: rotate(90deg);
+  }
+  
+  /* ============================= */
+  /* GLOBAL STYLES FOR INNER HTML CONTENT */
+  /* ============================= */
+  /* Because we use [innerHTML], we need specific selectors to reach inside */
+  :host ::ng-deep {
+    .modal-body {
+      line-height: 1.6;
+      color: #CBD5E1;
+    }
+  
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 15px;
+    }
+  
+    .f-item {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 15px;
+      border-radius: 12px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      color: #CBD5E1;
+    }
+  
+    .f-item i {
+      color: #F97316;
+    }
+  
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+    }
+  
+    .stat {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      color: #CBD5E1;
+    }
+  
+    .stat strong {
+      font-size: 1.6rem;
+      display: block;
+      color: #F97316;
+    }
+  
+    /* Responsive Mobile */
+    @media (max-width: 768px) {
+      .feature-grid, .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+  
+  /* ============================= */
+  /* RESPONSIVE LAYOUT */
+  /* ============================= */
+  @media (max-width: 768px) {
+    .footer-container {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .footer-container {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+  
+    .social-links {
+      justify-content: center;
+    }
+  }

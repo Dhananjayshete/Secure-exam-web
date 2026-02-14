@@ -292,7 +292,7 @@
       <div class="profile">
         <img src="assets/images/edu1.png" alt="profile1">
         <div>
-          <h4>Dr. Sarah Jenkins</h4>
+          <h4>Saniya yadav</h4>
           <span>Dean, Tech University</span>
         </div>
       </div>
@@ -308,7 +308,7 @@
       <div class="profile">
         <img src="assets/images/edu2.png" alt="profile2">
         <div>
-          <h4>Mark Rutherford</h4>
+          <h4>Shreya lonari</h4>
           <span>CS Professor</span>
         </div>
       </div>
@@ -324,7 +324,7 @@
       <div class="profile">
         <img src="assets/images/edu3.png" alt="profile3">
         <div>
-          <h4>Elena Rodriguez</h4>
+          <h4>Namrata Namnaware</h4>
           <span>IT Admin</span>
         </div>
       </div>
@@ -340,7 +340,7 @@
       <div class="profile">
         <img src="assets/images/edu4.png" alt="profile4">
         <div>
-          <h4>James Carter</h4>
+          <h4>Harshada nimbolkar</h4>
           <span>Academic Director</span>
         </div>
       </div>
@@ -402,3 +402,93 @@
   </div>
 
 </section>
+<!-- ===============================
+     FOOTER SECTION
+================================ -->
+<footer class="footer-section">
+  <div class="footer-container">
+
+    <!-- Brand Column -->
+    <div>
+      <a class="footer-logo">SecureTake</a>
+      <p class="brand-desc">
+        Empowering education with integrity. AI-powered proctoring trusted worldwide.
+      </p>
+
+      <div class="social-links">
+        <a class="social-btn"><i class="fa-brands fa-twitter"></i></a>
+        <a class="social-btn"><i class="fa-brands fa-linkedin"></i></a>
+        <a class="social-btn"><i class="fa-brands fa-github"></i></a>
+      </div>
+    </div>
+
+    <!-- Platform -->
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <ul class="footer-links">
+        <!-- UPDATED: openFooterModal -->
+        <li><a (click)="openFooterModal('features')">Features</a></li>
+        <li><a (click)="openFooterModal('integrations')">Integrations</a></li>
+        <li><a (click)="openFooterModal('roadmap')">Roadmap</a></li>
+      </ul>
+    </div>
+
+    <!-- Company -->
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul class="footer-links">
+        <!-- UPDATED: openFooterModal -->
+        <li><a (click)="openFooterModal('about')">About</a></li>
+        <li><a (click)="openFooterModal('careers')">Careers</a></li>
+        <li><a (click)="openFooterModal('contact')">Contact</a></li>
+      </ul>
+    </div>
+
+    <!-- Legal -->
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <ul class="footer-links">
+        <!-- UPDATED: openFooterModal -->
+        <li><a (click)="openFooterModal('privacy')">Privacy</a></li>
+        <li><a (click)="openFooterModal('terms')">Terms</a></li>
+        <li><a (click)="openFooterModal('gdpr')">GDPR</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    © 2026 SecureTake Inc. All rights reserved.
+  </div>
+</footer>
+
+
+<!-- ===============================
+     FOOTER MODAL (Renamed Variables)
+================================ -->
+
+<div class="glass-modal-overlay"
+     [class.active]="isFooterModalOpen"
+     (click)="closeFooterModal()">
+
+  <div class="glass-card"
+       (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <!-- UPDATED: footerModalTitle -->
+      <h2>{{ footerModalTitle }}</h2>
+      
+      <!-- UPDATED: closeFooterModal -->
+      <button class="close-btn"
+              (click)="closeFooterModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- UPDATED: footerModalContent -->
+    <div class="modal-body"
+         [innerHTML]="footerModalContent">
+    </div>
+
+  </div>
+</div>
