@@ -1,52 +1,47 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // Required for [(ngModel)]
+import { FormsModule } from '@angular/forms';
+import { ApiService } from '../../../../services/api.service';
+import { AuthService } from '../../../../services/auth.service';
 
 @Component({
   selector: 'app-teacher-dashboard',
   standalone: true,
-  // We import CommonModule for *ngIf/*ngFor and FormsModule for inputs
-  imports: [CommonModule, FormsModule], 
+  imports: [CommonModule, FormsModule],
   templateUrl: './teacher-dashboard.component.html',
   styleUrls: ['./teacher-dashboard.component.scss']
 })
-export class TeacherDashboardComponent {
+export class TeacherDashboardComponent implements OnInit {
 
-  // --- 1. DASHBOARD STATE (Variables that control the UI) ---
-  currentView: string = 'dashboard'; // Which tab is currently open?
-  searchTerm: string = '';           // What is typed in the search bar?
-  isModalOpen: boolean = false;      // Is the "Create Exam" popup open?
+  // --- 1. DASHBOARD STATE ---
+  currentView: string = 'dashboard';
+  searchTerm: string = '';
+  isModalOpen: boolean = false;
 
-  // --- 2. DATA FOR "EXAM MANAGER" TAB ---
-  exams = [
-    { id: 1, title: 'CS101: Data Structures', subject: 'Computer Science', date: 'Today, 10:00 AM', candidates: '45/50', status: 'Live', security: 'High' },
-    { id: 2, title: 'MATH202: Linear Algebra', subject: 'Mathematics', date: 'Tomorrow, 09:00 AM', candidates: '--', status: 'Scheduled', security: 'Medium' },
-    { id: 3, title: 'PHY300: Quantum Mechanics', subject: 'Physics', date: 'Oct 28, 02:00 PM', candidates: '--', status: 'Draft', security: 'High' }
-  ];
+  // --- 2. DATA (loaded from API) ---
+  exams: any[] = [];
+  liveStudents: any[] = [];
+  studentData: any[] = [];
+  proctoringEvents: any[] = [];
 
-  // --- 3. DATA FOR "LIVE MONITOR" TAB (Mock Cameras) ---
-  liveStudents = [
-    { name: 'Sarah J.', status: 'good', img: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=200' },
-    { name: 'Mike T.', status: 'flagged', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200' },
-    { name: 'Emily R.', status: 'good', img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200' },
-    { name: 'John D.', status: 'flagged', img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200' },
-    { name: 'David B.', status: 'good', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200' },
-    { name: 'Lisa K.', status: 'good', img: 'https://images.unsplash.com/photo-1554151228-14d9def656ec?w=200' }
-  ];
+  // --- 3. QUESTION MANAGEMENT ---
+  selectedExamId: string = '';
+  selectedExamTitle: string = '';
+  questions: any[] = [];
+  isQuestionsLoading: boolean = false;
+  newQuestion = {
+    questionText: '',
+    questionType: 'MCQ',
+    points: 2,
+    options: [
+      { optionText: '', isCorrect: false },
+      { optionText: '', isCorrect: false },
+      { optionText: '', isCorrect: false },
+      { optionText: '', isCorrect: false }
+    ]
+  };
 
-  // --- 4. DATA FOR "STUDENTS" TAB (Your Custom Data) ---
-  studentData = [
-    { id: '2024001', name: 'Aarav Sharma', email: 'aarav@exam.com', batch: '2024-25', dept: 'CS', status: 'Active', photo: 'https://ui-avatars.com/api/?name=Aarav+Sharma&background=e0e7ff&color=4338ca' },
-    { id: '2024002', name: 'Ananya Iyer', email: 'ananya@exam.com', batch: '2024-25', dept: 'IT', status: 'Examining', photo: 'https://ui-avatars.com/api/?name=Ananya+Iyer&background=fce7f3&color=db2777' },
-    { id: '2024003', name: 'Rohan Verma', email: 'rohan.verma@exam.com', batch: '2024-25', dept: 'Mech', status: 'Active', photo: 'https://ui-avatars.com/api/?name=Rohan+Verma&background=dcfce7&color=15803d' },
-    { id: '2024004', name: 'Priya Nair', email: 'priya.nair@exam.com', batch: '2024-25', dept: 'Civil', status: 'Blocked', photo: 'https://ui-avatars.com/api/?name=Priya+Nair&background=fee2e2&color=dc2626' },
-    { id: '2024005', name: 'Karan Malhotra', email: 'karan@exam.com', batch: '2024-25', dept: 'ECE', status: 'Active', photo: 'https://ui-avatars.com/api/?name=Karan+Malhotra&background=e0e7ff&color=4338ca' },
-    { id: '2024006', name: 'Sneha Reddy', email: 'sneha@exam.com', batch: '2024-25', dept: 'CS', status: 'Examining', photo: 'https://ui-avatars.com/api/?name=Sneha+Reddy&background=fce7f3&color=db2777' },
-    { id: '2024007', name: 'Vikram Singh', email: 'vikram@exam.com', batch: '2024-25', dept: 'IT', status: 'Active', photo: 'https://ui-avatars.com/api/?name=Vikram+Singh&background=dcfce7&color=15803d' },
-    // ... You can add the rest of your 100+ students here ...
-  ];
-
-  // --- 5. FORM DATA (For the "Create Exam" Modal) ---
+  // --- 4. FORM DATA ---
   newExam = {
     title: '',
     subject: 'Computer Science',
@@ -57,66 +52,246 @@ export class TeacherDashboardComponent {
     }
   };
 
-  // --- 6. HELPER FUNCTIONS (Logic that makes things work) ---
+  // --- 5. LIVE MONITORING ---
+  monitorExamId: string = '';
 
-  // Function: Switches the visible tab
-  switchView(viewName: string) {
-    this.currentView = viewName;
+  constructor(private apiService: ApiService, private authService: AuthService) { }
+
+  ngOnInit() {
+    this.loadExams();
+    this.loadStudents();
   }
 
-  // Function: Opens the popup
+  loadExams() {
+    this.apiService.getExams().subscribe({
+      next: (exams) => {
+        this.exams = exams.map(e => ({
+          id: e.id,
+          title: e.title,
+          subject: e.subject,
+          date: e.date ? new Date(e.date).toLocaleString() : 'TBD',
+          candidates: e.candidates || '--',
+          status: e.status,
+          security: e.security
+        }));
+      },
+      error: (err) => console.error('Error loading exams:', err)
+    });
+  }
+
+  loadStudents() {
+    this.apiService.getUsers('student').subscribe({
+      next: (students) => {
+        this.studentData = students.map(s => ({
+          id: s.specialId || s.id,
+          name: s.name,
+          email: s.email,
+          batch: s.batch || 'N/A',
+          dept: s.dept || 'N/A',
+          status: s.status,
+          photo: s.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}`
+        }));
+      },
+      error: (err) => console.error('Error loading students:', err)
+    });
+  }
+
+  // --- QUESTION MANAGEMENT ---
+  openQuestions(exam: any) {
+    this.selectedExamId = exam.id;
+    this.selectedExamTitle = exam.title;
+    this.currentView = 'questions';
+    this.loadQuestions();
+  }
+
+  loadQuestions() {
+    this.isQuestionsLoading = true;
+    this.apiService.getQuestions(this.selectedExamId).subscribe({
+      next: (questions) => {
+        this.questions = questions;
+        this.isQuestionsLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading questions:', err);
+        this.isQuestionsLoading = false;
+      }
+    });
+  }
+
+  addQuestion() {
+    if (!this.newQuestion.questionText.trim()) {
+      alert('Question text is required.');
+      return;
+    }
+
+    const payload: any = {
+      questionText: this.newQuestion.questionText,
+      questionType: this.newQuestion.questionType,
+      points: this.newQuestion.points,
+      sortOrder: this.questions.length + 1
+    };
+
+    if (this.newQuestion.questionType === 'MCQ') {
+      const validOptions = this.newQuestion.options.filter(o => o.optionText.trim());
+      if (validOptions.length < 2) {
+        alert('At least 2 options are required for MCQ.');
+        return;
+      }
+      if (!validOptions.some(o => o.isCorrect)) {
+        alert('Please mark at least one option as correct.');
+        return;
+      }
+      payload.options = validOptions;
+    }
+
+    this.apiService.createQuestion(this.selectedExamId, payload).subscribe({
+      next: (q) => {
+        this.questions.push(q);
+        this.resetQuestionForm();
+      },
+      error: (err) => alert(err.error?.error || 'Failed to add question.')
+    });
+  }
+
+  deleteQuestion(questionId: string) {
+    if (!confirm('Delete this question?')) return;
+    this.apiService.deleteQuestion(questionId).subscribe({
+      next: () => {
+        this.questions = this.questions.filter(q => q.id !== questionId);
+      },
+      error: (err) => alert(err.error?.error || 'Failed to delete question.')
+    });
+  }
+
+  resetQuestionForm() {
+    this.newQuestion = {
+      questionText: '',
+      questionType: 'MCQ',
+      points: 2,
+      options: [
+        { optionText: '', isCorrect: false },
+        { optionText: '', isCorrect: false },
+        { optionText: '', isCorrect: false },
+        { optionText: '', isCorrect: false }
+      ]
+    };
+  }
+
+  setCorrectOption(index: number) {
+    this.newQuestion.options.forEach((o, i) => o.isCorrect = i === index);
+  }
+
+  // --- LIVE MONITORING (real proctoring data) ---
+  openMonitor(exam: any) {
+    this.monitorExamId = exam.id;
+    this.selectedExamTitle = exam.title;
+    this.currentView = 'monitor';
+    this.loadProctoringData();
+  }
+
+  loadProctoringData() {
+    if (!this.monitorExamId) return;
+
+    this.apiService.getProctoringEventsSummary(this.monitorExamId).subscribe({
+      next: (students) => {
+        this.liveStudents = students.map(s => ({
+          name: s.name,
+          status: s.status,
+          img: s.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=0D8ABC&color=fff`,
+          flagCount: s.flagCount
+        }));
+      },
+      error: (err) => console.error('Error loading proctoring summary:', err)
+    });
+
+    this.apiService.getProctoringEvents(this.monitorExamId).subscribe({
+      next: (events) => {
+        this.proctoringEvents = events.map(e => ({
+          time: new Date(e.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+          studentName: e.studentName,
+          eventType: e.eventType,
+          details: e.details
+        }));
+      },
+      error: (err) => console.error('Error loading proctoring events:', err)
+    });
+  }
+
+  // --- HELPER FUNCTIONS ---
+  switchView(viewName: string) {
+    this.currentView = viewName;
+    if (viewName === 'monitor' && this.monitorExamId) {
+      this.loadProctoringData();
+    }
+  }
+
   openModal() {
     this.isModalOpen = true;
   }
 
-  // Function: Closes the popup
   closeModal() {
     this.isModalOpen = false;
   }
 
-  // Function: Saves the new exam (Adds it to the top of the list)
   createExam() {
-    this.exams.unshift({
-      id: Date.now(),
+    this.apiService.createExam({
       title: this.newExam.title || 'Untitled Exam',
       subject: this.newExam.subject,
-      date: 'Just Now',
-      candidates: '--',
-      status: 'Scheduled',
-      security: this.newExam.security.browserLock ? 'High' : 'Low'
+      durationMinutes: this.newExam.duration,
+      securityLevel: this.newExam.security.browserLock ? 'High' : 'Low'
+    }).subscribe({
+      next: (exam) => {
+        this.exams.unshift({
+          id: exam.id,
+          title: exam.title,
+          subject: exam.subject,
+          date: 'Just Now',
+          candidates: '--',
+          status: exam.status || 'Scheduled',
+          security: exam.securityLevel
+        });
+
+        this.closeModal();
+        this.switchView('exams');
+        this.newExam.title = '';
+      },
+      error: (err) => console.error('Error creating exam:', err)
     });
-    
-    this.closeModal(); // Close popup
-    this.switchView('exams'); // Go to exams page to see it
-    
-    // Reset the form for next time
-    this.newExam.title = '';
   }
 
-  // Function: Handles the Search Bar Logic
-  // It checks if the Name OR ID OR Dept matches what you typed
   get filteredStudents() {
-    if (!this.searchTerm) return this.studentData; // If empty, show all
-
+    if (!this.searchTerm) return this.studentData;
     const term = this.searchTerm.toLowerCase();
-    return this.studentData.filter(s => 
-      s.name.toLowerCase().includes(term) || 
-      s.id.includes(term) ||
+    return this.studentData.filter(s =>
+      s.name.toLowerCase().includes(term) ||
+      s.id.toString().includes(term) ||
       s.dept.toLowerCase().includes(term)
     );
   }
 
-  // Function: Returns the CSS class for different statuses (Green/Red/Blue)
   getStatusClass(status: string): string {
     switch (status) {
-      case 'Active': return 'status active';      // Green
-      case 'Examining': return 'status grading';  // Blue
-      case 'Blocked': return 'status scheduled';  // Orange/Red
-      default: return 'status draft';             // Gray
+      case 'Active': return 'status active';
+      case 'Examining': return 'status grading';
+      case 'Blocked': return 'status scheduled';
+      default: return 'status draft';
+    }
+  }
+
+  getEventIcon(eventType: string): string {
+    switch (eventType) {
+      case 'tab_switch': return 'fa-solid fa-arrow-right-arrow-left';
+      case 'focus_loss': return 'fa-solid fa-eye-slash';
+      case 'face_warning': return 'fa-solid fa-face-frown';
+      case 'copy_attempt': return 'fa-solid fa-copy';
+      case 'right_click': return 'fa-solid fa-computer-mouse';
+      case 'devtools': return 'fa-solid fa-code';
+      default: return 'fa-solid fa-triangle-exclamation';
     }
   }
 
   logout() {
-    alert("Logging out...");
+    this.authService.logout();
+    window.location.href = '/';
   }
 }

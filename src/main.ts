@@ -1,7 +1,6 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideRouter } from '@angular/router';
 import { AppComponent } from './app/app.component';
-import { routes } from './app/app.routes';
+import { appConfig } from './app/app.config';
 
 import {
   Chart,
@@ -16,7 +15,7 @@ import {
   Legend
 } from 'chart.js';
 
-// ✅ THIS IS THE IMPORTANT PART
+// Register Chart.js components
 Chart.register(
   PieController,
   LineController,
@@ -29,6 +28,5 @@ Chart.register(
   Legend
 );
 
-bootstrapApplication(AppComponent, {
-  providers: [provideRouter(routes)]
-}).catch(err => console.error(err));
+bootstrapApplication(AppComponent, appConfig)
+  .catch((err: any) => console.error(err));

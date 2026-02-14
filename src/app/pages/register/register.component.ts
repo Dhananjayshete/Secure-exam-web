@@ -1,29 +1,30 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms'; // <--- Import this
-import { AuthService } from '../../services/auth.service'; // <--- Import the Service
+import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule], // <--- Add FormsModule
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
   activeRole: string = 'student';
   showSuccessPopup: boolean = false;
+  isLoading: boolean = false;
+  errorMessage: string = '';
 
-  // Variables to hold form data
   formData = {
     fullName: '',
     email: '',
     password: '',
-    specialId: '' // Student ID, Teacher ID, or Admin Code
+    specialId: ''
   };
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
 
   setRole(role: string) {
     this.activeRole = role;
@@ -31,8 +32,9 @@ export class RegisterComponent {
 
   onSubmit(event: Event) {
     event.preventDefault();
+    this.errorMessage = '';
+    this.isLoading = true;
 
-    // 1. Prepare the data to save
     const newUser = {
       name: this.formData.fullName,
       email: this.formData.email,
@@ -41,16 +43,20 @@ export class RegisterComponent {
       specialId: this.formData.specialId
     };
 
-    // 2. Send to the Service (Save to LocalStorage)
-    this.authService.registerUser(newUser);
+    this.authService.registerUser(newUser).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.showSuccessPopup = true;
 
-    // 3. Show Success Popup
-    this.showSuccessPopup = true;
-
-    // 4. Close popup after 2 seconds
-    setTimeout(() => {
-      this.showSuccessPopup = false;
-    }, 2000);
+        setTimeout(() => {
+          this.showSuccessPopup = false;
+        }, 2000);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = err.error?.error || 'Registration failed. Please try again.';
+      }
+    });
   }
 
   closePopup() {

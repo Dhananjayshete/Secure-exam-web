@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
+import { ApiService } from '../../../services/api.service';
 
 @Component({
   selector: 'app-dashboard-home',
@@ -12,13 +13,14 @@ import { ChartConfiguration, ChartOptions } from 'chart.js';
   styleUrl: './dashboard-home.component.scss'
 })
 export class DashboardHomeComponent implements OnInit {
-  
+
   users: any[] = [];
   students: any[] = [];
   teachers: any[] = [];
   admins: any[] = [];
   filteredUsers: any[] = [];
   selectedRole: string = 'all';
+  isLoading: boolean = true;
 
   // --- CHART CONFIGURATION ---
   public pieChartOptions: ChartOptions<'pie'> = { responsive: true };
@@ -33,46 +35,60 @@ export class DashboardHomeComponent implements OnInit {
     datasets: [{ data: [0, 0, 0, 0, 0], label: 'Registrations', fill: true }]
   };
 
-  constructor() {}
+  constructor(private apiService: ApiService) { }
 
   ngOnInit(): void {
-    this.loadDataFromStorage();
+    this.loadDataFromApi();
   }
 
-  loadDataFromStorage() {
-    // 1. Try to find the data in LocalStorage (Try common keys)
-    // CHECK HERE: If your app uses 'signupUsers' or 'registeredUsers', change this line!
-    let rawData = localStorage.getItem('users') || localStorage.getItem('signupUsers');
-    
-    if (rawData) {
-      this.users = JSON.parse(rawData);
-      console.log('✅ Data Found in LocalStorage:', this.users);
-      
-      this.processData();
-    } else {
-      console.warn('❌ No data found in LocalStorage. Keys available:', Object.keys(localStorage));
-      this.users = [];
-    }
+  loadDataFromApi() {
+    this.isLoading = true;
+
+    // Load user stats for charts
+    this.apiService.getUserStats().subscribe({
+      next: (stats) => {
+        // Update pie chart
+        this.pieChartData = {
+          labels: ['Students', 'Teachers', 'Admins'],
+          datasets: [{
+            data: [stats.counts.student, stats.counts.teacher, stats.counts.admin],
+            backgroundColor: ['#536dfe', '#e040fb', '#ffab00']
+          }]
+        };
+
+        // Update line chart with registration trend
+        if (stats.registrationTrend && stats.registrationTrend.length > 0) {
+          this.lineChartData = {
+            labels: stats.registrationTrend.map((t: any) => t.month),
+            datasets: [{
+              data: stats.registrationTrend.map((t: any) => t.count),
+              label: 'Registrations',
+              fill: true
+            }]
+          };
+        }
+      },
+      error: (err) => console.error('Error loading stats:', err)
+    });
+
+    // Load all users for the table
+    this.apiService.getUsers().subscribe({
+      next: (users) => {
+        this.users = users;
+        this.processData();
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading users:', err);
+        this.isLoading = false;
+      }
+    });
   }
 
   processData() {
-    // 2. Safe Filtering (Handles 'Student', 'student', 'STUDENT')
     this.students = this.users.filter(u => u.role?.toLowerCase() === 'student');
     this.teachers = this.users.filter(u => u.role?.toLowerCase() === 'teacher');
     this.admins = this.users.filter(u => u.role?.toLowerCase() === 'admin');
-
-    console.log('Counts -> Students:', this.students.length, 'Teachers:', this.teachers.length);
-
-    // 3. Update Charts
-    this.pieChartData = {
-      labels: ['Students', 'Teachers', 'Admins'],
-      datasets: [{
-        data: [this.students.length, this.teachers.length, this.admins.length],
-        backgroundColor: ['#536dfe', '#e040fb', '#ffab00']
-      }]
-    };
-
-    // 4. Update Table
     this.filterUsers();
   }
 
@@ -80,7 +96,7 @@ export class DashboardHomeComponent implements OnInit {
     if (this.selectedRole === 'all') {
       this.filteredUsers = this.users;
     } else {
-      this.filteredUsers = this.users.filter(user => 
+      this.filteredUsers = this.users.filter(user =>
         user.role?.toLowerCase() === this.selectedRole.toLowerCase()
       );
     }

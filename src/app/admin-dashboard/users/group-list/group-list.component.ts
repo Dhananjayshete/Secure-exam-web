@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ApiService } from '../../../services/api.service';
 
 @Component({
   selector: 'app-group-list',
@@ -8,6 +9,27 @@ import { CommonModule } from '@angular/common';
   templateUrl: './group-list.component.html',
   styleUrls: ['./group-list.component.scss']
 })
-export class GroupListComponent {
-  batches = [1, 2, 3, 4, 5]; // Mock batches
+export class GroupListComponent implements OnInit {
+  groups: any[] = [];
+  isLoading: boolean = true;
+
+  constructor(private apiService: ApiService) { }
+
+  ngOnInit() {
+    this.loadGroups();
+  }
+
+  loadGroups() {
+    this.isLoading = true;
+    this.apiService.getGroups().subscribe({
+      next: (groups) => {
+        this.groups = groups;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading groups:', err);
+        this.isLoading = false;
+      }
+    });
+  }
 }

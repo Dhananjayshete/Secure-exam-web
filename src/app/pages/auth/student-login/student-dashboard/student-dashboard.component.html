@@ -7,7 +7,7 @@
         </div>
 
         <div class="nav-title">Menu</div>
-        
+
         <a class="nav-item" [class.active]="currentView === 'dashboard'" (click)="switchView('dashboard')">
             <i class="fa-solid fa-house"></i> Dashboard
         </a>
@@ -25,7 +25,7 @@
         </a>
 
         <div class="nav-title">Settings</div>
-        
+
         <a class="nav-item" [class.active]="currentView === 'profile'" (click)="switchView('profile')">
             <i class="fa-solid fa-user"></i> Profile
         </a>
@@ -44,11 +44,11 @@
 
     <!-- 2. MAIN CONTENT AREA -->
     <div class="main-wrapper">
-        
+
         <!-- Header -->
         <header class="top-bar">
             <div class="date-badge"><i class="fa-regular fa-calendar"></i> Academic Portal</div>
-            
+
             <div class="actions-right">
                 <i class="fa-regular fa-bell notification-icon"></i>
                 <div class="user-pill" (click)="switchView('profile')">
@@ -78,19 +78,27 @@
                 <div class="stats-row">
                     <div class="stat-card">
                         <div class="icon-circle orange"><i class="fa-solid fa-list"></i></div>
-                        <div><h3>{{ stats.total }}</h3><span>Total Exams</span></div>
+                        <div>
+                            <h3>{{ stats.total }}</h3><span>Total Exams</span>
+                        </div>
                     </div>
                     <div class="stat-card">
                         <div class="icon-circle blue"><i class="fa-solid fa-calendar-day"></i></div>
-                        <div><h3>{{ stats.upcoming }}</h3><span>Upcoming</span></div>
+                        <div>
+                            <h3>{{ stats.upcoming }}</h3><span>Upcoming</span>
+                        </div>
                     </div>
                     <div class="stat-card">
                         <div class="icon-circle green"><i class="fa-solid fa-check-circle"></i></div>
-                        <div><h3>{{ stats.completed }}</h3><span>Completed</span></div>
+                        <div>
+                            <h3>{{ stats.completed }}</h3><span>Completed</span>
+                        </div>
                     </div>
                     <div class="stat-card">
                         <div class="icon-circle purple"><i class="fa-solid fa-chart-line"></i></div>
-                        <div><h3>{{ stats.latestScore }}</h3><span>Latest Result</span></div>
+                        <div>
+                            <h3>{{ stats.latestScore }}</h3><span>Latest Result</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -100,18 +108,29 @@
                 <h2 class="page-title">Upcoming Exams</h2>
                 <div class="table-container">
                     <table>
-                        <thead><tr><th>Exam Name</th><th>Date</th><th>Time</th><th>Duration</th><th>Status</th><th>Action</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th>Exam Name</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Duration</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             <tr *ngFor="let exam of upcomingExams">
                                 <td><strong>{{ exam.name }}</strong></td>
                                 <td>{{ exam.date }}</td>
                                 <td>{{ exam.time }}</td>
                                 <td>{{ exam.duration }}</td>
-                                <td><span class="status-badge" [ngClass]="{'ready': exam.status === 'Ready', 'locked': exam.status === 'Locked'}">{{ exam.status }}</span></td>
+                                <td><span class="status-badge"
+                                        [ngClass]="{'ready': exam.status === 'Ready', 'locked': exam.status === 'Locked'}">{{
+                                        exam.status }}</span></td>
                                 <td>
-                                    <button class="btn btn-sm" 
-                                        [ngClass]="exam.status === 'Ready' ? 'btn-primary' : 'btn-disabled'" 
-                                        (click)="startExam(exam.status)">
+                                    <button class="btn btn-sm"
+                                        [ngClass]="exam.status === 'Ready' ? 'btn-primary' : 'btn-disabled'"
+                                        (click)="startExam(exam)">
                                         Start Exam
                                     </button>
                                 </td>
@@ -126,7 +145,14 @@
                 <h2 class="page-title">Exam History</h2>
                 <div class="table-container">
                     <table>
-                        <thead><tr><th>Exam Name</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th>Exam Name</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             <tr *ngFor="let exam of examHistory">
                                 <td>{{ exam.name }}</td>
@@ -144,7 +170,14 @@
                 <h2 class="page-title">Results & Scorecards</h2>
                 <div class="table-container">
                     <table>
-                        <thead><tr><th>Exam</th><th>Score</th><th>Result</th><th>Download</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th>Exam</th>
+                                <th>Score</th>
+                                <th>Result</th>
+                                <th>Download</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             <tr *ngFor="let res of results">
                                 <td><strong>{{ res.exam }}</strong></td>
@@ -165,10 +198,18 @@
                         <p>ADMIT CARD 2024</p>
                     </div>
                     <div class="admit-body">
-                        <div class="info-group"><label>Name</label><div>{{ studentProfile.name }}</div></div>
-                        <div class="info-group"><label>Roll No</label><div>{{ studentProfile.rollNo }}</div></div>
-                        <div class="info-group"><label>Center</label><div>Online (Home)</div></div>
-                        <div class="info-group"><label>Timing</label><div>10:00 AM</div></div>
+                        <div class="info-group"><label>Name</label>
+                            <div>{{ studentProfile.name }}</div>
+                        </div>
+                        <div class="info-group"><label>Roll No</label>
+                            <div>{{ studentProfile.rollNo }}</div>
+                        </div>
+                        <div class="info-group"><label>Center</label>
+                            <div>Online (Home)</div>
+                        </div>
+                        <div class="info-group"><label>Timing</label>
+                            <div>10:00 AM</div>
+                        </div>
                     </div>
                     <button class="btn btn-primary full-width" onclick="window.print()">Download Admit Card</button>
                 </div>
@@ -204,8 +245,10 @@
             <div *ngIf="currentView === 'support'" class="view-section fade-in">
                 <h2 class="page-title">Help & Support</h2>
                 <div class="table-container compact-form">
-                    <label>Subject</label><input type="text" placeholder="e.g. Exam Crash" [(ngModel)]="ticketForm.subject">
-                    <label>Message</label><textarea rows="4" placeholder="Describe issue..." [(ngModel)]="ticketForm.message"></textarea>
+                    <label>Subject</label><input type="text" placeholder="e.g. Exam Crash"
+                        [(ngModel)]="ticketForm.subject">
+                    <label>Message</label><textarea rows="4" placeholder="Describe issue..."
+                        [(ngModel)]="ticketForm.message"></textarea>
                     <button class="btn btn-primary full-width" (click)="submitTicket()">Submit Ticket</button>
                 </div>
             </div>
@@ -219,36 +262,61 @@
      ========================== -->
 <div id="exam-interface" *ngIf="isExamActive" [class.active]="isExamActive">
     <div class="exam-navbar">
-        <div style="font-weight:700;">Java Certification Test</div>
+        <div style="font-weight:700;">{{ activeExamTitle }}</div>
         <div class="timer-pill">{{ timerDisplay }}</div>
         <button class="btn btn-sm btn-danger" (click)="submitExam()">Submit Exam</button>
     </div>
     <div class="exam-layout">
         <!-- Question Panel -->
         <div class="question-panel">
-            <div class="q-card">
-                <div class="q-meta">QUESTION 1 OF 30</div>
-                <div class="q-text">Which of the following is not a Java primitive type?</div>
-                <label class="option-box"><input type="radio" name="q1"> int</label>
-                <label class="option-box"><input type="radio" name="q1"> float</label>
-                <label class="option-box"><input type="radio" name="q1"> String</label>
-                <label class="option-box"><input type="radio" name="q1"> boolean</label>
-                
+            <div class="q-card" *ngIf="currentQuestion">
+                <div class="q-meta">QUESTION {{ currentQuestionIndex + 1 }} OF {{ examQuestions.length }} · {{
+                    currentQuestion.points }} pts</div>
+                <div class="q-text">{{ currentQuestion.questionText }}</div>
+
+                <!-- MCQ Options -->
+                <ng-container *ngIf="currentQuestion.questionType === 'MCQ'">
+                    <label class="option-box" *ngFor="let opt of currentQuestion.options"
+                        [class.selected]="getSelectedOptionId(currentQuestion.id) === opt.id"
+                        (click)="selectOption(currentQuestion.id, opt.id)">
+                        <input type="radio" [name]="'q_' + currentQuestion.id" [value]="opt.id"
+                            [checked]="getSelectedOptionId(currentQuestion.id) === opt.id">
+                        {{ opt.optionText }}
+                    </label>
+                </ng-container>
+
+                <!-- Short Answer / Essay -->
+                <ng-container
+                    *ngIf="currentQuestion.questionType === 'short_answer' || currentQuestion.questionType === 'essay'">
+                    <textarea [rows]="currentQuestion.questionType === 'essay' ? 8 : 3"
+                        [value]="getTextAnswer(currentQuestion.id)"
+                        (input)="setTextAnswer(currentQuestion.id, $any($event.target).value)"
+                        [placeholder]="currentQuestion.questionType === 'essay' ? 'Write your essay here...' : 'Type your answer...'"
+                        style="width:100%; padding:12px; border:1px solid #e2e8f0; border-radius:8px; margin-top:12px; resize:vertical; font-family:inherit;"></textarea>
+                </ng-container>
+
                 <div class="q-actions">
-                    <button class="btn btn-sm btn-outline">Previous</button>
-                    <button class="btn btn-sm btn-outline">Mark for Review</button>
-                    <button class="btn btn-sm btn-primary">Next</button>
+                    <button class="btn btn-sm btn-outline" (click)="prevQuestion()"
+                        [disabled]="currentQuestionIndex === 0">Previous</button>
+                    <button class="btn btn-sm btn-primary" (click)="nextQuestion()"
+                        *ngIf="currentQuestionIndex < examQuestions.length - 1">Next</button>
+                    <button class="btn btn-sm btn-danger" (click)="submitExam()"
+                        *ngIf="currentQuestionIndex === examQuestions.length - 1">Submit Exam</button>
                 </div>
             </div>
+            <div *ngIf="!currentQuestion" style="text-align:center; padding:40px; color:#94a3b8;">
+                No questions loaded for this exam.
+            </div>
         </div>
-        <!-- Sidebar (Camera & Nav) -->
+        <!-- Sidebar (Question Palette) -->
         <div class="sidebar-right">
             <div class="cam-preview"><span class="rec">● REC</span></div>
             <div class="q-palette">
-                <div class="q-dot current">1</div>
-                <div class="q-dot">2</div>
-                <div class="q-dot">3</div>
-                <div class="q-dot solved">4</div>
+                <div *ngFor="let q of examQuestions; let i = index" class="q-dot"
+                    [class.current]="i === currentQuestionIndex" [class.solved]="isAnswered(q.id)"
+                    (click)="goToQuestion(i)">
+                    {{ i + 1 }}
+                </div>
             </div>
         </div>
     </div>

@@ -1,19 +1,18 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-// Ensure path is correct
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-student-login',
   standalone: true,
-  imports: [CommonModule, FormsModule], 
+  imports: [CommonModule, FormsModule],
   templateUrl: './student-login.component.html',
-  styleUrls: ['./student-login.component.scss']   
+  styleUrls: ['./student-login.component.scss']
 })
 export class StudentLoginComponent {
-  
+
   loginData = {
     email: '',
     password: ''
@@ -21,8 +20,9 @@ export class StudentLoginComponent {
 
   showPassword = false;
   isLoading = false;
+  errorMessage = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
 
   togglePassword() {
     this.showPassword = !this.showPassword;
@@ -30,27 +30,26 @@ export class StudentLoginComponent {
 
   handleLogin() {
     if (!this.loginData.email || !this.loginData.password) {
-      alert('Please fill in all fields');
+      this.errorMessage = 'Please fill in all fields';
       return;
     }
 
     this.isLoading = true;
+    this.errorMessage = '';
 
-    // Simulate network delay
-    setTimeout(() => {
-      const isValid = this.authService.login(
-        this.loginData.email, 
-        this.loginData.password, 
-        'student' 
-      );
-
-      this.isLoading = false;
-
-      if (isValid) {
-        this.router.navigate(['/student-dashboard']); 
-      } else {
-        alert('Invalid Email or Password! Please register first.');
+    this.authService.login(
+      this.loginData.email,
+      this.loginData.password,
+      'student'
+    ).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.router.navigate(['/student-dashboard']);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = err.error?.error || 'Invalid Email or Password! Please register first.';
       }
-    }, 1000);
+    });
   }
 }

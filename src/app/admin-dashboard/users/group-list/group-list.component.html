@@ -1,11 +1,22 @@
 <div class="main-container">
     <h1 class="page-title">Groups & Batches</h1>
-    <div class="cards-grid">
-        <div class="glass-folder" *ngFor="let i of batches">
+
+    <div *ngIf="isLoading" style="text-align: center; padding: 2rem;">
+        <p>Loading groups...</p>
+    </div>
+
+    <div class="cards-grid" *ngIf="!isLoading">
+        <div class="glass-folder" *ngFor="let group of groups">
             <i class="fa-solid fa-folder-open folder-icon"></i>
-            <h3>Batch 202{{i}}</h3>
-            <p>120 Students</p>
+            <h3>{{ group.name }}</h3>
+            <p>{{ group.member_count || 0 }} Students</p>
             <button>Open Folder</button>
+        </div>
+
+        <div class="glass-folder" *ngIf="groups.length === 0" style="opacity: 0.6;">
+            <i class="fa-solid fa-folder folder-icon"></i>
+            <h3>No Groups Yet</h3>
+            <p>Create a group to get started</p>
         </div>
     </div>
 </div>
