@@ -160,6 +160,9 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW();
 ALTER TABLE exams ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW();
 ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW();
 
+ALTER TABLE exams ADD COLUMN IF NOT EXISTS start_time TIMESTAMP;
+ALTER TABLE exams ADD COLUMN IF NOT EXISTS end_time TIMESTAMP;
+
 -- ============================================
 -- INDEXES for performance
 -- ============================================

@@ -1,96 +1,121 @@
 <div class="main-container">
-  
-    <a routerLink="/" class="nav-back">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-      <span>Home</span>
-    </a>
-  
-    <div class="card animate-entry">
-      <div class="header">
-        <h1>Sign Up</h1>
-        <p>Start your journey with SecureExam</p>
-      </div>
-  
-      <!-- Role Switcher -->
-      <div class="role-container">
-        <div class="role-bg" [ngClass]="activeRole"></div>
-        <button class="role-btn" [class.active]="activeRole === 'student'" (click)="setRole('student')">Student</button>
-        <button class="role-btn" [class.active]="activeRole === 'teacher'" (click)="setRole('teacher')">Teacher</button>
-        <button class="role-btn" [class.active]="activeRole === 'admin'" (click)="setRole('admin')">Admin</button>
-      </div>
-  
-      <!-- FORM START -->
-      <form (submit)="onSubmit($event)">
-        
-        <!-- Full Name Input (Connected to formData.fullName) -->
-        <div class="input-wrapper">
-          <label>Full Name</label>
-          <input type="text" placeholder="Jane Doe" [(ngModel)]="formData.fullName" name="fullName" required>
-        </div>
-  
-        <!-- Email Input (Connected to formData.email) -->
-        <div class="input-wrapper">
-          <label>Email Address</label>
-          <input type="email" placeholder="jane@example.com" [(ngModel)]="formData.email" name="email" required>
-        </div>
-  
-        <!-- Dynamic Sections (Connected to formData.specialId) -->
-        <div class="dynamic-container" [ngSwitch]="activeRole">
-          
-          <!-- Student ID Input -->
-          <div *ngSwitchCase="'student'" class="field-slide">
-            <div class="input-wrapper highlight">
-              <label>Student ID Number</label>
-              <input type="text" placeholder="STU-2024" [(ngModel)]="formData.specialId" name="specialId">
-            </div>
-          </div>
-  
-          <!-- Teacher ID Input -->
-          <div *ngSwitchCase="'teacher'" class="field-slide">
-            <div class="input-wrapper highlight">
-              <label>Employee ID</label>
-              <input type="text" placeholder="TCH-888" [(ngModel)]="formData.specialId" name="specialId">
-            </div>
-          </div>
-  
-          <!-- Admin Code Input -->
-          <div *ngSwitchCase="'admin'" class="field-slide">
-            <div class="input-wrapper highlight">
-              <label>Security Code</label>
-              <input type="password" placeholder="••••••" [(ngModel)]="formData.specialId" name="specialId">
-            </div>
-          </div>
-  
-        </div>
-  
-        <!-- Password Input (Connected to formData.password) -->
-        <div class="input-wrapper">
-          <label>Password</label>
-          <input type="password" placeholder="Min. 8 characters" [(ngModel)]="formData.password" name="password" required>
-        </div>
-  
-        <button type="submit" class="btn-submit">
-          Create Account
-          <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-        </button>
-  
-        <div class="footer">
-          Already have an account? <a routerLink="/login/student">Log In</a>
-        </div>
-      </form>
+
+  <a routerLink="/" class="nav-back">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="19" y1="12" x2="5" y2="12"></line>
+      <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
+    <span>Home</span>
+  </a>
+
+  <div class="card animate-entry">
+    <div class="header">
+      <h1>Sign Up</h1>
+      <p>Start your journey with SecureExam</p>
     </div>
-  
-    <!-- SUCCESS POPUP -->
-    <div class="popup-overlay" *ngIf="showSuccessPopup">
-      <div class="popup-card pop-in">
-        <div class="icon-circle">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-        </div>
-        <h2>Success!</h2>
-        <p>Your <strong>{{ activeRole | titlecase }}</strong> details have been saved successfully.</p>
-        
-        <button class="btn-close" (click)="closePopup()">Continue to Login</button>
-      </div>
+
+    <!-- Role Switcher -->
+    <div class="role-container">
+      <div class="role-bg" [ngClass]="activeRole"></div>
+      <button class="role-btn" [class.active]="activeRole === 'student'" (click)="setRole('student')">Student</button>
+      <button class="role-btn" [class.active]="activeRole === 'teacher'" (click)="setRole('teacher')">Teacher</button>
+      <button class="role-btn" [class.active]="activeRole === 'admin'" (click)="setRole('admin')">Admin</button>
     </div>
-  
+
+    <!-- FORM START -->
+    <form (submit)="onSubmit($event)">
+
+      <!-- Full Name Input (Connected to formData.fullName) -->
+      <div class="input-wrapper">
+        <label>Full Name</label>
+        <input type="text" placeholder="Jane Doe" [(ngModel)]="formData.fullName" name="fullName" required>
+      </div>
+
+      <!-- Email Input (Connected to formData.email) -->
+      <div class="input-wrapper">
+        <label>Email Address</label>
+        <input type="email" placeholder="jane@example.com" [(ngModel)]="formData.email" name="email" required>
+      </div>
+
+      <!-- Dynamic Sections (Connected to formData.specialId) -->
+      <div class="dynamic-container" [ngSwitch]="activeRole">
+
+        <!-- Student ID Input -->
+        <div *ngSwitchCase="'student'" class="field-slide">
+          <div class="input-wrapper highlight">
+            <label>Student ID Number</label>
+            <input type="text" placeholder="STU-2024" [(ngModel)]="formData.specialId" name="specialId">
+          </div>
+        </div>
+
+        <!-- Teacher ID Input -->
+        <div *ngSwitchCase="'teacher'" class="field-slide">
+          <div class="input-wrapper highlight">
+            <label>Employee ID</label>
+            <input type="text" placeholder="TCH-888" [(ngModel)]="formData.specialId" name="specialId">
+          </div>
+        </div>
+
+        <!-- Admin Code Input -->
+        <div *ngSwitchCase="'admin'" class="field-slide">
+          <div class="input-wrapper highlight">
+            <label>Security Code</label>
+            <input type="password" placeholder="••••••" [(ngModel)]="formData.specialId" name="specialId">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Password Input (Connected to formData.password) -->
+      <div class="input-wrapper">
+        <label>Password</label>
+        <input type="password" placeholder="Min. 8 characters" [(ngModel)]="formData.password" name="password" required>
+      </div>
+
+      <!-- CAPTCHA Section -->
+      <div class="captcha-container" *ngIf="captchaData">
+        <div class="captcha-display">
+          <span class="captcha-text">{{ captchaData.text }}</span>
+          <button type="button" class="btn-refresh" (click)="refreshCaptcha()">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </button>
+        </div>
+        <div class="input-wrapper">
+          <label>Verify Captcha</label>
+          <input type="text" placeholder="Enter text above" [(ngModel)]="captchaInput" name="captcha" required>
+        </div>
+      </div>
+
+      <div class="error-msg" *ngIf="errorMessage">{{ errorMessage }}</div>
+      <button type="submit" class="btn-submit">
+        Create Account
+        <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </button>
+
+      <div class="footer">
+        Already have an account? <a routerLink="/login/student">Log In</a>
+      </div>
+    </form>
   </div>
+
+  <!-- SUCCESS POPUP -->
+  <div class="popup-overlay" *ngIf="showSuccessPopup">
+    <div class="popup-card pop-in">
+      <div class="icon-circle">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"
+          stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h2>Success!</h2>
+      <p>Your <strong>{{ activeRole | titlecase }}</strong> details have been saved successfully.</p>
+
+      <button class="btn-close" (click)="closePopup()">Continue to Login</button>
+    </div>
+  </div>
+
+</div>

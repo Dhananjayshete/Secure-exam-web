@@ -4,6 +4,19 @@ import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../../services/api.service';
 import { AuthService } from '../../../../services/auth.service';
 
+interface NewExam {
+  title: string;
+  subject: string;
+  startTime: string;
+  endTime: string;
+  duration: number;
+  security: {
+    browserLock: boolean;
+    aiProctor: boolean;
+  };
+  groupIds: string[];
+}
+
 @Component({
   selector: 'app-teacher-dashboard',
   standalone: true,
@@ -22,6 +35,7 @@ export class TeacherDashboardComponent implements OnInit {
   exams: any[] = [];
   liveStudents: any[] = [];
   studentData: any[] = [];
+  groups: any[] = [];
   proctoringEvents: any[] = [];
 
   // --- 3. QUESTION MANAGEMENT ---
@@ -29,10 +43,20 @@ export class TeacherDashboardComponent implements OnInit {
   selectedExamTitle: string = '';
   questions: any[] = [];
   isQuestionsLoading: boolean = false;
+
+  // NEW: Analytics & Grading state
+  analytics: any = null;
+  gradingList: any[] = [];
+  isAnalyticsLoading: boolean = false;
+  isGradingLoading: boolean = false;
+  selectedExamForAnalytics: any = null;
+  selectedExamForGrading: any = null;
+
   newQuestion = {
     questionText: '',
     questionType: 'MCQ',
     points: 2,
+    modelAnswer: '',
     options: [
       { optionText: '', isCorrect: false },
       { optionText: '', isCorrect: false },
@@ -42,14 +66,17 @@ export class TeacherDashboardComponent implements OnInit {
   };
 
   // --- 4. FORM DATA ---
-  newExam = {
+  newExam: NewExam = {
     title: '',
     subject: 'Computer Science',
+    startTime: '',
+    endTime: '',
     duration: 60,
     security: {
       browserLock: true,
       aiProctor: true
-    }
+    },
+    groupIds: []
   };
 
   // --- 5. LIVE MONITORING ---
@@ -60,6 +87,16 @@ export class TeacherDashboardComponent implements OnInit {
   ngOnInit() {
     this.loadExams();
     this.loadStudents();
+    this.loadGroups();
+  }
+
+  loadGroups() {
+    this.apiService.getGroups().subscribe({
+      next: (groups) => {
+        this.groups = groups;
+      },
+      error: (err) => console.error('Error loading groups:', err)
+    });
   }
 
   loadExams() {
@@ -128,6 +165,7 @@ export class TeacherDashboardComponent implements OnInit {
       questionText: this.newQuestion.questionText,
       questionType: this.newQuestion.questionType,
       points: this.newQuestion.points,
+      modelAnswer: this.newQuestion.modelAnswer,
       sortOrder: this.questions.length + 1
     };
 
@@ -168,6 +206,7 @@ export class TeacherDashboardComponent implements OnInit {
       questionText: '',
       questionType: 'MCQ',
       points: 2,
+      modelAnswer: '',
       options: [
         { optionText: '', isCorrect: false },
         { optionText: '', isCorrect: false },
@@ -192,28 +231,62 @@ export class TeacherDashboardComponent implements OnInit {
   loadProctoringData() {
     if (!this.monitorExamId) return;
 
-    this.apiService.getProctoringEventsSummary(this.monitorExamId).subscribe({
+    this.apiService.getMonitorData(this.monitorExamId).subscribe({
       next: (students) => {
         this.liveStudents = students.map(s => ({
           name: s.name,
-          status: s.status,
+          email: s.email,
+          status: s.status, // flagged or good
+          examStatus: s.examStatus, // In-Progress, Completed
           img: s.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=0D8ABC&color=fff`,
-          flagCount: s.flagCount
+          flagCount: s.flagCount,
+          lastActivity: s.lastActivity ? new Date(s.lastActivity).toLocaleTimeString() : 'N/A'
         }));
       },
-      error: (err) => console.error('Error loading proctoring summary:', err)
+      error: (err) => console.error('Error loading proctoring data:', err)
     });
+  }
 
-    this.apiService.getProctoringEvents(this.monitorExamId).subscribe({
-      next: (events) => {
-        this.proctoringEvents = events.map(e => ({
-          time: new Date(e.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
-          studentName: e.studentName,
-          eventType: e.eventType,
-          details: e.details
-        }));
+  // --- ANALYTICS & GRADING ---
+  openAnalytics(exam: any) {
+    this.selectedExamForAnalytics = exam;
+    this.selectedExamTitle = exam.title;
+    this.currentView = 'analytics';
+    this.loadAnalytics();
+  }
+
+  loadAnalytics() {
+    this.isAnalyticsLoading = true;
+    this.apiService.getTeacherAnalytics().subscribe({
+      next: (data: any) => {
+        this.analytics = data;
+        this.isAnalyticsLoading = false;
       },
-      error: (err) => console.error('Error loading proctoring events:', err)
+      error: (err: any) => {
+        console.error('Error loading analytics:', err);
+        this.isAnalyticsLoading = false;
+      }
+    });
+  }
+
+  openGrading(exam: any) {
+    this.selectedExamForGrading = exam;
+    this.selectedExamTitle = exam.title;
+    this.currentView = 'grading';
+    this.loadGrading();
+  }
+
+  loadGrading() {
+    this.isGradingLoading = true;
+    this.apiService.getTeacherGrading().subscribe({
+      next: (data: any[]) => {
+        this.gradingList = data;
+        this.isGradingLoading = false;
+      },
+      error: (err: any) => {
+        console.error('Error loading grading data:', err);
+        this.isGradingLoading = false;
+      }
     });
   }
 
@@ -222,11 +295,16 @@ export class TeacherDashboardComponent implements OnInit {
     this.currentView = viewName;
     if (viewName === 'monitor' && this.monitorExamId) {
       this.loadProctoringData();
+    } else if (viewName === 'analytics') {
+      this.loadAnalytics();
+    } else if (viewName === 'grading') {
+      this.loadGrading();
     }
   }
 
   openModal() {
     this.isModalOpen = true;
+    this.resetExamForm(); // Reset on open
   }
 
   closeModal() {
@@ -234,29 +312,71 @@ export class TeacherDashboardComponent implements OnInit {
   }
 
   createExam() {
-    this.apiService.createExam({
-      title: this.newExam.title || 'Untitled Exam',
+    const examData = {
+      title: this.newExam.title,
       subject: this.newExam.subject,
+      scheduledAt: this.newExam.startTime, // Raw string like '2026-02-16T17:45'
+      startTime: this.newExam.startTime,
+      endTime: this.newExam.endTime,
       durationMinutes: this.newExam.duration,
-      securityLevel: this.newExam.security.browserLock ? 'High' : 'Low'
-    }).subscribe({
+      securityLevel: this.newExam.security.aiProctor ? 'High' : 'Medium',
+      groupIds: this.newExam.groupIds,
+      status: 'Scheduled'
+    };
+    this.apiService.createExam(examData).subscribe({
       next: (exam) => {
         this.exams.unshift({
           id: exam.id,
           title: exam.title,
           subject: exam.subject,
-          date: 'Just Now',
-          candidates: '--',
+          date: new Date(exam.start_time).toLocaleString(),
+          candidates: exam.assignedGroupsCount ? `${exam.assignedGroupsCount} Groups` : '--',
           status: exam.status || 'Scheduled',
           security: exam.securityLevel
         });
 
         this.closeModal();
         this.switchView('exams');
-        this.newExam.title = '';
+        this.resetExamForm();
       },
       error: (err) => console.error('Error creating exam:', err)
     });
+  }
+
+  resetExamForm() {
+    const toLocalISO = (date: Date) => {
+      // Return YYYY-MM-DDTHH:mm representing the "wall clock" time
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    };
+
+    const start = new Date();
+    const end = new Date(start.getTime() + 60 * 60 * 1000); // 1 hour later
+
+    this.newExam = {
+      title: '',
+      subject: 'Computer Science',
+      startTime: toLocalISO(start),
+      endTime: toLocalISO(end),
+      duration: 60,
+      security: {
+        browserLock: true,
+        aiProctor: true
+      },
+      groupIds: []
+    };
+  }
+
+  toggleGroupSelection(groupId: string, event: any) {
+    if (event.target.checked) {
+      this.newExam.groupIds.push(groupId);
+    } else {
+      this.newExam.groupIds = this.newExam.groupIds.filter(id => id !== groupId);
+    }
   }
 
   get filteredStudents() {

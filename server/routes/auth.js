@@ -4,12 +4,41 @@ const jwt = require('jsonwebtoken');
 const pool = require('../db');
 const router = express.Router();
 
+// Simple in-memory storage for CAPTCHAs (for demo purposes)
+const captchaStore = new Map();
+
+// ============================================
+// GET /api/auth/captcha — Generate a CAPTCHA
+// ============================================
+router.get('/captcha', (req, res) => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let captcha = '';
+    for (let i = 0; i < 6; i++) {
+        captcha += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    const captchaId = Math.random().toString(36).substring(7);
+    captchaStore.set(captchaId, captcha);
+
+    // Clear captcha after 5 minutes
+    setTimeout(() => captchaStore.delete(captchaId), 300000);
+
+    res.json({ id: captchaId, text: captcha }); // In real app, send IMAGE, not text.
+});
+
 // ============================================
 // POST /api/auth/register
 // ============================================
 router.post('/register', async (req, res) => {
     try {
-        const { name, email, password, role, specialId } = req.body;
+        const { name, email, password, role, specialId, captcha, captchaId } = req.body;
+
+        // Verify CAPTCHA
+        const validCaptcha = captchaStore.get(captchaId);
+        if (!validCaptcha || validCaptcha !== captcha?.toUpperCase()) {
+            return res.status(400).json({ error: 'Invalid or expired CAPTCHA.' });
+        }
+        // Only delete on success
+        captchaStore.delete(captchaId);
 
         // 1. Validate required fields
         if (!name || !email || !password || !role) {
@@ -160,6 +189,44 @@ router.get('/me', authMiddleware, async (req, res) => {
         });
     } catch (err) {
         console.error('Get Profile Error:', err);
+        res.status(500).json({ error: 'Server error.' });
+    }
+});
+
+// ============================================
+// POST /api/auth/reverify — Re-check password
+// ============================================
+router.post('/reverify', authMiddleware, async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Email and password are required.' });
+        }
+
+        // 1. Check if email matches current user
+        if (email.toLowerCase() !== req.user.email.toLowerCase()) {
+            return res.status(401).json({ error: 'Email does not match logged-in user.' });
+        }
+
+        // 2. Get user password hash
+        const result = await pool.query('SELECT password_hash FROM users WHERE id = $1', [req.user.id]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+        const user = result.rows[0];
+
+        // 3. Verify password
+        const isMatch = await bcrypt.compare(password, user.password_hash);
+        if (!isMatch) {
+            return res.status(401).json({ error: 'Invalid password.' });
+        }
+
+        res.json({ message: 'Verification successful.' });
+
+    } catch (err) {
+        console.error('Reverify Error:', err);
         res.status(500).json({ error: 'Server error.' });
     }
 });

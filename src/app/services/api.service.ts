@@ -62,6 +62,18 @@ export class ApiService {
         return this.http.patch(`${this.baseUrl}/users/${userId}/password`, { oldPassword, newPassword }, { headers: this.getHeaders() });
     }
 
+    updateProfile(userId: string, data: any): Observable<any> {
+        return this.http.patch(`${this.baseUrl}/users/${userId}`, data, { headers: this.getHeaders() });
+    }
+
+    updateUserRole(userId: string, role: string): Observable<any> {
+        return this.http.patch(`${this.baseUrl}/users/${userId}/role`, { role }, { headers: this.getHeaders() });
+    }
+
+    resetUserPassword(userId: string, newPassword: string): Observable<any> {
+        return this.http.post(`${this.baseUrl}/users/${userId}/reset-password`, { newPassword }, { headers: this.getHeaders() });
+    }
+
     // ==========================================
     // EXAMS
     // ==========================================
@@ -82,12 +94,36 @@ export class ApiService {
         return this.http.patch(`${this.baseUrl}/exams/${id}`, data, { headers: this.getHeaders() });
     }
 
+    deleteExam(id: string): Observable<any> {
+        return this.http.delete(`${this.baseUrl}/exams/${id}`, { headers: this.getHeaders() });
+    }
+
     submitExam(examId: string, score: number, grade: string): Observable<any> {
         return this.http.post(`${this.baseUrl}/exams/${examId}/submit`, { score, grade }, { headers: this.getHeaders() });
     }
 
+    startExamSession(examId: string): Observable<any> {
+        return this.http.post(`${this.baseUrl}/exams/${examId}/start`, {}, { headers: this.getHeaders() });
+    }
+
     getStudentResults(): Observable<any[]> {
         return this.http.get<any[]>(`${this.baseUrl}/exams/student/results`, { headers: this.getHeaders() });
+    }
+
+    getTeacherAnalytics(): Observable<any> {
+        return this.http.get(`${this.baseUrl}/exams/teacher/analytics`, { headers: this.getHeaders() });
+    }
+
+    getTeacherGrading(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/exams/teacher/grading`, { headers: this.getHeaders() });
+    }
+
+    getAllQuestions(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/questions`, { headers: this.getHeaders() });
+    }
+
+    getAdminExams(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/exams/admin/all`, { headers: this.getHeaders() });
     }
 
     // ==========================================
@@ -135,16 +171,16 @@ export class ApiService {
         return this.http.get<any[]>(`${this.baseUrl}/exams/${examId}/questions`, { headers: this.getHeaders() });
     }
 
+    deleteQuestion(id: string): Observable<any> {
+        return this.http.delete(`${this.baseUrl}/questions/${id}`, { headers: this.getHeaders() });
+    }
+
     createQuestion(examId: string, data: any): Observable<any> {
         return this.http.post(`${this.baseUrl}/exams/${examId}/questions`, data, { headers: this.getHeaders() });
     }
 
     updateQuestion(questionId: string, data: any): Observable<any> {
         return this.http.patch(`${this.baseUrl}/questions/${questionId}`, data, { headers: this.getHeaders() });
-    }
-
-    deleteQuestion(questionId: string): Observable<any> {
-        return this.http.delete(`${this.baseUrl}/questions/${questionId}`, { headers: this.getHeaders() });
     }
 
     submitAnswers(examId: string, answers: any[]): Observable<any> {
@@ -159,14 +195,34 @@ export class ApiService {
     // ==========================================
     // PROCTORING
     // ==========================================
-    logProctoringEvent(examId: string, eventType: string, details?: string): Observable<any> {
-        return this.http.post(`${this.baseUrl}/exams/${examId}/proctoring`, { eventType, details }, { headers: this.getHeaders() });
+    // ==========================================
+    // PROCTORING & MONITORING
+    // ==========================================
+    reverify(password: string): Observable<any> {
+        const user = this.getCurrentUser();
+        return this.http.post(`${this.baseUrl}/auth/reverify`, { email: user?.email, password }, { headers: this.getHeaders() });
     }
 
+    logProctoringEvent(examId: string, eventType: string, details?: string): Observable<any> {
+        return this.http.post(`${this.baseUrl}/proctoring/events`, { examId, eventType, details }, { headers: this.getHeaders() });
+    }
+
+    getMonitorData(examId: string): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/proctoring/monitor/${examId}`, { headers: this.getHeaders() });
+    }
+
+    // Deprecated logProctoringEvent in previous location, replacing/consolidating here
+    // getProctoringEvents (student info) - keeping existing if needed, but monitor is better
+
     getProctoringEvents(examId: string, studentId?: string): Observable<any[]> {
+        // This was using /exams/:id/proctoring, but we now use /api/proctoring
+        // Let's leave it if it was working, but our new backend uses /api/proctoring/monitor for teachers
+        // If we need student-specific logs, we might need another endpoint, but for now monitor covers it.
         const params = studentId ? `?studentId=${studentId}` : '';
         return this.http.get<any[]>(`${this.baseUrl}/exams/${examId}/proctoring${params}`, { headers: this.getHeaders() });
     }
+
+
 
     getProctoringEventsSummary(examId: string): Observable<any[]> {
         return this.http.get<any[]>(`${this.baseUrl}/exams/${examId}/proctoring/summary`, { headers: this.getHeaders() });

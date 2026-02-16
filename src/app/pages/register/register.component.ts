@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -11,11 +11,14 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   activeRole: string = 'student';
   showSuccessPopup: boolean = false;
   isLoading: boolean = false;
   errorMessage: string = '';
+
+  captchaData: any = null;
+  captchaInput: string = '';
 
   formData = {
     fullName: '',
@@ -25,6 +28,17 @@ export class RegisterComponent {
   };
 
   constructor(private authService: AuthService, private router: Router) { }
+
+  ngOnInit() {
+    this.refreshCaptcha();
+  }
+
+  refreshCaptcha() {
+    this.authService.getCaptcha().subscribe({
+      next: (data) => this.captchaData = data,
+      error: (err) => console.error('Captcha error:', err)
+    });
+  }
 
   setRole(role: string) {
     this.activeRole = role;
@@ -40,7 +54,9 @@ export class RegisterComponent {
       email: this.formData.email,
       password: this.formData.password,
       role: this.activeRole,
-      specialId: this.formData.specialId
+      specialId: this.formData.specialId,
+      captcha: this.captchaInput,
+      captchaId: this.captchaData?.id
     };
 
     this.authService.registerUser(newUser).subscribe({
@@ -55,6 +71,8 @@ export class RegisterComponent {
       error: (err) => {
         this.isLoading = false;
         this.errorMessage = err.error?.error || 'Registration failed. Please try again.';
+        this.refreshCaptcha();
+        this.captchaInput = '';
       }
     });
   }

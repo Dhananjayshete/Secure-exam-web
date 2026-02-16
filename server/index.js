@@ -30,7 +30,8 @@ app.use('/api/exams', require('./routes/exams'));
 app.use('/api/groups', require('./routes/groups'));
 app.use('/api/tickets', require('./routes/tickets'));
 app.use('/api', require('./routes/questions'));
-app.use('/api', require('./routes/proctoring'));
+app.use('/api', require('./routes/questions'));
+app.use('/api/proctoring', require('./routes/proctoring'));
 
 // Health check
 app.get('/api/health', (req, res) => {
