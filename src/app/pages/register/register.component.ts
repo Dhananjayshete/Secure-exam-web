@@ -35,7 +35,10 @@ export class RegisterComponent implements OnInit {
 
   refreshCaptcha() {
     this.authService.getCaptcha().subscribe({
-      next: (data) => this.captchaData = data,
+      next: (data) => {
+        this.captchaData = data;
+        this.captchaInput = '';
+      },
       error: (err) => console.error('Captcha error:', err)
     });
   }
@@ -47,6 +50,17 @@ export class RegisterComponent implements OnInit {
   onSubmit(event: Event) {
     event.preventDefault();
     this.errorMessage = '';
+
+    // 1. Frontend CAPTCHA validation
+    const input = this.captchaInput.trim().toLowerCase();
+    const actual = this.captchaData?.text?.trim().toLowerCase();
+
+    if (input !== actual) {
+      this.errorMessage = 'Incorrect CAPTCHA, please try again.';
+      this.refreshCaptcha();
+      return;
+    }
+
     this.isLoading = true;
 
     const newUser = {
@@ -55,7 +69,7 @@ export class RegisterComponent implements OnInit {
       password: this.formData.password,
       role: this.activeRole,
       specialId: this.formData.specialId,
-      captcha: this.captchaInput,
+      captcha: this.captchaInput.trim(),
       captchaId: this.captchaData?.id
     };
 
@@ -71,8 +85,11 @@ export class RegisterComponent implements OnInit {
       error: (err) => {
         this.isLoading = false;
         this.errorMessage = err.error?.error || 'Registration failed. Please try again.';
-        this.refreshCaptcha();
-        this.captchaInput = '';
+
+        // Refresh captcha if it was a captcha error or if we want to be safe
+        if (this.errorMessage.toLowerCase().includes('captcha')) {
+          this.refreshCaptcha();
+        }
       }
     });
   }

@@ -34,7 +34,7 @@ router.post('/register', async (req, res) => {
 
         // Verify CAPTCHA
         const validCaptcha = captchaStore.get(captchaId);
-        if (!validCaptcha || validCaptcha !== captcha?.toUpperCase()) {
+        if (!validCaptcha || validCaptcha !== captcha?.trim().toUpperCase()) {
             return res.status(400).json({ error: 'Invalid or expired CAPTCHA.' });
         }
         // Only delete on success

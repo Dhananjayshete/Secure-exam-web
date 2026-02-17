@@ -23,7 +23,9 @@ export class AuthService {
       email: user.email,
       password: user.password,
       role: user.role,
-      specialId: user.specialId
+      specialId: user.specialId,
+      captcha: user.captcha,
+      captchaId: user.captchaId
     }).pipe(
       map((response: any) => {
         // Auto-save token on registration
