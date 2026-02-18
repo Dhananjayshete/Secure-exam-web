@@ -1,29 +1,34 @@
 <!-- SECTION 1: HERO (Introduction) -->
 <div class="hero-wrapper">
-  <header class="navbar">
-    <div class="logo">
-      <h2>SecureTake</h2>
+  <header class="navbar glass-morphism">
+    <div class="logo" (click)="scrollTo('home')">
+      <img src="assets/secure-take-logo.svg" alt="Secure Take Logo" class="brand-logo">
+      <h2 class="brand-text">Secure<span>Take</span></h2>
     </div>
 
     <nav class="menu">
-      <a>Home</a>
-      <a>Service</a>
-      <a>Why Us</a>
-      <a>FAQs</a>
-      <a>Reviews</a>
+      <a (click)="openNavModal('home')">Home</a>
+      <a (click)="openNavModal('services')">Services</a>
+      <a (click)="openNavModal('why_us')">Why Us</a>
+      <a (click)="openNavModal('faqs')">FAQs</a>
+      <a (click)="openNavModal('reviews')">Reviews</a>
     </nav>
   </header>
 
-  <section class="hero-grid">
+  <section class="hero-grid animate-fade-in-up" id="home">
     <div class="hero-text">
-      <span class="badge">Get Help Today – By My Assignment Services</span>
-      <h1>Exam Alert<br />Upcoming Quizzes & Exams!</h1>
+      <span class="badge">Next-Gen Assessment Integrity</span>
+      <h1>Secure Take<br /><span>Trust in Every Test.</span></h1>
       <p>
-        We have carefully prepared specialization paths so that you can
-        focus on learning a specific topic with expert support.
+        Redefining online examination integrity using cutting-edge AI technology
+        trusted by institutions worldwide. Experience a distraction-free,
+        secure environment for high-stakes assessments.
       </p>
       <!-- Angular Router Link -->
-      <button routerLink="/register">Get Started | Registration</button>
+      <div class="hero-btns">
+        <button class="primary-btn" routerLink="/register">Get Started</button>
+        <button class="secondary-btn" (click)="openNavModal('services')">Learn More</button>
+      </div>
     </div>
 
     <div class="hero-image">
@@ -38,7 +43,7 @@
 <!-- SECTION 2: ROLES OVERVIEW (Who is this for?) -->
 <!-- Using 'how-page' class for the Beige background & Role Cards -->
 <!-- SECTION 2: FEATURES (Why Us?) -->
-<section class="features-section" id="why-us">
+<section class="features-section animate-fade-in-up" id="why-us">
   <div class="header">
     <h1>Secure Assessment Suite</h1>
     <p>Everything you need to conduct high-stakes exams confidently.</p>
@@ -46,7 +51,7 @@
 
   <div class="features-grid">
     <!-- Card 1: AI Proctoring -->
-    <div class="feature-card">
+    <div class="feature-card glass-morphism">
       <div class="icon-box">
         <i class="fa-solid fa-robot"></i>
       </div>
@@ -55,7 +60,7 @@
     </div>
 
     <!-- Card 2: Browser Lockdown -->
-    <div class="feature-card">
+    <div class="feature-card glass-morphism">
       <div class="icon-box">
         <i class="fa-solid fa-lock"></i>
       </div>
@@ -64,7 +69,7 @@
     </div>
 
     <!-- Card 3: Instant Results -->
-    <div class="feature-card">
+    <div class="feature-card glass-morphism">
       <div class="icon-box">
         <i class="fa-solid fa-bolt"></i>
       </div>
@@ -76,65 +81,59 @@
 <!-- ============================================ -->
 <!-- START: BUILT FOR EVERYONE SECTION            -->
 <!-- ============================================ -->
-<section class="personas-section">
-    
+<section class="personas-section animate-fade-in-up">
+
   <!-- 1. Section Heading -->
   <div class="personas-header">
-      <h2>Built for Everyone</h2>
+    <h2>Built for Everyone</h2>
   </div>
 
   <!-- 2. The Buttons (Tabs) -->
   <!-- We use (click) to update the variable in TS -->
   <div class="persona-tabs">
-      <button class="tab-btn" 
-              [class.active]="activePersona === 'admin'" 
-              (click)="setPersona('admin')">
-          Admins
-      </button>
+    <button class="tab-btn" [class.active]="activePersona === 'admin'" (click)="setPersona('admin')">
+      Admins
+    </button>
 
-      <button class="tab-btn" 
-              [class.active]="activePersona === 'teacher'" 
-              (click)="setPersona('teacher')">
-          Teachers
-      </button>
+    <button class="tab-btn" [class.active]="activePersona === 'teacher'" (click)="setPersona('teacher')">
+      Teachers
+    </button>
 
-      <button class="tab-btn" 
-              [class.active]="activePersona === 'student'" 
-              (click)="setPersona('student')">
-          Students
-      </button>
+    <button class="tab-btn" [class.active]="activePersona === 'student'" (click)="setPersona('student')">
+      Students
+    </button>
   </div>
 
   <!-- 3. The Dynamic Content Area -->
   <div class="persona-content-grid">
-      
-      <!-- Left Side: Text Description -->
-      <div class="persona-text-col">
-          <!-- Angular Binding: {{ }} allows the text to change automatically -->
-          <h3>{{ personaData[activePersona].title }}</h3>
-          <p>{{ personaData[activePersona].desc }}</p>
-          
-          <!-- List of Features -->
-          <ul class="persona-list">
-              <!-- *ngFor loops through the features of the selected role -->
-              <li *ngFor="let feature of personaData[activePersona].features">
-                  <i class="fa-solid fa-circle-check"></i> {{ feature }}
-              </li>
-          </ul>
-      </div>
 
-      <!-- Right Side: Image -->
-      <div class="persona-img-col">
-          <!-- [src] binds the image URL dynamically -->
-          <img [src]="personaData[activePersona].img" alt="Dashboard Preview">
-      </div>
+    <!-- Left Side: Text Description -->
+    <div class="persona-text-col">
+      <!-- Angular Binding: {{ }} allows the text to change automatically -->
+      <h3>{{ personaData[activePersona].title }}</h3>
+      <p>{{ personaData[activePersona].desc }}</p>
+
+      <!-- List of Features -->
+      <ul class="persona-list">
+        <!-- *ngFor loops through the features of the selected role -->
+        <li *ngFor="let feature of personaData[activePersona].features">
+          <i class="fa-solid fa-circle-check"></i> {{ feature }}
+        </li>
+      </ul>
+    </div>
+
+    <!-- Right Side: Image -->
+    <div class="persona-img-col">
+      <!-- [src] binds the image URL dynamically -->
+      <img [src]="personaData[activePersona].img" alt="Dashboard Preview" class="glass-morphism">
+    </div>
 
   </div>
 
 </section>
 <!-- SECTION 3: DETAILED PROCESS (The Zig-Zag Steps) -->
 <!-- Using 'steps-section' class for the Zig-Zag layout -->
-<section id="how-it-works" class="steps-section">
+<section id="how-it-works" class="steps-section animate-fade-in-up">
   <div class="steps-container">
     <div class="header" style="text-align: center; margin-bottom: 60px;">
       <h1>How It Works</h1>
@@ -146,10 +145,12 @@
       <div class="step-text">
         <span class="step-number">01</span>
         <h3>Setup & Scheduling</h3>
-        <p>Teachers create exams using our rich text editor or import from question banks. Set strict timings, randomization rules, and assign to specific student batches instantly.</p>
+        <p>Teachers create exams using our rich text editor or import from question banks. Set strict timings,
+          randomization rules, and assign to specific student batches instantly.</p>
       </div>
       <div class="step-image">
-        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop" alt="Setup Exam">
+        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop"
+          alt="Setup Exam" class="glass-morphism">
       </div>
     </div>
 
@@ -158,10 +159,12 @@
       <div class="step-text">
         <span class="step-number">02</span>
         <h3>Secure Authentication</h3>
-        <p>Students log in and undergo a 3-step verification process: ID scan, face match, and environment check to ensure the room is clear of unauthorized materials.</p>
+        <p>Students log in and undergo a 3-step verification process: ID scan, face match, and environment check to
+          ensure the room is clear of unauthorized materials.</p>
       </div>
       <div class="step-image">
-        <img src="https://images.unsplash.com/photo-1593642532744-d377ab507dc8?q=80&w=2069&auto=format&fit=crop" alt="Student Verification">
+        <img src="https://images.unsplash.com/photo-1593642532744-d377ab507dc8?q=80&w=2069&auto=format&fit=crop"
+          alt="Student Verification" class="glass-morphism">
       </div>
     </div>
 
@@ -170,102 +173,104 @@
       <div class="step-text">
         <span class="step-number">03</span>
         <h3>The Examination</h3>
-        <p>The exam begins in full-screen mode. Autosave protects answers every 30 seconds. If the internet connection drops, students can resume exactly where they left off.</p>
+        <p>The exam begins in full-screen mode. Autosave protects answers every 30 seconds. If the internet connection
+          drops, students can resume exactly where they left off.</p>
       </div>
       <div class="step-image">
-        <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=2070&auto=format&fit=crop" alt="Taking Exam">
+        <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=2070&auto=format&fit=crop"
+          alt="Taking Exam" class="glass-morphism">
       </div>
     </div>
 
   </div>
 </section>
-<section class="security-section">
-    <div class="security-container">
-        <!-- Header -->
-        <div class="sec-header">
-            <h2>Uncompromised Security</h2>
-            <p>We adhere to the strictest data privacy standards in the world.</p>
-        </div>
-
-        <!-- Cards Grid -->
-        <div class="sec-grid">
-            
-            <!-- Card 1: GDPR (Shield) -->
-            <div class="sec-card">
-                <div class="sec-icon-box">
-                    <!-- SVG Shield Icon -->
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                    </svg>
-                </div>
-                <h3>GDPR Compliant</h3>
-                <p>Full compliance with EU data protection regulations.</p>
-            </div>
-
-            <!-- Card 2: ISO (File) -->
-            <div class="sec-card">
-                <div class="sec-icon-box">
-                    <!-- SVG File/Contract Icon -->
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                </div>
-                <h3>ISO 27001</h3>
-                <p>Certified information security management systems.</p>
-            </div>
-
-            <!-- Card 3: AES (Lock) -->
-            <div class="sec-card">
-                <div class="sec-icon-box">
-                    <!-- SVG Lock Icon -->
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                    </svg>
-                </div>
-                <h3>AES-256</h3>
-                <p>Bank-grade encryption for all data at rest and in transit.</p>
-            </div>
-
-            <!-- Card 4: Backups (Server/Database) -->
-            <div class="sec-card">
-                <div class="sec-icon-box">
-                    <!-- SVG Server Icon -->
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
-                        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
-                        <path d="M3 5v14c0 1.66 4 3 9 3s 9-1.34 9-3V5"></path>
-                    </svg>
-                </div>
-                <h3>Daily Backups</h3>
-                <p>Redundant cloud storage ensures zero data loss.</p>
-            </div>
-
-        </div>
+<section class="security-section animate-fade-in-up">
+  <div class="security-container">
+    <!-- Header -->
+    <div class="sec-header">
+      <h2>Uncompromised Security</h2>
+      <p>We adhere to the strictest data privacy standards in the world.</p>
     </div>
+
+    <!-- Cards Grid -->
+    <div class="sec-grid">
+
+      <!-- Card 1: GDPR (Shield) -->
+      <div class="sec-card glass-morphism">
+        <div class="sec-icon-box">
+          <!-- SVG Shield Icon -->
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+        </div>
+        <h3>GDPR Compliant</h3>
+        <p>Full compliance with EU data protection regulations.</p>
+      </div>
+
+      <!-- Card 2: ISO (File) -->
+      <div class="sec-card glass-morphism">
+        <div class="sec-icon-box">
+          <!-- SVG File/Contract Icon -->
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </div>
+        <h3>ISO 27001</h3>
+        <p>Certified information security management systems.</p>
+      </div>
+
+      <!-- Card 3: AES (Lock) -->
+      <div class="sec-card glass-morphism">
+        <div class="sec-icon-box">
+          <!-- SVG Lock Icon -->
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <h3>AES-256</h3>
+        <p>Bank-grade encryption for all data at rest and in transit.</p>
+      </div>
+
+      <!-- Card 4: Backups (Server/Database) -->
+      <div class="sec-card glass-morphism">
+        <div class="sec-icon-box">
+          <!-- SVG Server Icon -->
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+            <path d="M3 5v14c0 1.66 4 3 9 3s 9-1.34 9-3V5"></path>
+          </svg>
+        </div>
+        <h3>Daily Backups</h3>
+        <p>Redundant cloud storage ensures zero data loss.</p>
+      </div>
+
+    </div>
+  </div>
 </section>
 
 
 <!-- SECTION 4: SUPPORTED SUBJECTS -->
-<section class="subjects-section">
+<section class="subjects-section animate-fade-in-up">
   <div class="container">
     <h2>Supported Subjects</h2>
     <p class="subtitle">Our platform handles complex symbols, code snippets, and chemical equations.</p>
 
     <!-- Grid of Cards -->
     <div class="subjects-grid">
-      <div 
-        class="subject-card" 
-        *ngFor="let subject of subjects" 
-        (click)="openModal(subject)"
-      >
+      <div class="subject-card glass-morphism" *ngFor="let subject of subjects" (click)="openModal(subject)">
         <!-- Use this syntax exactly: -->
         <i class="fa-solid {{subject.icon}}"></i>
-        
+
         <h3>{{ subject.title }}</h3>
       </div>
     </div>
@@ -273,7 +278,7 @@
   </div>
 </section>
 
-<section class="testimonial-section">
+<section class="testimonial-section animate-fade-in-up" id="reviews-section">
 
   <div class="heading">
     <h2>Loved by Educators</h2>
@@ -283,7 +288,7 @@
   <div class="cards">
 
     <!-- Card 1 -->
-    <div class="card">
+    <div class="card glass-morphism">
       <div class="stars">★★★★★</div>
       <p class="review">
         "The AI proctoring is a game changer. We caught 30% more academic
@@ -299,7 +304,7 @@
     </div>
 
     <!-- Card 2 -->
-    <div class="card">
+    <div class="card glass-morphism">
       <div class="stars">★★★★★</div>
       <p class="review">
         "Finally, a platform that supports complex coding questions.
@@ -315,7 +320,7 @@
     </div>
 
     <!-- Card 3 -->
-    <div class="card">
+    <div class="card glass-morphism">
       <div class="stars">★★★★★</div>
       <p class="review">
         "The support team is incredible. They helped us migrate
@@ -331,7 +336,7 @@
     </div>
 
     <!-- Card 4 -->
-    <div class="card">
+    <div class="card glass-morphism">
       <div class="stars">★★★★★</div>
       <p class="review">
         "This platform transformed our online examination process
@@ -352,7 +357,7 @@
 <!-- GLASSMORPHISM MODAL (Lives outside the grid, usually at the bottom of the file) -->
 <div class="modal-overlay" *ngIf="selectedSubject" (click)="closeModal()">
   <!-- (click)="$event.stopPropagation()" prevents the modal from closing when clicking inside the white box -->
-  <div class="glass-card" (click)="$event.stopPropagation()">
+  <div class="glass-morphism subject-modal-card" (click)="$event.stopPropagation()">
     <div class="modal-content">
       <i class="fa-solid" [ngClass]="selectedSubject.icon"></i>
       <h3>{{ selectedSubject.title }}</h3>
@@ -364,14 +369,14 @@
 
 <!-- SECTION 4: LOGIN PORTAL (Call to Action) -->
 <!-- Using 'how-it-works' class for the Gradient Background & Login Cards -->
-<section class="how-it-works">
+<section class="how-it-works animate-fade-in-up">
 
   <h2>Enter The Portal</h2>
   <p class="subtitle">Choose your role to continue</p>
 
   <div class="cards">
     <!-- Admin Login -->
-    <div class="card">
+    <div class="card glass-morphism">
       <div class="icon">📮</div>
       <h3>Admin</h3>
       <p>Manage exams, users and platform security</p>
@@ -381,7 +386,7 @@
     </div>
 
     <!-- Teacher Login -->
-    <div class="card">
+    <div class="card glass-morphism">
       <div class="icon">👨🏻‍🏫👩🏻‍🏫</div>
       <h3>Teacher</h3>
       <p>Create exams and monitor students</p>
@@ -391,7 +396,7 @@
     </div>
 
     <!-- Student Login -->
-    <div class="card">
+    <div class="card glass-morphism">
       <div class="icon">👨🏻‍🎓👩🏻‍🎓</div>
       <h3>Student</h3>
       <p>Attend exams securely</p>
@@ -467,28 +472,97 @@
      FOOTER MODAL (Renamed Variables)
 ================================ -->
 
-<div class="glass-modal-overlay"
-     [class.active]="isFooterModalOpen"
-     (click)="closeFooterModal()">
+<div class="glass-modal-overlay" [class.active]="isFooterModalOpen" (click)="closeFooterModal()">
 
-  <div class="glass-card"
-       (click)="$event.stopPropagation()">
+  <div class="glass-morphism footer-modal-card" (click)="$event.stopPropagation()">
 
     <div class="modal-header">
       <!-- UPDATED: footerModalTitle -->
       <h2>{{ footerModalTitle }}</h2>
-      
+
       <!-- UPDATED: closeFooterModal -->
-      <button class="close-btn"
-              (click)="closeFooterModal()">
+      <button class="close-btn" (click)="closeFooterModal()">
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
 
     <!-- UPDATED: footerModalContent -->
-    <div class="modal-body"
-         [innerHTML]="footerModalContent">
+    <div class="modal-body" [innerHTML]="footerModalContent">
     </div>
 
+  </div>
+</div>
+
+<!-- ===============================
+     NAV MODAL (Interactive Navigation Content)
+================================ -->
+
+<div class="nav-modal-overlay" [class.active]="isNavModalOpen" (click)="closeNavModal()">
+  <div class="glass-morphism nav-modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ navContent[activeNavSection]?.title }}</h2>
+      <button class="close-btn" (click)="closeNavModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <!-- HOME SECTION -->
+      <div *ngIf="activeNavSection === 'home'" class="nav-section-content">
+        <p class="section-subtitle">{{ navContent.home.subtitle }}</p>
+        <ul class="nav-points">
+          <li *ngFor="let point of navContent.home.points">
+            <i class="fa-solid" [ngClass]="point.icon"></i>
+            <span>{{ point.text }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- SERVICES SECTION -->
+      <div *ngIf="activeNavSection === 'services'" class="nav-section-content">
+        <div class="nav-items-grid">
+          <div *ngFor="let item of navContent.services.items" class="nav-item-box">
+            <h4>{{ item.title }}</h4>
+            <p>{{ item.desc }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- WHY US SECTION -->
+      <div *ngIf="activeNavSection === 'why_us'" class="nav-section-content">
+        <div class="nav-points-alt">
+          <div *ngFor="let point of navContent.why_us.points" class="nav-point-item">
+            <strong>{{ point.title }}:</strong> {{ point.desc }}
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQs SECTION -->
+      <div *ngIf="activeNavSection === 'faqs'" class="nav-section-content">
+        <div class="faq-list">
+          <div *ngFor="let item of navContent.faqs.questions" class="faq-item">
+            <h4 class="faq-q">Q: {{ item.q }}</h4>
+            <p class="faq-a">A: {{ item.a }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVIEWS SECTION -->
+      <div *ngIf="activeNavSection === 'reviews'" class="nav-section-content">
+        <div class="reviews-carousel">
+          <div *ngFor="let review of navContent.reviews.testimonials" class="review-card-mini">
+            <p>"{{ review.text }}"</p>
+            <div class="reviewer-info">
+              <strong>{{ review.name }}</strong>
+              <span>{{ review.role }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="primary-btn" (click)="closeNavModal()">Close</button>
+    </div>
   </div>
 </div>
