@@ -262,16 +262,36 @@
 <!-- SECTION 4: SUPPORTED SUBJECTS -->
 <section class="subjects-section animate-fade-in-up">
   <div class="container">
-    <h2>Supported Subjects</h2>
-    <p class="subtitle">Our platform handles complex symbols, code snippets, and chemical equations.</p>
+    <div class="subjects-header">
+      <h2>Supported Subjects</h2>
+      <p class="subtitle">Our platform handles complex symbols, code snippets, and chemical equations.</p>
+    </div>
 
     <!-- Grid of Cards -->
     <div class="subjects-grid">
-      <div class="subject-card glass-morphism" *ngFor="let subject of subjects" (click)="openModal(subject)">
-        <!-- Use this syntax exactly: -->
+      <div class="subject-card glass-morphism" *ngFor="let subject of subjects" (click)="openModal(subject)"
+        [class.active]="selectedSubject === subject">
         <i class="fa-solid {{subject.icon}}"></i>
-
         <h3>{{ subject.title }}</h3>
+      </div>
+    </div>
+
+    <!-- INTEGRATED SUBJECT DETAILS -->
+    <div class="subject-details-wrapper" *ngIf="selectedSubject">
+      <div class="subject-details-card glass-morphism">
+        <button class="close-details-btn" (click)="closeModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="details-content">
+          <div class="details-icon">
+            <i class="fa-solid {{selectedSubject.icon}}"></i>
+          </div>
+          <div class="details-text">
+            <h3>{{ selectedSubject.title }}</h3>
+            <p>{{ selectedSubject.description }}</p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -355,17 +375,6 @@
 
 </section>
 <!-- GLASSMORPHISM MODAL (Lives outside the grid, usually at the bottom of the file) -->
-<div class="modal-overlay" *ngIf="selectedSubject" (click)="closeModal()">
-  <!-- (click)="$event.stopPropagation()" prevents the modal from closing when clicking inside the white box -->
-  <div class="glass-morphism subject-modal-card" (click)="$event.stopPropagation()">
-    <div class="modal-content">
-      <i class="fa-solid" [ngClass]="selectedSubject.icon"></i>
-      <h3>{{ selectedSubject.title }}</h3>
-      <p>{{ selectedSubject.description }}</p>
-      <button class="close-btn" (click)="closeModal()">Close Details</button>
-    </div>
-  </div>
-</div>
 
 <!-- SECTION 4: LOGIN PORTAL (Call to Action) -->
 <!-- Using 'how-it-works' class for the Gradient Background & Login Cards -->

@@ -114,12 +114,10 @@ export class HomeComponent {
   // Logic for Subject Cards
   openModal(subject: Subject) {
     this.selectedSubject = subject;
-    document.body.style.overflow = 'hidden';
   }
 
   closeModal() {
     this.selectedSubject = null;
-    document.body.style.overflow = 'auto';
   }
 
   // ============================================

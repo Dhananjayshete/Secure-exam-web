@@ -738,201 +738,225 @@ html {
 }
 
 /* --- SECTION STYLES --- */
+/* --- SUBJECTS SECTION (REFACTORED) --- */
 .subjects-section {
-  /* CHANGED: Using your global variable to match the rest of the page */
   background-color: var(--main-bg-color, #fde9c9);
-  font-family: 'Inter', sans-serif;
-  padding: 80px 20px;
+  padding: 100px 48px;
   width: 100%;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
+.subjects-header {
   text-align: center;
+  margin-bottom: 60px;
+
+  h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 3.5rem;
+    color: #1a1a1a;
+    margin-bottom: 16px;
+    letter-spacing: -1px;
+  }
+
+  .subtitle {
+    color: #555;
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
 }
 
-/* Typography */
-h2 {
-  font-family: 'DM Serif Display', serif;
-  font-size: 3rem;
-  color: #000;
-  margin-bottom: 15px;
-}
-
-.subtitle {
-  color: #666;
-  font-size: 1rem;
-  margin-bottom: 50px;
-}
-
-/* Grid Layout */
+/* 4x2 Grid for Desktop */
 .subjects-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-/* Card Styling */
+/* Individual Subject Card */
 .subject-card {
-  background-color: #ffffff;
-  border-radius: 12px;
-  padding: 35px 20px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 40px 20px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid transparent;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 2px solid transparent;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
 
   i {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900 !important;
     font-size: 2.5rem;
-    /* Made slightly bigger */
-    /* CHANGED: Using your specific orange color */
     color: #ff7a00;
     margin-bottom: 20px;
+    transition: transform 0.3s ease;
   }
 
   h3 {
     font-family: 'DM Serif Display', serif;
-    font-size: 1.2rem;
-    color: #000;
-    font-weight: normal;
+    font-size: 1.4rem;
+    color: #1a1a1a;
     margin: 0;
   }
 
-  /* Hover State */
   &:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(255, 122, 0, 0.1);
+    border-color: rgba(255, 122, 0, 0.3);
+
+    i {
+      transform: scale(1.1);
+    }
+  }
+
+  /* Active State (Selected) */
+  &.active {
+    background: #fffaf7;
     border-color: #ff7a00;
-    /* Match orange border */
-    background-color: #fffaf7;
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 25px rgba(255, 122, 0, 0.15);
+
+    i {
+      transform: scale(1.15);
+    }
   }
 }
 
-.subject-card i {
-  /* 1. FORCE THE FONT FAMILY (This fixes the empty squares) */
-  font-family: "Font Awesome 6 Free" !important;
-  font-weight: 900 !important;
-
-  /* 2. Styling */
-  font-size: 2.5rem;
-  color: #ff7a00;
-  margin-bottom: 20px;
-
-  /* 3. Reset default font styles */
-  font-style: normal;
-  font-variant: normal;
-  line-height: 1;
-  text-rendering: auto;
-  -webkit-font-smoothing: antialiased;
+/* Details Panel (Appears below the grid) */
+.subject-details-wrapper {
+  max-width: 1200px;
+  margin: 48px auto 0;
+  animation: slideUpFade 0.5s ease forwards;
 }
 
-/* --- GLASS MODAL STYLES --- */
-
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(6px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-/* Stable modal card */
-.modal-overlay .glass-card {
-  width: 85%;
-  max-width: 450px;
-  padding: 30px;
-  border-radius: 18px;
-  text-align: center;
+.subject-details-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 48px;
   position: relative;
-
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-
-  animation: fadeIn 0.25s ease forwards;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-/* Modal Content */
-.modal-content i {
-  font-size: 3.5rem;
-  color: #ff7a00;
-  margin-bottom: 20px;
-  display: block;
-}
-
-.modal-content h3 {
-  font-family: 'DM Serif Display', serif;
-  font-size: 2rem;
-  margin-bottom: 15px;
-  color: #222;
-}
-
-.modal-content p {
-  font-size: 1.05rem;
-  line-height: 1.6;
-  color: #444;
-  margin-bottom: 25px;
-}
-
-/* Close Button */
-.close-btn {
-  background: #ff7a00;
-  color: #ffffff;
+.close-details-btn {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: #f1f5f9;
   border: none;
-  padding: 12px 30px;
-  border-radius: 25px;
-  font-size: 1rem;
-  font-weight: 600;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  transition: all 0.3s ease;
+  color: #64748b;
 
-  display: inline-block;
-  width: auto;
-  height: auto;
-
-  writing-mode: horizontal-tb;
-  transform: none !important;
-
-  transition: background 0.2s ease;
+  &:hover {
+    background: #ff7a00;
+    color: #ffffff;
+    transform: rotate(90deg);
+  }
 }
 
-.close-btn:hover {
-  background: #e66e00;
+.details-content {
+  display: flex;
+  gap: 40px;
+  align-items: center;
 }
 
+.details-icon {
+  width: 100px;
+  height: 100px;
+  background: #fff7ed;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 
-/* Simple Fade Animation */
-@keyframes fadeIn {
+  i {
+    font-size: 3.5rem;
+    color: #ff7a00;
+  }
+}
+
+.details-text {
+  text-align: left;
+
+  h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.2rem;
+    color: #1a1a1a;
+    margin-bottom: 16px;
+  }
+
+  p {
+    font-size: 1.15rem;
+    line-height: 1.7;
+    color: #4b5563;
+    max-width: 800px;
+  }
+}
+
+/* Animations */
+@keyframes slideUpFade {
   from {
     opacity: 0;
+    transform: translateY(30px);
   }
 
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* Responsive */
+/* Responsive Breakpoints */
 @media (max-width: 1024px) {
+  .subjects-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .subjects-section {
+    padding: 60px 24px;
+  }
+
   .subjects-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .details-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 24px;
+  }
+
+  .details-text {
+    text-align: center;
+  }
+
+  .details-text h3 {
+    font-size: 1.8rem;
+  }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 480px) {
   .subjects-grid {
     grid-template-columns: 1fr;
   }
 
-  h2 {
-    font-size: 2.2rem;
+  .subjects-header h2 {
+    font-size: 2.5rem;
   }
 }
 
