@@ -1347,31 +1347,34 @@ html {
 }
 
 /* ============================= */
-/* FOOTER SECTION */
+/* FOOTER SECTION (COMPACT & CENTERED) */
 /* ============================= */
 .footer-section {
   background: #0F172A;
   color: #94A3B8;
-  padding: 90px 20px 30px;
+  /* Reduced top and bottom padding to make it less tall */
+  padding: 50px 20px 20px; 
   position: relative;
   overflow: hidden;
   font-family: 'Inter', sans-serif;
 }
 
 .footer-container {
-  max-width: 1200px;
+  /* Reduced width from 1200px to 900px to bring everything into the middle */
+  max-width: 900px; 
   margin: auto;
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 40px;
-  margin-bottom: 60px;
+  /* Adjusted grid to give the logo section slightly less dominant space */
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 30px; /* Reduced gap so columns sit closer */
+  margin-bottom: 30px; /* Reduced bottom margin */
 }
 
 /* ============================= */
 /* LOGO */
 /* ============================= */
 .footer-logo {
-  font-size: 2rem;
+  font-size: 1.6rem; /* Shrunk from 2rem */
   font-weight: 900;
   text-decoration: none;
   background: linear-gradient(90deg, #fff, #F97316, #fff);
@@ -1380,7 +1383,7 @@ html {
   -webkit-text-fill-color: transparent;
   animation: shine 5s linear infinite;
   display: block;
-  margin-bottom: 15px;
+  margin-bottom: 10px; /* Tighter spacing */
   cursor: pointer;
 }
 
@@ -1394,9 +1397,10 @@ html {
 /* BRAND DESCRIPTION */
 /* ============================= */
 .brand-desc {
-  max-width: 320px;
-  line-height: 1.6;
-  margin-bottom: 25px;
+  max-width: 260px; /* Shrunk width */
+  font-size: 13px; /* Smaller text */
+  line-height: 1.5;
+  margin-bottom: 15px; /* Tighter spacing */
   color: #CBD5E1;
 }
 
@@ -1405,12 +1409,12 @@ html {
 /* ============================= */
 .social-links {
   display: flex;
-  gap: 12px;
+  gap: 10px;
 }
 
 .social-btn {
-  width: 40px;
-  height: 40px;
+  width: 34px; /* Shrunk from 40px */
+  height: 34px; /* Shrunk from 40px */
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.05);
   display: flex;
@@ -1422,9 +1426,15 @@ html {
   cursor: pointer;
 }
 
+.social-btn i {
+  font-family: "Font Awesome 6 Brands", "Font Awesome 5 Brands", sans-serif !important;
+  font-size: 1rem; /* Smaller icons */
+  color: white;
+}
+
 .social-btn:hover {
   background: #F97316;
-  box-shadow: 0 0 20px rgba(249, 115, 22, 0.7);
+  box-shadow: 0 0 15px rgba(249, 115, 22, 0.7);
   transform: translateY(-3px);
 }
 
@@ -1433,10 +1443,10 @@ html {
 /* ============================= */
 .footer-col h4 {
   color: white;
-  margin-bottom: 20px;
+  margin-bottom: 12px; /* Tighter spacing */
   font-weight: 700;
   text-transform: uppercase;
-  font-size: 1rem;
+  font-size: 13px; /* Smaller header */
   letter-spacing: 1px;
 }
 
@@ -1446,12 +1456,13 @@ html {
 }
 
 .footer-links li {
-  margin-bottom: 12px;
+  margin-bottom: 8px; /* Tighter spacing between links */
 }
 
 .footer-links a {
   text-decoration: none;
   color: #94A3B8;
+  font-size: 13px; /* Smaller link text */
   transition: 0.3s;
   cursor: pointer;
   display: inline-block;
@@ -1459,22 +1470,23 @@ html {
 
 .footer-links a:hover {
   color: #F97316;
-  transform: translateX(8px);
-  text-shadow: 0 0 20px rgba(249, 115, 22, 0.8);
+  transform: translateX(6px);
+  text-shadow: 0 0 15px rgba(249, 115, 22, 0.8);
 }
 
 /* ============================= */
 /* FOOTER BOTTOM */
 /* ============================= */
 .footer-bottom {
-  border-top: 1px solid #1E293B;
-  padding-top: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05); /* Softer line */
+  padding-top: 20px; /* Tighter spacing */
   text-align: center;
-  font-size: 0.85rem;
+  font-size: 12px; /* Smaller copyright text */
+  color: #64748B;
 }
 
 /* ============================= */
-/* MODAL */
+/* PREMIUM MODAL STYLING */
 /* ============================= */
 .glass-modal-overlay {
   position: fixed;
@@ -1497,20 +1509,31 @@ html {
 
 .glass-card {
   width: 90%;
-  max-width: 650px;
-  background: rgba(30, 41, 59, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 600px;
+  height: auto; /* Lets small cards shrink perfectly */
+  
+  /* Premium Dark Gradient */
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+  backdrop-filter: blur(16px);
+  
+  /* Orange Accent Border */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 4px solid #ff7a00; 
   border-radius: 20px;
-  padding: 40px;
+  padding: 35px 40px;
   color: white;
+  
   transform: scale(0.85) translateY(30px);
-  animation: modalFade 0.5s forwards;
+  animation: modalFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  
+  /* Subtle Orange Aura Glow */
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 40px rgba(255, 122, 0, 0.05);
+  display: flex;
+  flex-direction: column;
 }
 
 @keyframes modalFade {
-  to {
-    transform: scale(1) translateY(0);
-  }
+  to { transform: scale(1) translateY(0); }
 }
 
 .modal-header {
@@ -1518,80 +1541,166 @@ html {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   padding-bottom: 15px;
 }
 
+/* Sleek Circular Close Button */
 .close-btn {
-  background: none;
-  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #94A3B8;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Font Awesome 6 Free" !important;
+  font-weight: 900 !important;
+}
+
+.close-btn i {
+  font-family: "Font Awesome 6 Free" !important;
+  font-weight: 900 !important;
 }
 
 .close-btn:hover {
+  background: #ff7a00;
   color: white;
-  transform: rotate(90deg);
+  border-color: #ff7a00;
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 0 15px rgba(255, 122, 0, 0.4);
 }
 
 /* ============================= */
 /* GLOBAL STYLES FOR INNER HTML CONTENT */
 /* ============================= */
-/* Because we use [innerHTML], we need specific selectors to reach inside */
 :host ::ng-deep {
+  
   .modal-body {
-    line-height: 1.6;
-    color: #CBD5E1;
+    line-height: 1.8;
+    color: #cbd5e1;
+    font-size: 15px;
+    padding-top: 5px;
+  }
+  
+  .modal-header h2, 
+  .modal-header h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    margin: 0;
+    color: #ffffff;
+    letter-spacing: 0.5px;
   }
 
-  .feature-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-top: 15px;
-  }
-
-  .f-item {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 15px;
-    border-radius: 12px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    color: #CBD5E1;
-  }
-
-  .f-item i {
-    color: #F97316;
-  }
-
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
+  /* 🟢 Automatically turns <ul> lists into beautiful checkmarks */
+  .modal-body ul {
+    list-style: none;
+    padding-left: 0;
     margin-top: 20px;
   }
 
+  .modal-body ul li {
+    position: relative;
+    padding-left: 32px;
+    margin-bottom: 14px;
+    color: #F8FAFC;
+    font-weight: 400;
+  }
+
+  .modal-body ul li::before {
+    content: "\f058"; /* FontAwesome Solid Check Circle */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 3px;
+    color: #ff7a00;
+    font-size: 1.2rem;
+  }
+
+  /* --- FEATURES GRID STYLING --- */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .f-item {
+    background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    padding: 14px 18px;
+    border-radius: 14px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    color: #f8fafc;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: default;
+  }
+
+  /* Glow & Lift Effect on Hover */
+  .f-item:hover {
+    background: rgba(255, 122, 0, 0.1);
+    border-color: rgba(255, 122, 0, 0.4);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(255, 122, 0, 0.15);
+  }
+
+  /* Beautiful Icon Box inside Features */
+  .f-item i {
+    color: #ff7a00;
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900 !important;
+    font-size: 1.1rem;
+    background: rgba(255, 122, 0, 0.15);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+  }
+
+  /* --- STATS STYLING --- */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
   .stat {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 15px;
-    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 18px;
+    border-radius: 16px;
     text-align: center;
-    color: #CBD5E1;
+    color: #94A3B8;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    transition: transform 0.3s ease;
+  }
+
+  .stat:hover {
+    transform: translateY(-3px);
   }
 
   .stat strong {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     display: block;
-    color: #F97316;
+    color: #ff7a00;
+    margin-bottom: 4px;
+    text-shadow: 0 2px 10px rgba(255, 122, 0, 0.3); /* Neon text glow */
   }
 
-  /* Responsive Mobile */
   @media (max-width: 768px) {
-
-    .feature-grid,
-    .stats {
+    .feature-grid, .stats {
       grid-template-columns: 1fr;
     }
   }
