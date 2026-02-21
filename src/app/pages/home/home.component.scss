@@ -31,16 +31,17 @@ html {
       3. HERO SECTION
       ========================================= */
 .hero-wrapper {
+  position: relative;
   min-height: 100vh;
   background: #fde9c9;
   padding: 24px 48px;
 }
 
 .navbar {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
-  right: 0;
+  width: 100%;
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
@@ -1353,7 +1354,7 @@ html {
   background: #0F172A;
   color: #94A3B8;
   /* Reduced top and bottom padding to make it less tall */
-  padding: 50px 20px 20px; 
+  padding: 50px 20px 20px;
   position: relative;
   overflow: hidden;
   font-family: 'Inter', sans-serif;
@@ -1361,20 +1362,23 @@ html {
 
 .footer-container {
   /* Reduced width from 1200px to 900px to bring everything into the middle */
-  max-width: 900px; 
+  max-width: 900px;
   margin: auto;
   display: grid;
   /* Adjusted grid to give the logo section slightly less dominant space */
   grid-template-columns: 1.5fr 1fr 1fr 1fr;
-  gap: 30px; /* Reduced gap so columns sit closer */
-  margin-bottom: 30px; /* Reduced bottom margin */
+  gap: 30px;
+  /* Reduced gap so columns sit closer */
+  margin-bottom: 30px;
+  /* Reduced bottom margin */
 }
 
 /* ============================= */
 /* LOGO */
 /* ============================= */
 .footer-logo {
-  font-size: 1.6rem; /* Shrunk from 2rem */
+  font-size: 1.6rem;
+  /* Shrunk from 2rem */
   font-weight: 900;
   text-decoration: none;
   background: linear-gradient(90deg, #fff, #F97316, #fff);
@@ -1383,7 +1387,8 @@ html {
   -webkit-text-fill-color: transparent;
   animation: shine 5s linear infinite;
   display: block;
-  margin-bottom: 10px; /* Tighter spacing */
+  margin-bottom: 10px;
+  /* Tighter spacing */
   cursor: pointer;
 }
 
@@ -1397,10 +1402,13 @@ html {
 /* BRAND DESCRIPTION */
 /* ============================= */
 .brand-desc {
-  max-width: 260px; /* Shrunk width */
-  font-size: 13px; /* Smaller text */
+  max-width: 260px;
+  /* Shrunk width */
+  font-size: 13px;
+  /* Smaller text */
   line-height: 1.5;
-  margin-bottom: 15px; /* Tighter spacing */
+  margin-bottom: 15px;
+  /* Tighter spacing */
   color: #CBD5E1;
 }
 
@@ -1413,8 +1421,10 @@ html {
 }
 
 .social-btn {
-  width: 34px; /* Shrunk from 40px */
-  height: 34px; /* Shrunk from 40px */
+  width: 34px;
+  /* Shrunk from 40px */
+  height: 34px;
+  /* Shrunk from 40px */
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.05);
   display: flex;
@@ -1428,7 +1438,8 @@ html {
 
 .social-btn i {
   font-family: "Font Awesome 6 Brands", "Font Awesome 5 Brands", sans-serif !important;
-  font-size: 1rem; /* Smaller icons */
+  font-size: 1rem;
+  /* Smaller icons */
   color: white;
 }
 
@@ -1443,10 +1454,12 @@ html {
 /* ============================= */
 .footer-col h4 {
   color: white;
-  margin-bottom: 12px; /* Tighter spacing */
+  margin-bottom: 12px;
+  /* Tighter spacing */
   font-weight: 700;
   text-transform: uppercase;
-  font-size: 13px; /* Smaller header */
+  font-size: 13px;
+  /* Smaller header */
   letter-spacing: 1px;
 }
 
@@ -1456,13 +1469,15 @@ html {
 }
 
 .footer-links li {
-  margin-bottom: 8px; /* Tighter spacing between links */
+  margin-bottom: 8px;
+  /* Tighter spacing between links */
 }
 
 .footer-links a {
   text-decoration: none;
   color: #94A3B8;
-  font-size: 13px; /* Smaller link text */
+  font-size: 13px;
+  /* Smaller link text */
   transition: 0.3s;
   cursor: pointer;
   display: inline-block;
@@ -1478,10 +1493,13 @@ html {
 /* FOOTER BOTTOM */
 /* ============================= */
 .footer-bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.05); /* Softer line */
-  padding-top: 20px; /* Tighter spacing */
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  /* Softer line */
+  padding-top: 20px;
+  /* Tighter spacing */
   text-align: center;
-  font-size: 12px; /* Smaller copyright text */
+  font-size: 12px;
+  /* Smaller copyright text */
   color: #64748B;
 }
 
@@ -1510,22 +1528,23 @@ html {
 .glass-card {
   width: 90%;
   max-width: 600px;
-  height: auto; /* Lets small cards shrink perfectly */
-  
+  height: auto;
+  /* Lets small cards shrink perfectly */
+
   /* Premium Dark Gradient */
   background: linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
   backdrop-filter: blur(16px);
-  
+
   /* Orange Accent Border */
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-top: 4px solid #ff7a00; 
+  border-top: 4px solid #ff7a00;
   border-radius: 20px;
   padding: 35px 40px;
   color: white;
-  
+
   transform: scale(0.85) translateY(30px);
   animation: modalFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  
+
   /* Subtle Orange Aura Glow */
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 40px rgba(255, 122, 0, 0.05);
   display: flex;
@@ -1533,7 +1552,9 @@ html {
 }
 
 @keyframes modalFade {
-  to { transform: scale(1) translateY(0); }
+  to {
+    transform: scale(1) translateY(0);
+  }
 }
 
 .modal-header {
@@ -1580,15 +1601,15 @@ html {
 /* GLOBAL STYLES FOR INNER HTML CONTENT */
 /* ============================= */
 :host ::ng-deep {
-  
+
   .modal-body {
     line-height: 1.8;
     color: #cbd5e1;
     font-size: 15px;
     padding-top: 5px;
   }
-  
-  .modal-header h2, 
+
+  .modal-header h2,
   .modal-header h3 {
     font-family: 'Playfair Display', serif;
     font-size: 28px;
@@ -1613,7 +1634,8 @@ html {
   }
 
   .modal-body ul li::before {
-    content: "\f058"; /* FontAwesome Solid Check Circle */
+    content: "\f058";
+    /* FontAwesome Solid Check Circle */
     font-family: "Font Awesome 6 Free";
     font-weight: 900;
     position: absolute;
@@ -1632,7 +1654,7 @@ html {
   }
 
   .f-item {
-    background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
     padding: 14px 18px;
     border-radius: 14px;
     display: flex;
@@ -1696,11 +1718,14 @@ html {
     display: block;
     color: #ff7a00;
     margin-bottom: 4px;
-    text-shadow: 0 2px 10px rgba(255, 122, 0, 0.3); /* Neon text glow */
+    text-shadow: 0 2px 10px rgba(255, 122, 0, 0.3);
+    /* Neon text glow */
   }
 
   @media (max-width: 768px) {
-    .feature-grid, .stats {
+
+    .feature-grid,
+    .stats {
       grid-template-columns: 1fr;
     }
   }
