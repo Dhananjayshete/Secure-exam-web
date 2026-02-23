@@ -257,6 +257,63 @@ export class HomeComponent {
     this.isNavModalOpen = false;
     document.body.style.overflow = 'auto';
   }
+  // ============================================
+// SECTION 3.5: SECURITY SECTION LOGIC
+// ============================================
+
+activeSecurityIndex: number | null = null;
+
+securityFeatures = [
+  {
+    icon: '🛡️',
+    title: 'GDPR Compliant',
+    desc: 'Full compliance with EU data protection regulations.',
+    details: [
+      'Data processing agreements',
+      'User data rights management',
+      'Secure EU-based infrastructure',
+      'Privacy-first architecture'
+    ]
+  },
+  {
+    icon: '📄',
+    title: 'ISO 27001',
+    desc: 'Certified information security management systems.',
+    details: [
+      'Risk assessment framework',
+      'Continuous monitoring',
+      'Security audits & reviews',
+      'Policy enforcement controls'
+    ]
+  },
+  {
+    icon: '🔒',
+    title: 'AES‑256',
+    desc: 'Bank‑grade encryption for all data protection.',
+    details: [
+      'End‑to‑end encryption',
+      'TLS 1.3 secure transmission',
+      'Encrypted backups',
+      'Key rotation policies'
+    ]
+  },
+  {
+    icon: '💾',
+    title: 'Daily Backups',
+    desc: 'Redundant cloud storage ensures zero data loss.',
+    details: [
+      'Automated daily snapshots',
+      'Multi‑region replication',
+      'Disaster recovery planning',
+      '99.99% uptime guarantee'
+    ]
+  }
+];
+
+toggleSecurityCard(index: number) {
+  this.activeSecurityIndex =
+    this.activeSecurityIndex === index ? null : index;
+}
 
   // ============================================
   // SECTION 4: GLOBAL UTILS

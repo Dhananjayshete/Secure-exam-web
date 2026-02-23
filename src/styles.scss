@@ -51,3 +51,13 @@ h6 {
 .animate-fade-in-up {
     animation: fadeInUp 0.6s ease-out forwards;
 }
+/* FORCE icons to use the correct font family */
+.fa, .fas, .fa-solid, .fa-regular, .fa-brands {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900;
+}
+
+.fa-brands {
+    font-family: "Font Awesome 6 Brands" !important;
+    font-weight: 400;
+}

@@ -1167,90 +1167,198 @@ html {
   }
 }
 
-/* ===============================
-   SECURITY SECTION (DARK SMALL)
-================================ */
+/* =========================================
+   DARK SECURITY SECTION (ONE LINE VERSION)
+========================================= */
 
-.security-section {
-  background: #0f172a;
-  /* Dark Blue */
-  padding: 70px 5%;
+.security-dark-section {
+  padding: 100px 20px;
+  background: linear-gradient(-45deg,#0f172a,#0b1f3a,#081028,#0a1930);
+  background-size:400% 400%;
+  animation: gradientMove 12s ease infinite;
+  color: white;
 }
 
-.security-container {
-  max-width: 1100px;
-  margin: 0 auto;
-  text-align: center;
+@keyframes gradientMove{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
 }
 
-/* Heading */
-.sec-header h2 {
-  font-size: 32px;
-  font-weight: 600;
-  color: #ffffff;
-  margin-bottom: 10px;
+.security-dark-container{
+  max-width:1200px;
+  margin:0 auto;
+  text-align:center;
 }
 
-.sec-header p {
-  font-size: 14px;
-  color: #cbd5e1;
-  margin-bottom: 50px;
+/* Title */
+.sec-dark-title{
+  font-size:36px;
+  font-weight:700;
+  margin-bottom:12px;
+  background: linear-gradient(90deg,#4f9cff,#7dd3fc);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
 
-/* Grid - Force One Line */
-.sec-grid {
-  display: flex;
-  justify-content: center;
-  gap: 25px;
-  flex-wrap: nowrap;
-  /* Important → keeps in one line */
+/* Subtitle */
+.sec-dark-subtitle{
+  font-size:14px;
+  opacity:.75;
+  margin-bottom:50px;
 }
 
-/* Small Cards */
-.sec-card {
-  background: #1e293b;
-  padding: 30px 20px;
-  border-radius: 16px;
-  width: 280px;
-  /* Fixed width so all fit nicely */
-  transition: 0.3s ease;
+/* ✅ FORCE ONE LINE */
+.sec-dark-cards{
+  display:flex;
+  justify-content:center;
+  align-items:stretch;
+  gap:25px;
+  flex-wrap:nowrap;              /* keeps all 4 in one row */
+  max-width:1100px;
+  margin:0 auto;
 }
 
-.sec-card:hover {
+/* Card */
+.sec-dark-card{
+  width:220px;                   /* smaller width */
+  min-height:180px;
+  padding:20px 15px;
+  border-radius:16px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  border:1px solid rgba(255,255,255,0.1);
+  cursor:pointer;
+  transition:.3s ease;
+  position:relative;
+  overflow:hidden;
+  text-align:center;
+}
+
+.sec-dark-card:hover{
   transform: translateY(-6px);
+  box-shadow:0 15px 30px rgba(0,0,0,.6);
+  border:1px solid #3b82f6;
 }
 
-/* Icon Box */
-.sec-icon-box {
-  width: 55px;
-  height: 55px;
-  background: #1d4ed8;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 15px;
+.sec-dark-card.active{
+  border:1px solid #3b82f6;
+  box-shadow:0 0 18px rgba(59,130,246,.5);
 }
 
-.sec-icon-box svg {
-  width: 22px;
-  height: 22px;
-  color: #ffffff;
+/* Icon */
+.sec-dark-icon{
+  width:45px;
+  height:45px;
+  margin:0 auto 12px;
+  background:linear-gradient(135deg,#2563eb,#1e40af);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  border-radius:12px;
+  font-size:20px;
+  transition:.3s ease;
 }
 
-/* Card Text */
-.sec-card h3 {
-  font-size: 16px;
-  color: #ffffff;
-  margin-bottom: 8px;
+.sec-dark-card.active .sec-dark-icon{
+  transform:rotate(12deg) scale(1.1);
+  box-shadow:0 0 12px #3b82f6;
 }
 
-.sec-card p {
-  font-size: 13px;
-  color: #cbd5e1;
-  line-height: 1.6;
+/* Title */
+.sec-dark-card h3{
+  font-size:16px;
+  font-weight:600;
+  margin-bottom:6px;
 }
 
+/* Description */
+.sec-dark-card p{
+  font-size:12px;
+  opacity:.8;
+  margin-bottom:6px;
+}
+
+/* Expand Animation */
+.sec-dark-details{
+  display:grid;
+  grid-template-rows:0fr;
+  transition:grid-template-rows .4s ease;
+  margin-top:8px;
+}
+
+.sec-dark-details-content{
+  overflow:hidden;
+  text-align:left;
+  font-size:12px;
+  line-height:1.5;
+  opacity:.9;
+}
+
+.sec-dark-card.active .sec-dark-details{
+  grid-template-rows:1fr;
+}
+
+/* Checklist animation */
+.sec-dark-details-content span{
+  display:block;
+  margin:5px 0;
+  transform:translateX(15px);
+  opacity:0;
+}
+
+.sec-dark-card.active .sec-dark-details-content span{
+  animation:slideIn .4s forwards;
+}
+
+.sec-dark-card.active .sec-dark-details-content span:nth-child(1){animation-delay:.05s}
+.sec-dark-card.active .sec-dark-details-content span:nth-child(2){animation-delay:.1s}
+.sec-dark-card.active .sec-dark-details-content span:nth-child(3){animation-delay:.15s}
+.sec-dark-card.active .sec-dark-details-content span:nth-child(4){animation-delay:.2s}
+
+@keyframes slideIn{
+  to{
+    transform:translateX(0);
+    opacity:1;
+  }
+}
+
+/* Subtle glow */
+.sec-dark-card::before{
+  content:"";
+  position:absolute;
+  top:-50%;
+  left:-50%;
+  width:200%;
+  height:200%;
+  background:radial-gradient(circle,rgba(59,130,246,.12),transparent 70%);
+  transform:rotate(0deg);
+  transition:.4s;
+  opacity:0;
+}
+
+.sec-dark-card:hover::before{
+  opacity:1;
+  transform:rotate(45deg);
+}
+
+/* ✅ Responsive: allow wrap only on smaller screens */
+@media (max-width: 1100px) {
+  .sec-dark-cards{
+    flex-wrap:wrap;
+  }
+}
+
+@media (max-width:768px){
+  .sec-dark-title{
+    font-size:28px;
+  }
+
+  .sec-dark-card{
+    width:90%;
+    max-width:280px;
+  }
+}
 /* ================================
    LOVED BY EDUCATORS (FIXED ROW)
 ================================ */
