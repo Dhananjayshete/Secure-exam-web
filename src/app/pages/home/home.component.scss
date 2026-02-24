@@ -1168,7 +1168,7 @@ html {
 }
 
 /* =========================================
-   DARK SECURITY SECTION (ONE LINE VERSION)
+   DARK SECURITY SECTION (FIXED VERSION)
 ========================================= */
 
 .security-dark-section {
@@ -1191,6 +1191,15 @@ html {
   text-align:center;
 }
 
+/* ✅ NEW LAYOUT WRAPPER */
+.sec-dark-layout{
+  display:flex;
+  align-items:center;          /* vertical center */
+  justify-content:center;      /* horizontal center */
+  gap:80px;                    /* space between cards & spinner */
+  margin-top:60px;
+}
+
 /* Title */
 .sec-dark-title{
   font-size:36px;
@@ -1208,20 +1217,17 @@ html {
   margin-bottom:50px;
 }
 
-/* ✅ FORCE ONE LINE */
+/* ✅ CARDS ROW */
 .sec-dark-cards{
   display:flex;
-  justify-content:center;
   align-items:stretch;
   gap:25px;
-  flex-wrap:nowrap;              /* keeps all 4 in one row */
-  max-width:1100px;
-  margin:0 auto;
+  flex-wrap:nowrap;
 }
 
 /* Card */
 .sec-dark-card{
-  width:220px;                   /* smaller width */
+  width:220px;
   min-height:180px;
   padding:20px 15px;
   border-radius:16px;
@@ -1342,22 +1348,95 @@ html {
   transform:rotate(45deg);
 }
 
-/* ✅ Responsive: allow wrap only on smaller screens */
-@media (max-width: 1100px) {
-  .sec-dark-cards{
-    flex-wrap:wrap;
-  }
+/* =========================
+   ADVANCED ORBIT SECURITY SPINNER
+========================= */
+
+.security-spinner {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-@media (max-width:768px){
-  .sec-dark-title{
-    font-size:28px;
-  }
+/* CENTER CORE */
+.spin-core {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: #ff7a00;
+  border-radius: 50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:32px;
+  box-shadow: 0 0 60px rgba(255,122,0,0.7);
+  z-index: 5;
+}
 
-  .sec-dark-card{
-    width:90%;
-    max-width:280px;
-  }
+/* ORBIT WRAPPER */
+.orbit {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(59,130,246,0.25);
+  animation: rotateOrbit linear infinite;
+}
+
+/* DIFFERENT ORBIT SIZES */
+.orbit-1 {
+  width: 220px;
+  height: 220px;
+  animation-duration: 18s;
+}
+
+.orbit-2 {
+  width: 170px;
+  height: 170px;
+  animation-duration: 14s;
+  animation-direction: reverse;
+}
+
+.orbit-3 {
+  width: 120px;
+  height: 120px;
+  animation-duration: 10s;
+}
+
+/* ORBITING BALL */
+.orbit .ball {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+
+/* DIFFERENT BALL COLORS */
+.ball.blue {
+  background: #3b82f6;
+  box-shadow: 0 0 15px #3b82f6;
+}
+
+.ball.green {
+  background: #10b981;
+  box-shadow: 0 0 15px #10b981;
+}
+
+.ball.orange {
+  background: #f59e0b;
+  box-shadow: 0 0 15px #f59e0b;
+}
+
+/* ROTATION */
+@keyframes rotateOrbit {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 /* ================================
    LOVED BY EDUCATORS (FIXED ROW)
@@ -2041,5 +2120,157 @@ html {
   .menu {
     display: none;
     /* Hide full menu on mobile for simplicity, or could add a hamburger */
+  }
+}
+/* =========================================================
+   COMPACT FOOTER MODAL (Paste at bottom of home.component.scss)
+   ========================================================= */
+
+/* 1. The Overlay */
+.glass-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(5px); /* Less blur for cleaner look */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.glass-modal-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* 2. The Compact Card */
+.footer-modal-card {
+  width: 90%;
+  max-width: 500px; /* Reduced from 650px to 500px */
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid #ff7a00;
+  border-radius: 16px; /* Slightly smaller radius */
+  padding: 30px; /* Reduced padding from 40px */
+  color: white;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  transform: scale(0.95);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.glass-modal-overlay.active .footer-modal-card {
+  transform: scale(1);
+}
+
+/* 3. Header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
+}
+
+.modal-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem; /* Reduced font size */
+  color: white;
+  margin: 0;
+}
+
+.close-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 32px; /* Smaller button */
+  height: 32px;
+  border-radius: 50%;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #ff7a00;
+  color: white;
+  border-color: #ff7a00;
+}
+
+/* ============================================================
+   DYNAMIC CONTENT (COMPACT VERSION)
+   ============================================================ */
+:host ::ng-deep {
+
+  /* Body Text */
+  .modal-body {
+    font-family: 'Poppins', sans-serif;
+    color: #cbd5e1;
+    line-height: 1.5;
+    font-size: 0.9rem; /* Smaller text */
+  }
+
+  /* Grid */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px; /* Tighter gap */
+    margin-top: 15px;
+  }
+
+  /* Items */
+  .f-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 10px 12px; /* Compact padding */
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #e2e8f0;
+    font-size: 0.85rem; /* Smaller text */
+    transition: 0.2s;
+  }
+
+  .f-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .f-item i {
+    color: #ff7a00;
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+  }
+
+  /* Stats */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .stat {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 8px;
+  }
+
+  .stat strong {
+    display: block;
+    font-size: 1.2rem; /* Smaller numbers */
+    color: #ff7a00;
+    margin-bottom: 2px;
   }
 }
