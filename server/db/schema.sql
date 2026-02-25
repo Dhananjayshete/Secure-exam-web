@@ -164,6 +164,21 @@ ALTER TABLE exams ADD COLUMN IF NOT EXISTS start_time TIMESTAMP;
 ALTER TABLE exams ADD COLUMN IF NOT EXISTS end_time TIMESTAMP;
 
 -- ============================================
+-- 13. NOTIFICATIONS TABLE
+-- ============================================
+CREATE TABLE IF NOT EXISTS notifications (
+    id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    message    TEXT NOT NULL,
+    is_read    BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, is_read);
+
+-- Add created_at to exam_candidates if missing (needed for Latest Result sorting)
+ALTER TABLE exam_candidates ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT NOW();
+
+-- ============================================
 -- INDEXES for performance
 -- ============================================
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);

@@ -422,8 +422,8 @@ router.get('/student/results', async (req, res) => {
             `SELECT ec.*, e.title as exam_name, e.subject, e.scheduled_at, e.start_time, e.end_time
        FROM exam_candidates ec
        JOIN exams e ON ec.exam_id = e.id
-       WHERE ec.student_id = $1
-       ORDER BY e.scheduled_at DESC`,
+       WHERE ec.student_id = $1 AND ec.status = 'Completed'
+       ORDER BY ec.created_at DESC`,
             [req.user.id]
         );
 

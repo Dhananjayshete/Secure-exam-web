@@ -146,6 +146,21 @@ export class ApiService {
     }
 
     // ==========================================
+    // NOTIFICATIONS
+    // ==========================================
+    getNotifications(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/notifications`, { headers: this.getHeaders() });
+    }
+
+    markNotificationRead(id: string): Observable<any> {
+        return this.http.patch(`${this.baseUrl}/notifications/${id}/read`, {}, { headers: this.getHeaders() });
+    }
+
+    markAllNotificationsRead(): Observable<any> {
+        return this.http.patch(`${this.baseUrl}/notifications/read-all`, {}, { headers: this.getHeaders() });
+    }
+
+    // ==========================================
     // SUPPORT TICKETS
     // ==========================================
     createTicket(subject: string, message: string): Observable<any> {

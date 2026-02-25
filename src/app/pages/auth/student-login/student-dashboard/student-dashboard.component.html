@@ -50,7 +50,30 @@
             <div class="date-badge"><i class="fa-regular fa-calendar"></i> Academic Portal</div>
 
             <div class="actions-right">
-                <i class="fa-regular fa-bell notification-icon"></i>
+                <!-- Bell Icon with Notification Dropdown -->
+                <div class="notif-wrapper" style="position:relative;">
+                    <div class="notif-bell" (click)="toggleNotifications()" style="position:relative; cursor:pointer;">
+                        <i class="fa-regular fa-bell notification-icon"></i>
+                        <span *ngIf="unreadCount > 0" class="notif-badge">{{ unreadCount }}</span>
+                    </div>
+
+                    <!-- Dropdown -->
+                    <div class="notif-dropdown" *ngIf="showNotifications">
+                        <div class="notif-header">
+                            <strong>Notifications</strong>
+                            <button *ngIf="notifications.length > 0" (click)="markAllRead()" class="mark-all-btn">Mark
+                                all read</button>
+                        </div>
+                        <div *ngIf="notifications.length === 0" class="notif-empty">
+                            <i class="fa-regular fa-bell-slash"></i> No new notifications
+                        </div>
+                        <div *ngFor="let n of notifications" class="notif-item" (click)="markNotificationRead(n)">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>{{ n.message }}</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="user-pill" (click)="switchView('profile')">
                     <div class="user-info">
                         <div class="name">{{ studentProfile.name }}</div>
@@ -76,25 +99,25 @@
 
                 <!-- Cards Section -->
                 <div class="stats-row">
-                    <div class="stat-card">
+                    <div class="stat-card" style="cursor:pointer;" (click)="switchView('upcoming')">
                         <div class="icon-circle orange"><i class="fa-solid fa-list"></i></div>
                         <div>
                             <h3>{{ stats.total }}</h3><span>Total Exams</span>
                         </div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card" style="cursor:pointer;" (click)="switchView('upcoming')">
                         <div class="icon-circle blue"><i class="fa-solid fa-calendar-day"></i></div>
                         <div>
                             <h3>{{ stats.upcoming }}</h3><span>Upcoming</span>
                         </div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card" style="cursor:pointer;" (click)="switchView('results')">
                         <div class="icon-circle green"><i class="fa-solid fa-check-circle"></i></div>
                         <div>
                             <h3>{{ stats.completed }}</h3><span>Completed</span>
                         </div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card" style="cursor:pointer;" (click)="switchView('results')">
                         <div class="icon-circle purple"><i class="fa-solid fa-chart-line"></i></div>
                         <div>
                             <h3>{{ stats.latestScore }}</h3><span>Latest Result</span>
@@ -158,14 +181,15 @@
 
             <!-- D. RESULTS PAGE -->
             <div *ngIf="currentView === 'results'" class="view-section fade-in">
-                <h2 class="page-title">Results & Scorecards</h2>
+                <h2 class="page-title">Results &amp; Scorecards</h2>
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
                                 <th>Exam</th>
                                 <th>Score</th>
-                                <th>Result</th>
+                                <th>Grade</th>
+                                <th>Date</th>
                                 <th>Download</th>
                             </tr>
                         </thead>
@@ -174,7 +198,16 @@
                                 <td><strong>{{ res.exam }}</strong></td>
                                 <td>{{ res.score }}</td>
                                 <td><span class="status-pass">{{ res.grade }}</span></td>
-                                <td><button class="btn btn-sm btn-primary">Download PDF</button></td>
+                                <td>{{ res.date }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" (click)="downloadResultPdf(res)">
+                                        <i class="fa-solid fa-file-pdf"></i> Download PDF
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr *ngIf="results.length === 0">
+                                <td colspan="5" style="text-align:center; padding:30px; color:#64748b;">No results yet.
+                                </td>
                             </tr>
                         </tbody>
                     </table>

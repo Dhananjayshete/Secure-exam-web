@@ -200,6 +200,94 @@
     }
   }
 
+  // Notification Badge
+  .notif-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  // Notification Dropdown
+  .notif-dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: 320px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    overflow: hidden;
+    animation: popIn 0.2s ease-out;
+
+    .notif-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 13px;
+    }
+
+    .mark-all-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 0;
+    }
+
+    .notif-empty {
+      padding: 24px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 13px;
+
+      i {
+        margin-right: 6px;
+      }
+    }
+
+    .notif-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 13px 18px;
+      border-bottom: 1px solid #f9fafb;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background 0.15s;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background: #f8fafc;
+      }
+
+      i {
+        color: var(--accent-blue);
+        margin-top: 2px;
+        flex-shrink: 0;
+      }
+    }
+  }
+
+
   /* User Profile Pill */
   .user-pill {
     display: flex;
