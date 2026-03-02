@@ -22,6 +22,18 @@ export class DashboardHomeComponent implements OnInit {
   selectedRole: string = 'all';
   isLoading: boolean = true;
 
+  // --- LOGS MODAL STATE ---
+  showLogsModal: boolean = false;
+  logs: any[] = [];
+
+  // --- SEATING PLAN STATE ---
+  examsList: any[] = [];
+  selectedExamId: number | null = null;
+  seatingRows: number = 3;
+  seatingCols: number = 4;
+  seatingGrid: any[][] = [];
+  seatingError: string = '';
+
   // --- CHART CONFIGURATION ---
   public pieChartOptions: ChartOptions<'pie'> = { responsive: true };
   public pieChartData: ChartConfiguration<'pie'>['data'] = {
@@ -77,6 +89,9 @@ export class DashboardHomeComponent implements OnInit {
         this.users = users;
         this.processData();
         this.isLoading = false;
+
+        // Load exams list for seating plan after users load
+        this.fetchExamsForSeating();
       },
       error: (err) => {
         console.error('Error loading users:', err);
@@ -100,5 +115,83 @@ export class DashboardHomeComponent implements OnInit {
         user.role?.toLowerCase() === this.selectedRole.toLowerCase()
       );
     }
+  }
+
+  // ==========================================
+  // ADMIN LOGS MODAL
+  // ==========================================
+  toggleLogsModal() {
+    this.showLogsModal = !this.showLogsModal;
+    if (this.showLogsModal && this.logs.length === 0) {
+      this.fetchLogs();
+    }
+  }
+
+  fetchLogs() {
+    this.apiService.getAdminLogs().subscribe({
+      next: (res) => {
+        this.logs = res.logs || [];
+      },
+      error: (err) => console.error('Error fetching logs', err)
+    });
+  }
+
+  // ==========================================
+  // SEATING PLAN
+  // ==========================================
+  fetchExamsForSeating() {
+    this.apiService.getExams().subscribe({
+      next: (exams) => {
+        this.examsList = exams;
+      },
+      error: (err) => console.error('Error loading exams for seating', err)
+    });
+  }
+
+  generateSeatingPlan() {
+    if (!this.selectedExamId) {
+      this.seatingError = 'Please select an exam first.';
+      return;
+    }
+
+    if (this.seatingRows < 1 || this.seatingCols < 1) {
+      this.seatingError = 'Rows and Columns must be at least 1.';
+      return;
+    }
+
+    this.seatingError = '';
+
+    this.apiService.getExamSeating(this.selectedExamId.toString()).subscribe({
+      next: (res) => {
+        const candidates = res.candidates || [];
+        const totalSeats = this.seatingRows * this.seatingCols;
+
+        if (candidates.length > totalSeats) {
+          this.seatingError = `Not enough seats! This exam has ${candidates.length} candidates, but the grid only has ${totalSeats} seats.`;
+          return;
+        }
+
+        // Build 2D array for the grid
+        this.seatingGrid = [];
+        let candidateIndex = 0;
+
+        for (let r = 0; r < this.seatingRows; r++) {
+          const row = [];
+          for (let c = 0; c < this.seatingCols; c++) {
+            if (candidateIndex < candidates.length) {
+              row.push(candidates[candidateIndex]);
+              candidateIndex++;
+            } else {
+              row.push(null); // Empty seat
+            }
+          }
+          this.seatingGrid.push(row);
+        }
+      },
+      error: (err) => {
+        console.error('Error generating seating plan', err);
+        this.seatingError = 'Failed to load candidates for seating plan.';
+      }
+    });
   }
 }

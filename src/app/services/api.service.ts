@@ -207,4 +207,15 @@ export class ApiService {
         localStorage.removeItem('jwt_token');
         localStorage.removeItem('current_user');
     }
+
+    // ==========================================
+    // ADMIN OVERHAUL
+    // ==========================================
+    getAdminLogs(): Observable<any> {
+        return this.http.get(`${this.baseUrl}/admin/logs`, { headers: this.getHeaders() });
+    }
+
+    getExamSeating(examId: string): Observable<any> {
+        return this.http.get(`${this.baseUrl}/exams/${examId}/seating`, { headers: this.getHeaders() });
+    }
 }

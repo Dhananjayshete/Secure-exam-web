@@ -238,4 +238,36 @@ router.get('/student/results', async (req, res) => {
     }
 });
 
+// ============================================
+// GET /api/exams/:id/seating — Get candidates for seating plan
+// ============================================
+router.get('/:id/seating', requireRole('admin', 'teacher'), async (req, res) => {
+    try {
+        // 1. Verify exam exists
+        const examResult = await pool.query('SELECT * FROM exams WHERE id = $1', [req.params.id]);
+        if (examResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Exam not found.' });
+        }
+
+        // 2. Fetch candidates for this exam, ordered by their ID or name for predictable seating
+        const candidatesResult = await pool.query(
+            `SELECT ec.student_id as id, u.name, u.email, u.special_id
+       FROM exam_candidates ec
+       JOIN users u ON ec.student_id = u.id
+       WHERE ec.exam_id = $1
+       ORDER BY u.name ASC`, // Sorting alphabetically by default
+            [req.params.id]
+        );
+
+        res.json({
+            examId: examResult.rows[0].id,
+            examTitle: examResult.rows[0].title,
+            candidates: candidatesResult.rows
+        });
+    } catch (err) {
+        console.error('Get Seating Error:', err);
+        res.status(500).json({ error: 'Server error fetching seating plan.' });
+    }
+});
+
 module.exports = router;
