@@ -11,6 +11,11 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
+  // 0. CAPTCHA
+  getCaptcha(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/captcha`);
+  }
+
   // 1. REGISTER USER — Sends data to backend
   registerUser(user: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, {
@@ -18,7 +23,9 @@ export class AuthService {
       email: user.email,
       password: user.password,
       role: user.role,
-      specialId: user.specialId
+      specialId: user.specialId,
+      captcha: user.captcha,
+      captchaId: user.captchaId
     }).pipe(
       map((response: any) => {
         // Auto-save token on registration
@@ -66,7 +73,12 @@ export class AuthService {
     localStorage.removeItem('current_user');
   }
 
-  // 6. GET TOKEN
+  // 6. UPDATE LOCAL USER DATA
+  updateUser(user: any): void {
+    localStorage.setItem('current_user', JSON.stringify(user));
+  }
+
+  // 7. GET TOKEN
   getToken(): string | null {
     return localStorage.getItem('jwt_token');
   }

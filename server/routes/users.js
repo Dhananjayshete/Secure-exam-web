@@ -165,6 +165,62 @@ router.patch('/:id/status', requireRole('admin'), async (req, res) => {
 });
 
 // ============================================
+// PATCH /api/users/:id — Update user profile
+// ============================================
+router.patch('/:id', async (req, res) => {
+    try {
+        // Users can only update their own profile
+        if (req.user.id !== req.params.id && req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Access denied.' });
+        }
+
+        const { name, phone, batch, department, photo_url } = req.body;
+        const updates = [];
+        const params = [];
+        let idx = 1;
+
+        if (name) { updates.push(`name = $${idx++}`); params.push(name); }
+        if (phone) { updates.push(`phone = $${idx++}`); params.push(phone); }
+        if (batch) { updates.push(`batch = $${idx++}`); params.push(batch); }
+        if (department) { updates.push(`department = $${idx++}`); params.push(department); }
+        if (photo_url) { updates.push(`photo_url = $${idx++}`); params.push(photo_url); }
+
+        if (updates.length === 0) {
+            return res.status(400).json({ error: 'No fields to update.' });
+        }
+
+        params.push(req.params.id);
+        const result = await pool.query(
+            `UPDATE users SET ${updates.join(', ')}, updated_at = NOW() WHERE id = $${idx} RETURNING *`,
+            params
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+        const u = result.rows[0];
+        res.json({
+            message: 'Profile updated.',
+            user: {
+                id: u.id,
+                name: u.name,
+                email: u.email,
+                role: u.role,
+                specialId: u.special_id,
+                batch: u.batch,
+                dept: u.department,
+                phone: u.phone,
+                photo: u.photo_url
+            }
+        });
+    } catch (err) {
+        console.error('Update Profile Error:', err);
+        res.status(500).json({ error: 'Server error.' });
+    }
+});
+
+// ============================================
 // PATCH /api/users/:id/password — Update password
 // ============================================
 const bcrypt = require('bcryptjs');
@@ -202,6 +258,53 @@ router.patch('/:id/password', async (req, res) => {
         res.json({ message: 'Password updated successfully.' });
     } catch (err) {
         console.error('Update Password Error:', err);
+        res.status(500).json({ error: 'Server error.' });
+    }
+});
+
+// ============================================
+// PATCH /api/users/:id/role — Change user role (Admin only)
+// ============================================
+router.patch('/:id/role', requireRole('admin'), async (req, res) => {
+    try {
+        const { role } = req.body;
+        if (!['student', 'teacher', 'admin'].includes(role)) {
+            return res.status(400).json({ error: 'Invalid role.' });
+        }
+
+        const result = await pool.query(
+            'UPDATE users SET role = $1 WHERE id = $2 RETURNING id, name, role',
+            [role, req.params.id]
+        );
+
+        if (result.rows.length === 0) return res.status(404).json({ error: 'User not found.' });
+        res.json({ message: 'Role updated.', user: result.rows[0] });
+    } catch (err) {
+        console.error('Update Role Error:', err);
+        res.status(500).json({ error: 'Server error.' });
+    }
+});
+
+// ============================================
+// POST /api/users/:id/reset-password — Reset password (Admin only)
+// ============================================
+router.post('/:id/reset-password', requireRole('admin'), async (req, res) => {
+    try {
+        const { newPassword } = req.body;
+        if (!newPassword) return res.status(400).json({ error: 'New password required.' });
+
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(newPassword, salt);
+
+        const result = await pool.query(
+            'UPDATE users SET password_hash = $1 WHERE id = $2 RETURNING id, name',
+            [hash, req.params.id]
+        );
+
+        if (result.rows.length === 0) return res.status(404).json({ error: 'User not found.' });
+        res.json({ message: 'Password reset successfully for ' + result.rows[0].name });
+    } catch (err) {
+        console.error('Reset Password Error:', err);
         res.status(500).json({ error: 'Server error.' });
     }
 });

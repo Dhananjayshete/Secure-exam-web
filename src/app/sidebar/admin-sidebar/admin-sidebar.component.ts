@@ -18,13 +18,13 @@ interface MenuItem {
   styleUrl: './admin-sidebar.component.scss',
 })
 export class AdminSidebar {
-  
+
   // Data-driven menu for reliability and easy maintenance
   menuItems: MenuItem[] = [
-    { 
-      label: 'Dashboard', 
-      icon: 'fa-solid fa-chart-line', 
-      link: '/admin-dashboard' 
+    {
+      label: 'Dashboard',
+      icon: 'fa-solid fa-chart-line',
+      link: '/admin-dashboard'
     },
     {
       label: 'User Management',
@@ -32,7 +32,7 @@ export class AdminSidebar {
       isOpen: false, // Dropdown state
       children: [
         { label: 'Students/Candidates', icon: 'fa-solid fa-user-graduate', link: '/admin-dashboard/users/students' },
-        { label: 'Proctors/Admins', icon: 'fa-solid fa-chalkboard-user', link: '/admin-dashboard/users/staff' },
+        { label: 'Teachers/Faculty', icon: 'fa-solid fa-chalkboard-user', link: '/admin-dashboard/users/teachers' },
         { label: 'Groups & Batches', icon: 'fa-solid fa-layer-group', link: '/admin-dashboard/users/groups' }
       ]
     },
@@ -58,7 +58,7 @@ export class AdminSidebar {
     },
     {
       label: 'Live Proctoring', // CRITICAL for Secure Exams
-      icon: 'fa-solid fa-eye', 
+      icon: 'fa-solid fa-eye',
       isOpen: false,
       children: [
         { label: 'Live Monitor', icon: 'fa-solid fa-video', link: '/admin-dashboard/proctor/live' },

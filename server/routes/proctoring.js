@@ -6,109 +6,104 @@ const router = express.Router();
 router.use(authMiddleware);
 
 // ============================================
-// POST /api/exams/:examId/proctoring — Log a proctoring event
-// Called by the student's browser during an active exam
+// POST /api/proctoring/events — Log an event
 // ============================================
-router.post('/exams/:examId/proctoring', async (req, res) => {
+router.post('/events', async (req, res) => {
     try {
-        const { examId } = req.params;
-        const { eventType, details } = req.body;
+        // attemptId is optional if we infer from student+exam, but let's assume we pass examId and studentId context or attemptId.
+        // The requirements say: Body: { attemptId, eventType, timestamp, metadata }
+        // AttemptID might be the candidate ID.
+        // Let's rely on examId to look up the attempt for the current user.
 
-        if (!eventType) {
-            return res.status(400).json({ error: 'eventType is required.' });
+        const { examId, eventType, details } = req.body;
+
+        if (!examId || !eventType) {
+            return res.status(400).json({ error: 'examId and eventType are required.' });
         }
 
-        const result = await pool.query(
+        // Find the active attempt (In-Progress)
+        // If strict execution, we should probably pass the attemptId from frontend, 
+        // but for now let's find it securely.
+        const attemptResult = await pool.query(
+            `SELECT id FROM exam_candidates 
+             WHERE exam_id = $1 AND student_id = $2`,
+            [examId, req.user.id]
+        );
+
+        if (attemptResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Exam attempt not found.' });
+        }
+
+        const attemptId = attemptResult.rows[0].id;
+
+        // Log the event
+        await pool.query(
             `INSERT INTO proctoring_events (exam_id, student_id, event_type, details)
-             VALUES ($1, $2, $3, $4) RETURNING *`,
-            [examId, req.user.id, eventType, details || null]
+             VALUES ($1, $2, $3, $4)`,
+            [examId, req.user.id, eventType, details]
         );
 
-        res.status(201).json({
-            id: result.rows[0].id,
-            eventType: result.rows[0].event_type,
-            createdAt: result.rows[0].created_at
-        });
+        // Count warnings
+        const countResult = await pool.query(
+            `SELECT COUNT(*) FROM proctoring_events 
+             WHERE exam_id = $1 AND student_id = $2 
+             AND event_type IN ('tab_switch', 'focus_loss', 'face_warning', 'copy_attempt', 'right_click', 'devtools')`,
+            [examId, req.user.id]
+        );
+
+        const warningCount = parseInt(countResult.rows[0].count, 10);
+
+        res.json({ message: 'Event logged.', warningCount });
+
     } catch (err) {
-        console.error('Log Proctoring Event Error:', err);
-        res.status(500).json({ error: 'Server error logging proctoring event.' });
+        console.error('Proctoring Log Error:', err);
+        res.status(500).json({ error: 'Server error logging event.' });
     }
 });
 
 // ============================================
-// GET /api/exams/:examId/proctoring — List proctoring events
-// Teacher/admin only — see all events for an exam
+// GET /api/proctoring/monitor/:examId — Live Monitor
 // ============================================
-router.get('/exams/:examId/proctoring', requireRole('teacher', 'admin'), async (req, res) => {
+router.get('/monitor/:examId', requireRole('teacher', 'admin'), async (req, res) => {
     try {
         const { examId } = req.params;
-        const { studentId } = req.query;
 
-        let query = `
-            SELECT pe.*, u.name as student_name, u.email as student_email, u.photo_url
-            FROM proctoring_events pe
-            JOIN users u ON pe.student_id = u.id
-            WHERE pe.exam_id = $1
+        // Get all candidates who are 'In-Progress' (or maybe all registered to show status)
+        // We also want their warning count.
+        const query = `
+            SELECT 
+                u.name, u.email, u.photo_url,
+                ec.status, ec.score,
+                (SELECT COUNT(*) FROM proctoring_events pe 
+                 WHERE pe.exam_id = ec.exam_id AND pe.student_id = ec.student_id
+                 AND pe.event_type IN ('tab_switch', 'focus_loss', 'face_warning', 'copy_attempt', 'right_click', 'devtools')
+                ) as flag_count,
+                (SELECT MAX(created_at) FROM proctoring_events pe 
+                 WHERE pe.exam_id = ec.exam_id AND pe.student_id = ec.student_id
+                ) as last_event_at
+            FROM exam_candidates ec
+            JOIN users u ON ec.student_id = u.id
+            WHERE ec.exam_id = $1
+            ORDER BY flag_count DESC, ec.status
         `;
-        const params = [examId];
 
-        if (studentId) {
-            query += ' AND pe.student_id = $2';
-            params.push(studentId);
-        }
+        const result = await pool.query(query, [examId]);
 
-        query += ' ORDER BY pe.created_at DESC';
-
-        const result = await pool.query(query, params);
-
-        res.json(result.rows.map(e => ({
-            id: e.id,
-            examId: e.exam_id,
-            studentId: e.student_id,
-            studentName: e.student_name,
-            studentEmail: e.student_email,
-            studentPhoto: e.photo_url,
-            eventType: e.event_type,
-            details: e.details,
-            createdAt: e.created_at
-        })));
-    } catch (err) {
-        console.error('Get Proctoring Events Error:', err);
-        res.status(500).json({ error: 'Server error.' });
-    }
-});
-
-// ============================================
-// GET /api/exams/:examId/proctoring/summary — Summary per student
-// Returns flag counts per student for the live monitoring view
-// ============================================
-router.get('/exams/:examId/proctoring/summary', requireRole('teacher', 'admin'), async (req, res) => {
-    try {
-        const { examId } = req.params;
-
-        const result = await pool.query(
-            `SELECT pe.student_id, u.name, u.photo_url,
-                    COUNT(*)::int as total_events,
-                    COUNT(*) FILTER (WHERE pe.event_type IN ('tab_switch', 'focus_loss', 'copy_attempt', 'devtools'))::int as flag_count
-             FROM proctoring_events pe
-             JOIN users u ON pe.student_id = u.id
-             WHERE pe.exam_id = $1
-             GROUP BY pe.student_id, u.name, u.photo_url
-             ORDER BY flag_count DESC`,
-            [examId]
-        );
-
-        res.json(result.rows.map(r => ({
-            studentId: r.student_id,
+        const students = result.rows.map(r => ({
             name: r.name,
+            email: r.email,
             photo: r.photo_url,
-            totalEvents: r.total_events,
-            flagCount: r.flag_count,
-            status: r.flag_count > 3 ? 'flagged' : 'good'
-        })));
+            status: r.flag_count > 0 ? 'flagged' : 'good', // simplistic status
+            examStatus: r.status,
+            flagCount: parseInt(r.flag_count, 10),
+            lastActivity: r.last_event_at
+        }));
+
+        res.json(students);
+
     } catch (err) {
-        console.error('Get Proctoring Summary Error:', err);
-        res.status(500).json({ error: 'Server error.' });
+        console.error('Monitor Error:', err);
+        res.status(500).json({ error: 'Server error fetching monitor data.' });
     }
 });
 

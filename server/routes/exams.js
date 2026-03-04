@@ -99,6 +99,123 @@ router.get('/', async (req, res) => {
 });
 
 // ============================================
+// GET /api/exams/teacher/analytics — Teacher analytics
+// ============================================
+router.get('/teacher/analytics', requireRole('teacher', 'admin'), async (req, res) => {
+    try {
+        const totalExams = await pool.query(
+            `SELECT COUNT(*)::int as count FROM exams WHERE created_by = $1`,
+            [req.user.id]
+        );
+
+        const avgScore = await pool.query(
+            `SELECT COALESCE(AVG(ec.score), 0) as avg_score
+             FROM exam_candidates ec
+             JOIN exams e ON ec.exam_id = e.id
+             WHERE e.created_by = $1 AND ec.status = 'Completed'`,
+            [req.user.id]
+        );
+
+        const statusBreakdown = await pool.query(
+            `SELECT e.status, COUNT(*)::int as count
+             FROM exams e WHERE e.created_by = $1
+             GROUP BY e.status`,
+            [req.user.id]
+        );
+
+        res.json({
+            totalExams: totalExams.rows[0].count,
+            averageScore: parseFloat(avgScore.rows[0].avg_score).toFixed(1),
+            statusBreakdown: statusBreakdown.rows
+        });
+    } catch (err) {
+        console.error('Teacher Analytics Error:', err);
+        res.status(500).json({ error: 'Server error.' });
+    }
+});
+
+// ============================================
+// GET /api/exams/teacher/grading — Submissions for grading
+// ============================================
+router.get('/teacher/grading', requireRole('teacher', 'admin'), async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT ec.*, e.title as exam_name, e.subject, u.name as student_name, u.email as student_email
+             FROM exam_candidates ec
+             JOIN exams e ON ec.exam_id = e.id
+             JOIN users u ON ec.student_id = u.id
+             WHERE e.created_by = $1 AND ec.status = 'Completed'
+             ORDER BY ec.created_at DESC`,
+            [req.user.id]
+        );
+
+        res.json(result.rows.map(r => ({
+            examId: r.exam_id,
+            examName: r.exam_name,
+            subject: r.subject,
+            studentName: r.student_name,
+            studentEmail: r.student_email,
+            score: r.score,
+            grade: r.grade,
+            submittedAt: r.created_at
+        })));
+    } catch (err) {
+        console.error('Teacher Grading Error:', err);
+        res.status(500).json({ error: 'Server error.' });
+    }
+});
+
+// ============================================
+// POST /api/exams/:id/start-session — Start exam session (student)
+// ============================================
+router.post('/:id/start-session', async (req, res) => {
+    try {
+        const examId = req.params.id;
+        const studentId = req.user.id;
+
+        // Check exam exists
+        const examResult = await pool.query('SELECT * FROM exams WHERE id = $1', [examId]);
+        if (examResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Exam not found.' });
+        }
+
+        const exam = examResult.rows[0];
+
+        // Check if student is registered as a candidate
+        const candidateResult = await pool.query(
+            `SELECT * FROM exam_candidates WHERE exam_id = $1 AND student_id = $2`,
+            [examId, studentId]
+        );
+
+        if (candidateResult.rows.length === 0) {
+            // Auto-register the student
+            await pool.query(
+                `INSERT INTO exam_candidates (exam_id, student_id, status) VALUES ($1, $2, 'In-Progress')`,
+                [examId, studentId]
+            );
+        } else {
+            // Update status to In-Progress
+            await pool.query(
+                `UPDATE exam_candidates SET status = 'In-Progress' WHERE exam_id = $1 AND student_id = $2`,
+                [examId, studentId]
+            );
+        }
+
+        res.json({
+            message: 'Exam session started.',
+            candidate: {
+                exam_id: examId,
+                student_id: studentId,
+                duration_minutes: exam.duration_minutes
+            }
+        });
+    } catch (err) {
+        console.error('Start Session Error:', err);
+        res.status(500).json({ error: 'Server error starting exam session.' });
+    }
+});
+
+// ============================================
 // GET /api/exams/:id — Get exam detail
 // ============================================
 router.get('/:id', async (req, res) => {
@@ -235,38 +352,6 @@ router.get('/student/results', async (req, res) => {
     } catch (err) {
         console.error('Get Results Error:', err);
         res.status(500).json({ error: 'Server error.' });
-    }
-});
-
-// ============================================
-// GET /api/exams/:id/seating — Get candidates for seating plan
-// ============================================
-router.get('/:id/seating', requireRole('admin', 'teacher'), async (req, res) => {
-    try {
-        // 1. Verify exam exists
-        const examResult = await pool.query('SELECT * FROM exams WHERE id = $1', [req.params.id]);
-        if (examResult.rows.length === 0) {
-            return res.status(404).json({ error: 'Exam not found.' });
-        }
-
-        // 2. Fetch candidates for this exam, ordered by their ID or name for predictable seating
-        const candidatesResult = await pool.query(
-            `SELECT ec.student_id as id, u.name, u.email, u.special_id
-       FROM exam_candidates ec
-       JOIN users u ON ec.student_id = u.id
-       WHERE ec.exam_id = $1
-       ORDER BY u.name ASC`, // Sorting alphabetically by default
-            [req.params.id]
-        );
-
-        res.json({
-            examId: examResult.rows[0].id,
-            examTitle: examResult.rows[0].title,
-            candidates: candidatesResult.rows
-        });
-    } catch (err) {
-        console.error('Get Seating Error:', err);
-        res.status(500).json({ error: 'Server error fetching seating plan.' });
     }
 });
 

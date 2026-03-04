@@ -6,6 +6,25 @@ const router = express.Router();
 router.use(authMiddleware);
 
 // ============================================
+// GET /api/questions — List all questions globally (Admin only)
+// ============================================
+router.get('/', requireRole('admin'), async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT q.*, e.title as exam_title, e.subject as exam_subject, u.name as teacher_name
+             FROM exam_questions q
+             JOIN exams e ON q.exam_id = e.id
+             LEFT JOIN users u ON e.created_by = u.id
+             ORDER BY q.created_at DESC`
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Get All Questions Error:', err);
+        res.status(500).json({ error: 'Server error.' });
+    }
+});
+
+// ============================================
 // GET /api/exams/:examId/questions — List questions for an exam
 // Teachers/admins see is_correct; students do not
 // ============================================
@@ -21,7 +40,7 @@ router.get('/exams/:examId/questions', async (req, res) => {
 
         // Get questions
         const questionsResult = await pool.query(
-            `SELECT id, exam_id, question_text, question_type, points, sort_order, created_at
+            `SELECT id, exam_id, question_text, question_type, points, sort_order, model_answer, created_at
              FROM exam_questions WHERE exam_id = $1 ORDER BY sort_order ASC`,
             [examId]
         );
@@ -45,6 +64,7 @@ router.get('/exams/:examId/questions', async (req, res) => {
                 questionType: q.question_type,
                 points: q.points,
                 sortOrder: q.sort_order,
+                modelAnswer: (req.user.role === 'teacher' || req.user.role === 'admin') ? q.model_answer : undefined,
                 options: optionsResult.rows.map(o => ({
                     id: o.id,
                     optionText: o.option_text,
@@ -66,7 +86,7 @@ router.get('/exams/:examId/questions', async (req, res) => {
 router.post('/exams/:examId/questions', requireRole('teacher', 'admin'), async (req, res) => {
     try {
         const { examId } = req.params;
-        const { questionText, questionType, points, sortOrder, options } = req.body;
+        const { questionText, questionType, points, sortOrder, options, modelAnswer } = req.body;
 
         if (!questionText) {
             return res.status(400).json({ error: 'questionText is required.' });
@@ -74,9 +94,9 @@ router.post('/exams/:examId/questions', requireRole('teacher', 'admin'), async (
 
         // Insert question
         const qResult = await pool.query(
-            `INSERT INTO exam_questions (exam_id, question_text, question_type, points, sort_order)
-             VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-            [examId, questionText, questionType || 'MCQ', points || 1, sortOrder || 0]
+            `INSERT INTO exam_questions (exam_id, question_text, question_type, points, sort_order, model_answer)
+             VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+            [examId, questionText, questionType || 'MCQ', points || 1, sortOrder || 0, modelAnswer || null]
         );
 
         const question = qResult.rows[0];
@@ -171,6 +191,18 @@ router.delete('/questions/:id', requireRole('teacher', 'admin'), async (req, res
     }
 });
 
+// Helper for text similarity (Jaccard)
+function getSimilarity(s1, s2) {
+    if (!s1 || !s2) return 0;
+    const v1 = s1.toLowerCase().trim().split(/\s+/);
+    const v2 = s2.toLowerCase().trim().split(/\s+/);
+    const set1 = new Set(v1);
+    const set2 = new Set(v2);
+    const intersection = new Set([...set1].filter(x => set2.has(x)));
+    const union = new Set([...set1, ...set2]);
+    return intersection.size / union.size;
+}
+
 // ============================================
 // POST /api/exams/:examId/answers — Submit answers (student)
 // Expects: { answers: [{ questionId, selectedOptionId?, textAnswer? }] }
@@ -205,6 +237,20 @@ router.post('/exams/:examId/answers', async (req, res) => {
                 );
                 if (optCheck.rows.length > 0) {
                     isCorrect = optCheck.rows[0].is_correct;
+                }
+            }
+            // For Short Answer, auto-grade based on similarity
+            else if (ans.textAnswer) {
+                const qCheck = await pool.query(
+                    'SELECT question_type, model_answer FROM exam_questions WHERE id = $1',
+                    [ans.questionId]
+                );
+                if (qCheck.rows.length > 0 && qCheck.rows[0].question_type === 'short_answer') {
+                    const model = qCheck.rows[0].model_answer;
+                    if (model) {
+                        const similarity = getSimilarity(ans.textAnswer, model);
+                        isCorrect = similarity >= 0.6; // 60% threshold
+                    }
                 }
             }
 

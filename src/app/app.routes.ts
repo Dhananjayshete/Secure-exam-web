@@ -18,7 +18,7 @@ export const routes: Routes = [
   //   loadComponent: () =>
   //     import('./pages/how-it-works/how-it-works.component').then(m => m.HowItWorksComponent),
   // },
-  
+
   // --- AUTH ROUTES ---
   {
     path: 'login/admin',
@@ -47,34 +47,59 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/admin-dashboard/admin-dashboard.component')
         .then(m => m.AdminDashboardComponent),
-    
+
     // CHILDREN ROUTES
     children: [
-        // 1. Show CHARTS by default (Empty path)
-        { 
-            path: '', 
-            component: DashboardHomeComponent 
-        },
+      // 1. Show CHARTS by default (Empty path)
+      {
+        path: '',
+        component: DashboardHomeComponent
+      },
 
-        // 2. Show STUDENTS ID Cards
-        { 
-            path: 'users/students', 
-            component: UserListComponent, 
-            data: { type: 'student' } 
-        },
-        
-        // 3. Show STAFF ID Cards
-        { 
-            path: 'users/staff', 
-            component: UserListComponent, 
-            data: { type: 'admin' } 
-        },
+      // 2. Show STUDENTS ID Cards
+      {
+        path: 'users/students',
+        component: UserListComponent,
+        data: { type: 'student' }
+      },
 
-        // 4. Show GROUPS
-        { 
-            path: 'users/groups', 
-            component: GroupListComponent 
-        }
+      // 3. Show TEACHERS ID Cards
+      {
+        path: 'users/teachers',
+        component: UserListComponent,
+        data: { type: 'teacher' }
+      },
+
+      // 3. Show STAFF ID Cards
+      {
+        path: 'users/staff',
+        component: UserListComponent,
+        data: { type: 'admin' }
+      },
+
+      // 4. Show GROUPS
+      {
+        path: 'users/groups',
+        component: GroupListComponent
+      },
+
+      // 5. Question Bank
+      {
+        path: 'questions/all',
+        loadComponent: () => import('./pages/admin-dashboard/questions/question-bank/question-bank.component').then(m => m.QuestionBankComponent)
+      },
+
+      // 6. Exam Management
+      {
+        path: 'exams/scheduled',
+        loadComponent: () => import('./pages/admin-dashboard/exams/exam-management/exam-management.component').then(m => m.ExamManagementComponent)
+      },
+
+      // 7. Live Proctoring
+      {
+        path: 'proctor/live',
+        loadComponent: () => import('./pages/admin-dashboard/proctoring/admin-monitor/admin-monitor.component').then(m => m.AdminMonitorComponent)
+      }
     ]
   },
 
@@ -84,7 +109,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/auth/student-login/student-dashboard/student-dashboard.component')
         .then(m => m.StudentDashboardComponent)
-  }, 
+  },
   {
     path: 'teacher-dashboard',
     loadComponent: () =>

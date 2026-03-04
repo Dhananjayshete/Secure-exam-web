@@ -29,9 +29,9 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/exams', require('./routes/exams'));
 app.use('/api/groups', require('./routes/groups'));
 app.use('/api/tickets', require('./routes/tickets'));
+app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api', require('./routes/questions'));
 app.use('/api', require('./routes/proctoring'));
-app.use('/api/admin', require('./routes/admin'));
 
 // Health check
 app.get('/api/health', (req, res) => {

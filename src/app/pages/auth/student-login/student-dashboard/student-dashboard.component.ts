@@ -1,13 +1,17 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, HostListener, ElementRef, ViewChild } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../../services/api.service';
 import { AuthService } from '../../../../services/auth.service';
+import { ExamHistoryComponent } from '../../../student-dashboard/exam-history/exam-history.component';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-student-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ExamHistoryComponent],
+  providers: [DatePipe],
   templateUrl: './student-dashboard.component.html',
   styleUrls: ['./student-dashboard.component.scss']
 })
@@ -29,6 +33,8 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
     rollNo: '',
     email: '',
     phone: '',
+    batch: '',
+    dept: '',
     avatar: ''
   };
 
@@ -46,6 +52,11 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
   examHistory: any[] = [];
   results: any[] = [];
 
+  // Notifications state
+  notifications: any[] = [];
+  showNotifications: boolean = false;
+  get unreadCount(): number { return this.notifications.length; }
+
   // =============================================================
   // 4. FORMS DATA
   // =============================================================
@@ -61,12 +72,25 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
   currentQuestionIndex: number = 0;
   selectedAnswers: Map<string, any> = new Map(); // questionId -> { selectedOptionId, textAnswer }
 
+  // NEW: UX state
+  isScheduledModalOpen: boolean = false;
+  scheduledExam: any = null;
+  isCompletionView: boolean = false;
+  completionData: any = null;
+
+  // Proctoring Strikes
+  warningCount: number = 0;
+  private cameraCheckInterval: any;
+
   constructor(private apiService: ApiService, private authService: AuthService) { }
+
+  @ViewChild('resultCard') resultCardRef?: ElementRef;
 
   ngOnInit() {
     this.loadProfile();
     this.loadExams();
     this.loadResults();
+    this.loadNotifications();
   }
 
   loadProfile() {
@@ -76,8 +100,10 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
         name: user.name,
         rollNo: user.specialId || 'N/A',
         email: user.email,
-        phone: '+91 XXXXX XXXXX',
-        avatar: user.photoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0D8ABC&color=fff`
+        phone: user.phone || '',
+        batch: user.batch || '',
+        dept: user.dept || user.department || '',
+        avatar: user.photoUrl || user.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0D8ABC&color=fff`
       };
     }
   }
@@ -85,47 +111,165 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
   loadExams() {
     this.apiService.getExams().subscribe({
       next: (exams) => {
+        // Filter out completed exams for upcoming list
         this.upcomingExams = exams
-          .filter(e => e.status === 'Scheduled' || e.status === 'Live')
-          .map(e => ({
-            id: e.id,
-            name: e.title,
-            date: e.date ? new Date(e.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'TBD',
-            time: e.date ? new Date(e.date).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : 'TBD',
-            duration: `${e.durationMinutes} min`,
-            status: e.status === 'Live' ? 'Ready' : 'Locked'
-          }));
+          .filter(e => e.status !== 'Completed')
+          .map(e => {
+            const start = e.startTime ? new Date(e.startTime) : null;
+            const end = e.endTime ? new Date(e.endTime) : null;
 
-        this.examHistory = exams
-          .filter(e => e.status === 'Completed')
-          .map(e => ({
-            name: e.title,
-            date: e.date ? new Date(e.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A',
-            status: 'Completed'
-          }));
+            return {
+              id: e.id,
+              name: e.title,
+              subject: e.subject,
+              startTime: start,
+              endTime: end,
+              duration: `${e.durationMinutes} min`,
+              displayDate: start ? start.toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'TBD',
+              displayEndDate: end ? end.toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : null,
+              time: start ? start.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : 'TBD',
+
+              // Initial status calc
+              isStartable: false,
+              displayStatus: 'Locked',
+              countdown: ''
+            };
+          });
+
+        this.updateExamStatuses();
+        // Start countdown timer
+        setInterval(() => this.updateExamStatuses(), 1000);
 
         this.stats.total = exams.length;
         this.stats.upcoming = this.upcomingExams.length;
-        this.stats.completed = this.examHistory.length;
+        this.stats.completed = exams.filter(e => e.status === 'Completed').length;
       },
       error: (err) => console.error('Error loading exams:', err)
     });
   }
 
+  updateExamStatuses() {
+    const now = new Date();
+    this.upcomingExams.forEach(exam => {
+      if (!exam.startTime) {
+        exam.isStartable = false;
+        exam.displayStatus = 'TBD';
+        return;
+      }
+
+      if (now < exam.startTime) {
+        exam.isStartable = false;
+        exam.displayStatus = 'Scheduled';
+        // Calc countdown
+        const diff = exam.startTime.getTime() - now.getTime();
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+        if (d > 0) exam.countdown = `Opens in ${d}d ${h}h`;
+        else exam.countdown = `Opens in ${h}h ${m}m ${s}s`;
+
+      } else if (exam.endTime && now > exam.endTime) {
+        exam.isStartable = false;
+        exam.displayStatus = 'Expired';
+        exam.countdown = 'Exam Ended';
+      } else {
+        // Live
+        exam.isStartable = true;
+        exam.displayStatus = 'Live';
+        exam.countdown = 'Active Now';
+      }
+    });
+  }
+
   loadResults() {
     this.apiService.getStudentResults().subscribe({
-      next: (results) => {
-        this.results = results.map(r => ({
-          exam: r.examName,
-          score: r.score !== null ? `${r.score}` : 'Pending',
-          grade: r.grade || 'Pending'
+      next: (data: any[]) => {
+        // Map raw API rows into display-friendly objects
+        this.results = data.map(r => ({
+          exam: r.exam_name,
+          subject: r.subject,
+          score: r.score != null ? `${r.score}%` : 'N/A',
+          grade: r.grade || 'Pending',
+          date: r.start_time ? new Date(r.start_time).toLocaleDateString() : 'N/A',
+          raw: r
         }));
 
-        if (this.results.length > 0 && this.results[0].score !== 'Pending') {
-          this.stats.latestScore = this.results[0].score;
+        this.examHistory = data.map(r => ({
+          name: r.exam_name,
+          subject: r.subject,
+          date: r.start_time ? new Date(r.start_time).toLocaleDateString() : 'N/A',
+          status: r.status || 'Completed',
+          score: r.score != null ? r.score + '%' : 'N/A'
+        }));
+
+        // Update latest result card — data is already sorted by created_at DESC
+        if (data.length > 0 && data[0].score != null) {
+          this.stats.latestScore = `${data[0].score}% (${data[0].grade || 'Pending'})`;
+        } else {
+          this.stats.latestScore = 'N/A';
         }
       },
       error: (err) => console.error('Error loading results:', err)
+    });
+  }
+
+  loadNotifications() {
+    this.apiService.getNotifications().subscribe({
+      next: (data: any) => { this.notifications = data; },
+      error: (err: any) => console.error('Error loading notifications:', err)
+    });
+  }
+
+  toggleNotifications() {
+    this.showNotifications = !this.showNotifications;
+  }
+
+  markNotificationRead(notification: any) {
+    this.apiService.markNotificationRead(notification.id).subscribe({
+      next: () => {
+        this.notifications = this.notifications.filter(n => n.id !== notification.id);
+      }
+    });
+  }
+
+  markAllRead() {
+    this.apiService.markAllNotificationsRead().subscribe({
+      next: () => { this.notifications = []; this.showNotifications = false; }
+    });
+  }
+
+  downloadResultPdf(result: any) {
+    const content = `
+      <div style="font-family: Arial, sans-serif; padding: 40px; max-width: 600px;">
+        <h1 style="color:#4f46e5; margin-bottom: 8px;">SecureTake — Result Card</h1>
+        <hr style="margin-bottom: 24px;" />
+        <p><strong>Exam:</strong> ${result.exam}</p>
+        <p><strong>Subject:</strong> ${result.subject}</p>
+        <p><strong>Score:</strong> ${result.score}</p>
+        <p><strong>Grade:</strong> ${result.grade}</p>
+        <p><strong>Student:</strong> ${this.studentProfile.name}</p>
+        <p><strong>Roll No:</strong> ${this.studentProfile.rollNo}</p>
+        <p><strong>Date:</strong> ${result.date}</p>
+        <hr style="margin-top: 24px;" />
+        <p style="font-size:11px; color:#64748b;">Generated by SecureTake Academic Portal</p>
+      </div>`;
+
+    const el = document.createElement('div');
+    el.innerHTML = content;
+    el.style.position = 'fixed';
+    el.style.left = '-9999px';
+    document.body.appendChild(el);
+
+    html2canvas(el, { scale: 2 }).then((canvas: any) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`Result_${result.exam}_${this.studentProfile.rollNo}.pdf`);
+      document.body.removeChild(el);
     });
   }
 
@@ -135,23 +279,122 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
 
   switchView(viewName: string) {
     this.currentView = viewName;
+    if (viewName === 'results' || viewName === 'history') {
+      this.loadResults();
+    }
   }
 
-  // --- Exam Security Logic ---
+  // =============================================================
+  // 6. EXAM SECURITY LOGIC
+  // =============================================================
+
+  // Verification State
+  isVerificationModalOpen: boolean = false;
+  verificationStep: 'password' | 'system-check' = 'password';
+  verificationPassword: string = '';
+  verificationError: string = '';
+  systemCheckStatus = { camera: false, mic: false, error: '' };
+  private activeMediaStream: MediaStream | null = null;
+
+  targetExam: any = null;
+
   startExam(exam: any) {
-    if (exam.status === 'Locked') {
-      alert("This exam is not yet active.");
+    const now = new Date();
+    if (exam.startTime && now < exam.startTime) {
+      this.scheduledExam = exam;
+      this.isScheduledModalOpen = true;
       return;
     }
-    if (confirm("System Check: Webcam OK, Mic OK. Start Exam?")) {
-      this.activeExamId = exam.id;
-      this.activeExamTitle = exam.name;
-      this.loadExamQuestions();
-      this.isExamActive = true;
-      this.enterFullscreen();
-      this.startTimer();
-      this.setupProctoringListeners();
+
+    if (exam.displayStatus === 'Expired') {
+      alert("This exam has already ended.");
+      return;
     }
+
+    this.targetExam = exam;
+    this.isVerificationModalOpen = true;
+    this.verificationStep = 'password';
+    this.verificationPassword = '';
+    this.verificationError = '';
+    this.systemCheckStatus = { camera: false, mic: false, error: '' };
+  }
+
+  closeVerificationModal() {
+    this.stopMediaStream();
+    this.isVerificationModalOpen = false;
+    this.targetExam = null;
+  }
+
+  private stopMediaStream() {
+    if (this.activeMediaStream) {
+      this.activeMediaStream.getTracks().forEach(track => track.stop());
+      this.activeMediaStream = null;
+    }
+  }
+
+  closeScheduledModal() {
+    this.isScheduledModalOpen = false;
+    this.scheduledExam = null;
+  }
+
+  verifyPassword() {
+    if (!this.verificationPassword) {
+      this.verificationError = 'Password is required';
+      return;
+    }
+    this.apiService.reverify(this.verificationPassword).subscribe({
+      next: () => {
+        this.verificationStep = 'system-check';
+        this.checkSystemPermissions();
+      },
+      error: (err: any) => {
+        this.verificationError = err.error?.error || 'Invalid password';
+      }
+    });
+  }
+
+  checkSystemPermissions() {
+    this.systemCheckStatus.error = '';
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      .then(stream => {
+        this.systemCheckStatus.camera = true;
+        this.systemCheckStatus.mic = true;
+        this.activeMediaStream = stream; // Keep it active
+      })
+      .catch(err => {
+        console.error('System check failed:', err);
+        this.systemCheckStatus.camera = false;
+        this.systemCheckStatus.mic = false;
+        this.systemCheckStatus.error = 'Camera and Microphone access is required. Please allow access in your browser settings.';
+      });
+  }
+
+  confirmStartExam() {
+    if (!this.systemCheckStatus.camera || !this.systemCheckStatus.mic) {
+      alert('Cannot start exam without System Check pass.');
+      return;
+    }
+
+    if (!this.targetExam) return;
+
+    this.apiService.startExamSession(this.targetExam.id).subscribe({
+      next: (res: any) => {
+        this.activeExamId = this.targetExam.id;
+        this.activeExamTitle = this.targetExam.name;
+        this.loadExamQuestions();
+        this.isExamActive = true;
+        this.warningCount = 0;
+        this.enterFullscreen();
+        this.startTimer(res.candidate?.duration_minutes || this.targetExam.duration || 60);
+        this.setupProctoringListeners();
+        this.isVerificationModalOpen = false; // Don't call closeVerificationModal to keep stream
+      },
+      error: (err: any) => {
+        console.error('Start Exam Error:', err);
+        alert(err.error?.error || 'Failed to start exam.');
+        this.closeVerificationModal();
+      }
+    });
   }
 
   loadExamQuestions() {
@@ -211,8 +454,8 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
     return this.selectedAnswers.has(questionId);
   }
 
-  submitExam() {
-    if (!confirm(`Are you sure you want to submit? You've answered ${this.selectedAnswers.size} of ${this.examQuestions.length} question(s).`)) return;
+  submitExam(isAuto: boolean = false) {
+    if (!isAuto && !confirm(`Are you sure you want to submit? You've answered ${this.selectedAnswers.size} of ${this.examQuestions.length} question(s).`)) return;
 
     const answers = Array.from(this.selectedAnswers.entries()).map(([questionId, ans]) => ({
       questionId,
@@ -220,18 +463,23 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
       textAnswer: ans.textAnswer || null
     }));
 
-    if (answers.length === 0) {
-      alert('Please answer at least one question before submitting.');
-      return;
-    }
-
     this.apiService.submitAnswers(this.activeExamId, answers).subscribe({
       next: (result) => {
-        this.isExamActive = false;
-        this.exitFullscreen();
-        clearInterval(this.timerInterval);
-        alert(`Exam Submitted!\nScore: ${result.percentage}%\nGrade: ${result.grade}`);
-        this.switchView('results');
+        this.endExamSession();
+
+        // Show completion view
+        this.completionData = {
+          title: this.activeExamTitle,
+          date: new Date().toLocaleDateString(),
+          score: result.percentage,
+          percentage: result.percentage,
+          grade: result.grade,
+          questionsAttempted: answers.length,
+          totalQuestions: this.examQuestions.length,
+          isDisqualified: result.grade === 'Disqualified'
+        };
+        this.isCompletionView = true;
+        this.currentView = 'completion';
         this.loadResults();
       },
       error: (err) => {
@@ -240,12 +488,32 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  private endExamSession() {
+    this.isExamActive = false;
+    this.exitFullscreen();
+    clearInterval(this.timerInterval);
+    clearInterval(this.cameraCheckInterval);
+    this.stopMediaStream();
+    document.removeEventListener('visibilitychange', this.onVisibilityChange);
+    window.removeEventListener('blur', this.onWindowBlur);
+  }
+
   // --- Proctoring Event Logging ---
   setupProctoringListeners() {
     // Tab visibility change
     document.addEventListener('visibilitychange', this.onVisibilityChange);
     // Window blur
     window.addEventListener('blur', this.onWindowBlur);
+
+    // Persistent Camera check
+    this.cameraCheckInterval = setInterval(() => {
+      if (this.activeMediaStream) {
+        const videoTrack = this.activeMediaStream.getVideoTracks()[0];
+        if (!videoTrack || videoTrack.readyState === 'ended' || !videoTrack.enabled) {
+          this.logProctoringEvent('camera_off', 'Camera track lost or disabled');
+        }
+      }
+    }, 5000);
   }
 
   private onVisibilityChange = () => {
@@ -278,6 +546,20 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
 
   logProctoringEvent(eventType: string, details: string) {
     if (!this.activeExamId) return;
+
+    // Increment warnings for serious violations
+    if (['tab_switch', 'focus_loss', 'camera_off'].includes(eventType)) {
+      this.warningCount++;
+      if (this.warningCount === 1) {
+        alert("Warning 1 of 3: Do not leave the exam window. Your session is being monitored.");
+      } else if (this.warningCount === 2) {
+        alert("Warning 2 of 3: Next violation will result in automatic disqualification!");
+      } else if (this.warningCount >= 3) {
+        alert("Warning 3 of 3: Disqualified! Your exam has been terminated.");
+        this.submitExam(true); // Auto-submit
+      }
+    }
+
     this.apiService.logProctoringEvent(this.activeExamId, eventType, details).subscribe({
       error: (err) => console.error('Proctoring log error:', err)
     });
@@ -290,8 +572,8 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
   }
 
   // --- Timer & Fullscreen ---
-  startTimer() {
-    let time = 3600; // 60 mins
+  startTimer(durationMinutes: number = 60) {
+    let time = durationMinutes * 60;
     this.timerInterval = setInterval(() => {
       let m = Math.floor(time / 60);
       let s = time % 60;
@@ -311,6 +593,31 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
   }
 
   // --- Form Handlers ---
+  updateProfile() {
+    const user = this.authService.getCurrentUser();
+    if (!user) return;
+
+    const data = {
+      name: this.studentProfile.name,
+      phone: this.studentProfile.phone,
+      batch: this.studentProfile.batch,
+      department: this.studentProfile.dept
+    };
+
+    this.apiService.updateProfile(user.id, data).subscribe({
+      next: (res: any) => {
+        alert("Profile updated successfully.");
+        // Update local storage user info
+        const updatedUser = { ...user, ...res.user };
+        this.authService.updateUser(updatedUser);
+        this.loadProfile();
+      },
+      error: (err: any) => {
+        alert(err.error?.error || "Failed to update profile.");
+      }
+    });
+  }
+
   updatePassword() {
     if (this.passwordForm.new !== this.passwordForm.confirm) {
       alert("Passwords do not match!");

@@ -86,6 +86,18 @@ export class ApiService {
         return this.http.post(`${this.baseUrl}/exams/${examId}/submit`, { score, grade }, { headers: this.getHeaders() });
     }
 
+    getAdminExams(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/exams`, { headers: this.getHeaders() });
+    }
+
+    deleteExam(examId: string): Observable<any> {
+        return this.http.delete(`${this.baseUrl}/exams/${examId}`, { headers: this.getHeaders() });
+    }
+
+    getAllQuestions(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/questions/all`, { headers: this.getHeaders() });
+    }
+
     getStudentResults(): Observable<any[]> {
         return this.http.get<any[]>(`${this.baseUrl}/exams/student/results`, { headers: this.getHeaders() });
     }
@@ -180,6 +192,66 @@ export class ApiService {
     }
 
     // ==========================================
+    // USERS (admin actions)
+    // ==========================================
+    updateUserRole(userId: string, role: string): Observable<any> {
+        return this.http.patch(`${this.baseUrl}/users/${userId}/role`, { role }, { headers: this.getHeaders() });
+    }
+
+    resetUserPassword(userId: string, newPassword: string): Observable<any> {
+        return this.http.post(`${this.baseUrl}/users/${userId}/reset-password`, { newPassword }, { headers: this.getHeaders() });
+    }
+
+    updateProfile(userId: string, data: any): Observable<any> {
+        return this.http.patch(`${this.baseUrl}/users/${userId}`, data, { headers: this.getHeaders() });
+    }
+
+    // ==========================================
+    // NOTIFICATIONS
+    // ==========================================
+    getNotifications(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/notifications`, { headers: this.getHeaders() });
+    }
+
+    markNotificationRead(notificationId: string): Observable<any> {
+        return this.http.patch(`${this.baseUrl}/notifications/${notificationId}/read`, {}, { headers: this.getHeaders() });
+    }
+
+    markAllNotificationsRead(): Observable<any> {
+        return this.http.patch(`${this.baseUrl}/notifications/read-all`, {}, { headers: this.getHeaders() });
+    }
+
+    // ==========================================
+    // AUTH (re-verification)
+    // ==========================================
+    reverify(password: string): Observable<any> {
+        const user = this.getCurrentUser();
+        return this.http.post(`${this.baseUrl}/auth/reverify`, { email: user?.email, password }, { headers: this.getHeaders() });
+    }
+
+    // ==========================================
+    // EXAM SESSION
+    // ==========================================
+    startExamSession(examId: string): Observable<any> {
+        return this.http.post(`${this.baseUrl}/exams/${examId}/start-session`, {}, { headers: this.getHeaders() });
+    }
+
+    // ==========================================
+    // TEACHER: MONITORING, ANALYTICS, GRADING
+    // ==========================================
+    getMonitorData(examId: string): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/proctoring/monitor/${examId}`, { headers: this.getHeaders() });
+    }
+
+    getTeacherAnalytics(): Observable<any> {
+        return this.http.get(`${this.baseUrl}/exams/teacher/analytics`, { headers: this.getHeaders() });
+    }
+
+    getTeacherGrading(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/exams/teacher/grading`, { headers: this.getHeaders() });
+    }
+
+    // ==========================================
     // TOKEN MANAGEMENT
     // ==========================================
     saveToken(token: string): void {
@@ -206,16 +278,5 @@ export class ApiService {
     logout(): void {
         localStorage.removeItem('jwt_token');
         localStorage.removeItem('current_user');
-    }
-
-    // ==========================================
-    // ADMIN OVERHAUL
-    // ==========================================
-    getAdminLogs(): Observable<any> {
-        return this.http.get(`${this.baseUrl}/admin/logs`, { headers: this.getHeaders() });
-    }
-
-    getExamSeating(examId: string): Observable<any> {
-        return this.http.get(`${this.baseUrl}/exams/${examId}/seating`, { headers: this.getHeaders() });
     }
 }

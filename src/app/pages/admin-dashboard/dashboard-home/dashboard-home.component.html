@@ -16,12 +16,14 @@
             <p class="stat-number">{{ teachers.length }}</p>
         </div>
 
-        <div class="card clickable" (click)="toggleLogsModal()">
-            <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
-            <div class="card-content">
-                <h3>Security & Logs</h3>
-                <p class="stat-number">View</p>
-            </div>
+        <div class="card">
+            <h3>Admins</h3>
+            <p class="stat-number">{{ admins.length }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Total Users</h3>
+            <p class="stat-number">{{ users.length }}</p>
         </div>
 
     </div>
@@ -59,7 +61,7 @@
             </select>
         </div>
 
-        <div class="table-responsive glass-panel">
+        <div class="table-responsive">
             <!-- Reuse your original table logic here -->
             <table>
                 <!-- ... table headers and body ... -->
@@ -75,11 +77,7 @@
                     <tr *ngFor="let user of filteredUsers">
                         <td>{{ user.name }}</td>
                         <td>{{ user.email }}</td>
-                        <td>
-                            <span class="role-badge" [ngClass]="'role-' + user.role?.toLowerCase()">
-                                {{ user.role }}
-                            </span>
-                        </td>
+                        <td>{{ user.role }}</td>
                         <td>{{ user.registeredBy || '-' }}</td>
                     </tr>
                 </tbody>
@@ -87,88 +85,4 @@
         </div>
     </div>
 
-    <!-- SEATING PLAN SECTION -->
-    <div class="seating-section glass-panel">
-        <h3>Exam Seating Plan Generator</h3>
-
-        <div class="seating-controls">
-            <div class="control-group">
-                <label>Select Exam:</label>
-                <select [(ngModel)]="selectedExamId">
-                    <option [ngValue]="null">-- Choose an Exam --</option>
-                    <option *ngFor="let exam of examsList" [value]="exam.id">{{ exam.title }} ({{ exam.subject }})
-                    </option>
-                </select>
-            </div>
-
-            <div class="control-group">
-                <label>Rows:</label>
-                <input type="number" [(ngModel)]="seatingRows" min="1" max="20">
-            </div>
-
-            <div class="control-group">
-                <label>Columns:</label>
-                <input type="number" [(ngModel)]="seatingCols" min="1" max="20">
-            </div>
-
-            <button class="btn-primary" (click)="generateSeatingPlan()">Generate Plan</button>
-        </div>
-
-        <div *ngIf="seatingError" class="error-message">
-            {{ seatingError }}
-        </div>
-
-        <!-- SEATING GRID -->
-        <div class="seating-grid-container" *ngIf="seatingGrid.length > 0">
-            <div class="grid-row" *ngFor="let row of seatingGrid">
-                <div class="grid-seat" *ngFor="let seat of row" [ngClass]="{'occupied': seat, 'empty': !seat}">
-                    <ng-container *ngIf="seat">
-                        <div class="seat-name">{{ seat.name }}</div>
-                        <div class="seat-id" *ngIf="seat.special_id">{{ seat.special_id }}</div>
-                    </ng-container>
-                    <ng-container *ngIf="!seat">
-                        <div class="seat-empty-text">Empty</div>
-                    </ng-container>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<!-- LOGS MODAL -->
-<div class="modal-overlay" *ngIf="showLogsModal" (click)="toggleLogsModal()">
-    <div class="modal-content glass-panel" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-            <h3>System Security Logs</h3>
-            <button class="close-btn" (click)="toggleLogsModal()">&times;</button>
-        </div>
-        <div class="modal-body">
-            <table class="logs-table">
-                <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Type</th>
-                        <th>Message</th>
-                        <th>IP Address</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let log of logs">
-                        <td>{{ log.timestamp | date:'short' }}</td>
-                        <td>
-                            <span class="status-badge" [ngClass]="'status-' + log.type.toLowerCase()">
-                                {{ log.type }}
-                            </span>
-                        </td>
-                        <td>{{ log.message }}</td>
-                        <td>{{ log.ip }}</td>
-                    </tr>
-                    <tr *ngIf="logs.length === 0">
-                        <td colspan="4" class="text-center">Loading logs...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
 </div>
