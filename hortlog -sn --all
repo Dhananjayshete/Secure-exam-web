@@ -1,0 +1,25 @@
+[33ma10c1e9[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m fix: resolve all build errors - add missing ApiService methods, server routes, and dependencies
+[33mb2448dc[m feat: complete admin dashboard overhaul with glassmorphism, logs, and seating grid
+[33m79dce8e[m Updated exams API, student dashboard, and notifications route
+[33m5478a84[m Updated home page and global styles
+[33mdf9d4da[m Updated home page, styles, and project config
+[33m47bf80a[m Updated home component UI and styles
+[33md48fbe3[m Updated home component UI and styles
+[33mff488e0[m Updated home component styles
+[33mf1d9dca[m Updated home page and config changes
+[33m3f11b4f[m Updated home page UI and styles
+[33m8269bd3[m Updated auth and register changes
+[33m8c42a24[m Updated admin, student dashboards and backend changes
+[33m4528a9f[m feat: add exam questions, answers, proctoring & ticket replies
+[33m7ac32eb[m Updated login styles and home page UI
+[33m255db33[m Updated home page and added new images
+[33m55ab8fd[m Updated home page
+[33m1d4a9c6[m Updated student dashboard
+[33m4c605a3[m Updated student dashboard
+[33m984b8e4[m Updated teacher dashboard and removed how-it-works page
+[33m4b0182d[m Update
+[33m7e446e2[m Update home component
+[33m5e6b4c3[m Update project files
+[33m406281b[m Update
+[33mbbfea23[m Initial commit
+[33mf369241[m Initial commit

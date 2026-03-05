@@ -68,12 +68,12 @@ export class AdminSidebar {
     {
       label: 'Results & Reports',
       icon: 'fa-solid fa-chart-pie',
-      link: '/admin-dashboard/reports'
+      link: '/admin-dashboard/reports/results'
     },
     {
       label: 'Security & Logs',
       icon: 'fa-solid fa-shield-halved',
-      link: '/admin-dashboard/audit-logs'
+      link: '/admin-dashboard/security/logs'
     },
     {
       label: 'Settings',

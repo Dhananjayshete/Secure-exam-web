@@ -279,4 +279,19 @@ export class ApiService {
         localStorage.removeItem('jwt_token');
         localStorage.removeItem('current_user');
     }
+
+    // ==========================================
+    // ADMIN REPORTS & SECURITY
+    // ==========================================
+    getAllResults(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/admin/results`, {
+            headers: this.getHeaders()
+        });
+    }
+
+    getSecurityLogs(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/admin/logs`, {
+            headers: this.getHeaders()
+        });
+    }
 }

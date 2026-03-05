@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const pool = require('../db');
 const router = express.Router();
 
-// Simple in-memory storage for CAPTCHAs (for demo purposes)
+// Simple in-memory storage for CAPTCHAs
 const captchaStore = new Map();
 
 // ============================================
@@ -22,7 +22,7 @@ router.get('/captcha', (req, res) => {
     // Clear captcha after 5 minutes
     setTimeout(() => captchaStore.delete(captchaId), 300000);
 
-    res.json({ id: captchaId, text: captcha }); // In real app, send IMAGE, not text.
+    res.json({ id: captchaId, text: captcha });
 });
 
 // ============================================
@@ -37,38 +37,37 @@ router.post('/register', async (req, res) => {
         if (!validCaptcha || validCaptcha !== captcha?.trim().toUpperCase()) {
             return res.status(400).json({ error: 'Invalid or expired CAPTCHA.' });
         }
-        // Only delete on success
         captchaStore.delete(captchaId);
 
-        // 1. Validate required fields
+        // Validate required fields
         if (!name || !email || !password || !role) {
             return res.status(400).json({ error: 'Name, email, password, and role are required.' });
         }
 
-        // 2. Check if user already exists
+        // Check if user already exists
         const existing = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
         if (existing.rows.length > 0) {
             return res.status(409).json({ error: 'Email already registered.' });
         }
 
-        // 3. Hash the password
+        // Hash the password
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(password, salt);
 
-        // 4. Generate avatar URL
+        // Generate avatar URL
         const photoUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=e0e7ff&color=4338ca`;
 
-        // 5. Insert into DB
+        // Insert into DB
         const result = await pool.query(
             `INSERT INTO users (name, email, password_hash, role, special_id, photo_url)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id, name, email, role, special_id, status, photo_url, created_at`,
+             VALUES ($1, $2, $3, $4, $5, $6)
+             RETURNING id, name, email, role, special_id, status, photo_url, created_at`,
             [name, email, passwordHash, role, specialId || null, photoUrl]
         );
 
         const user = result.rows[0];
 
-        // 6. Create JWT
+        // Create JWT
         const token = jwt.sign(
             { id: user.id, email: user.email, role: user.role },
             process.env.JWT_SECRET,
@@ -101,12 +100,12 @@ router.post('/login', async (req, res) => {
     try {
         const { email, password, role } = req.body;
 
-        // 1. Validate
+        // Validate
         if (!email || !password || !role) {
             return res.status(400).json({ error: 'Email, password, and role are required.' });
         }
 
-        // 2. Find user by email AND role
+        // Find user by email AND role
         const result = await pool.query(
             'SELECT * FROM users WHERE email = $1 AND role = $2',
             [email, role]
@@ -118,23 +117,36 @@ router.post('/login', async (req, res) => {
 
         const user = result.rows[0];
 
-        // 3. Check if user is blocked
+        // Check if user is blocked
         if (user.status === 'Blocked') {
             return res.status(403).json({ error: 'Your account has been blocked. Contact admin.' });
         }
 
-        // 4. Compare password
+        // Compare password
         const isMatch = await bcrypt.compare(password, user.password_hash);
         if (!isMatch) {
             return res.status(401).json({ error: 'Invalid credentials.' });
         }
 
-        // 5. Create JWT
+        // Create JWT
         const token = jwt.sign(
             { id: user.id, email: user.email, role: user.role },
             process.env.JWT_SECRET,
             { expiresIn: '24h' }
         );
+
+        // ✅ Save login event to security logs
+        try {
+            const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+            await pool.query(
+                `INSERT INTO proctoring_events (student_id, event_type, details, ip_address, timestamp)
+                 VALUES ($1, 'login', 'Successful login', $2, NOW())`,
+                [user.id, ip]
+            );
+        } catch (logErr) {
+            // Don't block login if logging fails
+            console.warn('Could not save login event:', logErr.message);
+        }
 
         res.json({
             message: 'Login successful',
@@ -166,7 +178,7 @@ router.get('/me', authMiddleware, async (req, res) => {
     try {
         const result = await pool.query(
             `SELECT id, name, email, role, special_id, batch, department, status, photo_url, created_at
-       FROM users WHERE id = $1`,
+             FROM users WHERE id = $1`,
             [req.user.id]
         );
 
@@ -204,20 +216,24 @@ router.post('/reverify', authMiddleware, async (req, res) => {
             return res.status(400).json({ error: 'Email and password are required.' });
         }
 
-        // 1. Check if email matches current user
+        // Check if email matches current user
         if (email.toLowerCase() !== req.user.email.toLowerCase()) {
             return res.status(401).json({ error: 'Email does not match logged-in user.' });
         }
 
-        // 2. Get user password hash
-        const result = await pool.query('SELECT password_hash FROM users WHERE id = $1', [req.user.id]);
+        // Get user password hash
+        const result = await pool.query(
+            'SELECT password_hash FROM users WHERE id = $1',
+            [req.user.id]
+        );
+
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'User not found.' });
         }
 
         const user = result.rows[0];
 
-        // 3. Verify password
+        // Verify password
         const isMatch = await bcrypt.compare(password, user.password_hash);
         if (!isMatch) {
             return res.status(401).json({ error: 'Invalid password.' });

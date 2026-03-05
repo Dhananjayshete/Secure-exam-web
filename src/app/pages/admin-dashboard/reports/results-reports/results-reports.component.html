@@ -1,0 +1,112 @@
+<div class="page">
+    <div class="page-header">
+        <div>
+            <h1>Results &amp; Reports</h1>
+            <p class="subtitle">View and export all student exam results</p>
+        </div>
+        <button class="btn-export" (click)="exportCSV()">
+            <i class="fa-solid fa-download"></i> Export CSV
+        </button>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card total">
+            <div class="stat-icon"><i class="fa-solid fa-file-lines"></i></div>
+            <div class="stat-info">
+                <span class="stat-value">{{ totalAttempts }}</span>
+                <span class="stat-label">Total Attempts</span>
+            </div>
+        </div>
+        <div class="stat-card pass">
+            <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="stat-info">
+                <span class="stat-value">{{ passCount }}</span>
+                <span class="stat-label">Passed</span>
+            </div>
+        </div>
+        <div class="stat-card fail">
+            <div class="stat-icon"><i class="fa-solid fa-circle-xmark"></i></div>
+            <div class="stat-info">
+                <span class="stat-value">{{ failCount }}</span>
+                <span class="stat-label">Failed</span>
+            </div>
+        </div>
+        <div class="stat-card avg">
+            <div class="stat-icon"><i class="fa-solid fa-chart-simple"></i></div>
+            <div class="stat-info">
+                <span class="stat-value">{{ avgScore }}%</span>
+                <span class="stat-label">Average Score</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="pass-rate-card">
+        <div class="pass-rate-header">
+            <span>Overall Pass Rate</span>
+            <span class="pass-rate-value">{{ getPassRate() }}%</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" [style.width]="getPassRate() + '%'"></div>
+        </div>
+    </div>
+
+    <div class="filters-bar">
+        <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()"
+            placeholder="Search by student or exam..." class="search-input" />
+        <select [(ngModel)]="selectedExam" (ngModelChange)="applyFilter()" class="filter-select">
+            <option value="all">All Exams</option>
+            <option *ngFor="let exam of exams" [value]="exam.id">{{ exam.title }}</option>
+        </select>
+    </div>
+
+    <div *ngIf="isLoading" class="loading-state">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <p>Loading results...</p>
+    </div>
+
+    <div *ngIf="!isLoading" class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Student</th>
+                    <th>Exam</th>
+                    <th>Score</th>
+                    <th>Percentage</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let r of filteredResults; let i = index">
+                    <td class="index">{{ i + 1 }}</td>
+                    <td>
+                        <div class="student-cell">
+                            <div class="avatar">{{ r.student_name?.charAt(0) || 'S' }}</div>
+                            <span>{{ r.student_name || 'Unknown' }}</span>
+                        </div>
+                    </td>
+                    <td>{{ r.exam_title }}</td>
+                    <td>{{ r.score }} / {{ r.total_marks }}</td>
+                    <td>
+                        <div class="score-bar-wrap">
+                            <div class="score-bar" [style.width]="(r.percentage || 0) + '%'"
+                                [class.high]="r.percentage >= 75" [class.mid]="r.percentage >= 50 && r.percentage < 75"
+                                [class.low]="r.percentage < 50"></div>
+                            <span>{{ r.percentage }}%</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge" [class.pass]="r.passed" [class.fail]="!r.passed">
+                            {{ r.passed ? 'Pass' : 'Fail' }}
+                        </span>
+                    </td>
+                    <td class="date">{{ r.submitted_at | date:'dd MMM yyyy' }}</td>
+                </tr>
+                <tr *ngIf="filteredResults.length === 0">
+                    <td colspan="7" class="empty">No results found.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,181 @@
+<div class="page">
+    <div class="page-header">
+        <div>
+            <h1><i class="fa-solid fa-gear"></i> Settings</h1>
+            <p class="subtitle">Configure your SecureExam platform</p>
+        </div>
+        <div class="header-actions">
+            <span class="save-success" *ngIf="saveSuccess">
+                <i class="fa-solid fa-check"></i> Saved!
+            </span>
+            <button class="btn-outline" (click)="resetDefaults()">Reset Defaults</button>
+            <button class="btn-primary" (click)="saveSettings()" [disabled]="isSaving">
+                <i class="fa-solid" [class.fa-floppy-disk]="!isSaving" [class.fa-spinner]="isSaving"
+                    [class.fa-spin]="isSaving"></i>
+                {{ isSaving ? 'Saving...' : 'Save Settings' }}
+            </button>
+        </div>
+    </div>
+
+    <div class="settings-layout">
+
+        <div class="settings-nav">
+            <button *ngFor="let tab of tabs" class="nav-item" [class.active]="activeTab === tab.id"
+                (click)="activeTab = tab.id">
+                <i class="fa-solid" [class]="tab.icon"></i>
+                {{ tab.label }}
+            </button>
+        </div>
+
+        <div class="settings-panel">
+
+            <div *ngIf="activeTab === 'general'">
+                <h2>General Settings</h2>
+                <div class="form-group">
+                    <label>Platform Name</label>
+                    <input type="text" [(ngModel)]="siteName" />
+                    <span class="hint">Displayed in the browser tab and header.</span>
+                </div>
+                <div class="form-group">
+                    <label>Support Email</label>
+                    <input type="email" [(ngModel)]="supportEmail" />
+                    <span class="hint">Students will contact this address for support.</span>
+                </div>
+                <div class="form-group">
+                    <label>Timezone</label>
+                    <select [(ngModel)]="timezone">
+                        <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
+                        <option value="America/New_York">America/New York (EST)</option>
+                        <option value="Europe/London">Europe/London (GMT)</option>
+                        <option value="Asia/Dubai">Asia/Dubai (GST)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div *ngIf="activeTab === 'exam'">
+                <h2>Exam Settings</h2>
+                <div class="form-group">
+                    <label>Default Exam Duration (minutes)</label>
+                    <input type="number" [(ngModel)]="defaultDuration" min="10" max="300" />
+                </div>
+                <div class="form-group">
+                    <label>Passing Marks (%)</label>
+                    <input type="number" [(ngModel)]="passingMarks" min="1" max="100" />
+                </div>
+                <div class="form-group">
+                    <label>Maximum Attempts per Student</label>
+                    <input type="number" [(ngModel)]="maxAttempts" min="1" max="10" />
+                </div>
+                <div class="toggle-group">
+                    <div class="toggle-item">
+                        <div>
+                            <span class="toggle-label">Auto Submit on Timer End</span>
+                            <span class="toggle-desc">Automatically submit exam when time runs out</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" [(ngModel)]="autoSubmit" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-item">
+                        <div>
+                            <span class="toggle-label">Allow Late Submission</span>
+                            <span class="toggle-desc">Students can submit after timer ends</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" [(ngModel)]="allowLateSubmission" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="activeTab === 'security'">
+                <h2>Security Settings</h2>
+                <div class="toggle-group">
+                    <div class="toggle-item">
+                        <div>
+                            <span class="toggle-label">Enable Live Proctoring</span>
+                            <span class="toggle-desc">Monitor students during exams in real time</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" [(ngModel)]="enableProctoring" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-item">
+                        <div>
+                            <span class="toggle-label">Block Tab Switching</span>
+                            <span class="toggle-desc">Flag students who switch browser tabs</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" [(ngModel)]="blockTabSwitch" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-item">
+                        <div>
+                            <span class="toggle-label">Block Copy &amp; Paste</span>
+                            <span class="toggle-desc">Disable clipboard during exam</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" [(ngModel)]="blockCopyPaste" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-item">
+                        <div>
+                            <span class="toggle-label">Require Camera</span>
+                            <span class="toggle-desc">Students must have camera enabled to start exam</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" [(ngModel)]="requireCamera" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 1.5rem;">
+                    <label>Max Tab Switches Before Auto-Submit</label>
+                    <input type="number" [(ngModel)]="maxTabSwitches" min="1" max="20" />
+                </div>
+            </div>
+
+            <div *ngIf="activeTab === 'notifications'">
+                <h2>Notification Settings</h2>
+                <div class="toggle-group">
+                    <div class="toggle-item">
+                        <div>
+                            <span class="toggle-label">Email on Result Published</span>
+                            <span class="toggle-desc">Notify students when results are available</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" [(ngModel)]="emailOnResult" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-item">
+                        <div>
+                            <span class="toggle-label">Email on New Login</span>
+                            <span class="toggle-desc">Alert admin when someone logs in</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" [(ngModel)]="emailOnLogin" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-item">
+                        <div>
+                            <span class="toggle-label">Email on Suspicious Activity</span>
+                            <span class="toggle-desc">Immediate alert on security violations</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" [(ngModel)]="emailOnSuspicious" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

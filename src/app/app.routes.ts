@@ -99,6 +99,30 @@ export const routes: Routes = [
       {
         path: 'proctor/live',
         loadComponent: () => import('./pages/admin-dashboard/proctoring/admin-monitor/admin-monitor.component').then(m => m.AdminMonitorComponent)
+      },
+
+      // 8. Results Reports
+      {
+        path: 'reports/results',
+        loadComponent: () =>
+          import('./pages/admin-dashboard/reports/results-reports/results-reports.component')
+            .then(m => m.ResultsReportsComponent)
+      },
+
+      // 9. Security Logs
+      {
+        path: 'security/logs',
+        loadComponent: () =>
+          import('./pages/admin-dashboard/security/security-logs/security-logs.component')
+            .then(m => m.SecurityLogsComponent)
+      },
+
+      // 10. Admin Settings
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./pages/admin-dashboard/settings/admin-settings/admin-settings.component')
+            .then(m => m.AdminSettingsComponent)
       }
     ]
   },

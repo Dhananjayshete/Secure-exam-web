@@ -1,0 +1,89 @@
+<div class="page">
+    <div class="page-header">
+        <div>
+            <h1><i class="fa-solid fa-shield-halved"></i> Security &amp; Logs</h1>
+            <p class="subtitle">Monitor login activity and exam security events</p>
+        </div>
+        <button class="btn-danger" (click)="clearLogs()">
+            <i class="fa-solid fa-trash"></i> Clear Logs
+        </button>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card blue">
+            <i class="fa-solid fa-list-check"></i>
+            <div><span class="val">{{ totalEvents }}</span><span class="lbl">Total Events</span></div>
+        </div>
+        <div class="stat-card green">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            <div><span class="val">{{ loginCount }}</span><span class="lbl">Logins</span></div>
+        </div>
+        <div class="stat-card orange">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <div><span class="val">{{ suspiciousCount }}</span><span class="lbl">Suspicious Events</span></div>
+        </div>
+        <div class="stat-card red">
+            <i class="fa-solid fa-ban"></i>
+            <div><span class="val">{{ blockedCount }}</span><span class="lbl">Blocked Attempts</span></div>
+        </div>
+    </div>
+
+    <div class="filters-bar">
+        <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()"
+            placeholder="Search by user, IP, or event..." class="search-input" />
+        <select [(ngModel)]="selectedType" (ngModelChange)="applyFilter()" class="filter-select">
+            <option *ngFor="let t of logTypes" [value]="t.value">{{ t.label }}</option>
+        </select>
+        <button class="btn-refresh" (click)="loadLogs()">
+            <i class="fa-solid fa-arrows-rotate"></i> Refresh
+        </button>
+    </div>
+
+    <div *ngIf="isLoading" class="loading-state">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <p>Loading logs...</p>
+    </div>
+
+    <div *ngIf="!isLoading" class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Severity</th>
+                    <th>Event</th>
+                    <th>User</th>
+                    <th>Details</th>
+                    <th>IP Address</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let log of filteredLogs" [class]="'row-' + getSeverity(log.event_type)">
+                    <td><span class="severity-dot" [class]="getSeverity(log.event_type)"></span></td>
+                    <td>
+                        <div class="event-cell">
+                            <span class="event-icon" [class]="getSeverity(log.event_type)">
+                                <i class="fa-solid" [class]="'fa-' + getEventIcon(log.event_type)"></i>
+                            </span>
+                            <span class="event-type">{{ log.event_type?.replace('_', ' ') | titlecase }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="user-cell">
+                            <div class="avatar">{{ log.user_name?.charAt(0)?.toUpperCase() || '?' }}</div>
+                            <span>{{ log.user_name || 'Unknown' }}</span>
+                        </div>
+                    </td>
+                    <td class="details">{{ log.details }}</td>
+                    <td class="ip">{{ log.ip_address }}</td>
+                    <td class="time">{{ log.timestamp | date:'dd MMM, hh:mm a' }}</td>
+                </tr>
+                <tr *ngIf="filteredLogs.length === 0">
+                    <td colspan="6" class="empty">
+                        <i class="fa-solid fa-shield-check"></i>
+                        <p>No security events found.</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

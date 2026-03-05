@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 // MIDDLEWARE
 // ============================================
 app.use(cors({
-    origin: 'http://localhost:4200', // Angular dev server
+    origin: 'http://localhost:4200',
     credentials: true
 }));
 app.use(express.json());
@@ -32,6 +32,7 @@ app.use('/api/tickets', require('./routes/tickets'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api', require('./routes/questions'));
 app.use('/api', require('./routes/proctoring'));
+app.use('/api/admin', require('./routes/admin'));  // ← NEW
 
 // Health check
 app.get('/api/health', (req, res) => {

@@ -309,4 +309,49 @@ router.post('/:id/reset-password', requireRole('admin'), async (req, res) => {
     }
 });
 
+// ============================================
+// GET /api/users/admin/logs — System activity logs (Admin only, mock data)
+// ============================================
+router.get('/admin/logs', requireRole('admin'), async (req, res) => {
+    try {
+        // Fetch recent real user registrations & status changes as base
+        const recentUsers = await pool.query(
+            `SELECT name, role, status, created_at FROM users ORDER BY created_at DESC LIMIT 10`
+        );
+
+        // Build a mix of real + mock log entries
+        const realLogs = recentUsers.rows.map(u => ({
+            action: `User Registered`,
+            detail: `${u.name} (${u.role})`,
+            timestamp: u.created_at,
+            status: 'Success',
+            icon: 'user-plus'
+        }));
+
+        const mockLogs = [
+            { action: 'Admin Login', detail: 'admin@exam.com logged in', timestamp: new Date(Date.now() - 5 * 60000).toISOString(), status: 'Success', icon: 'shield' },
+            { action: 'Exam Created', detail: '"Final Mathematics Exam" scheduled', timestamp: new Date(Date.now() - 18 * 60000).toISOString(), status: 'Success', icon: 'file-text' },
+            { action: 'Failed Login', detail: 'unknown@user.com — 3 attempts', timestamp: new Date(Date.now() - 32 * 60000).toISOString(), status: 'Warning', icon: 'alert-triangle' },
+            { action: 'Exam Started', detail: '"Physics Mid-Term" went Live', timestamp: new Date(Date.now() - 55 * 60000).toISOString(), status: 'Success', icon: 'play' },
+            { action: 'User Blocked', detail: 'student27@college.edu blocked by admin', timestamp: new Date(Date.now() - 80 * 60000).toISOString(), status: 'Warning', icon: 'user-x' },
+            { action: 'Password Reset', detail: 'teacher@school.com reset password', timestamp: new Date(Date.now() - 120 * 60000).toISOString(), status: 'Success', icon: 'key' },
+            { action: 'Failed Login', detail: 'brute-force attempt on /auth/login', timestamp: new Date(Date.now() - 150 * 60000).toISOString(), status: 'Danger', icon: 'alert-octagon' },
+            { action: 'Exam Submitted', detail: '12 students submitted "Chemistry Quiz"', timestamp: new Date(Date.now() - 200 * 60000).toISOString(), status: 'Success', icon: 'check-circle' },
+            { action: 'Group Created', detail: 'Group "Batch 2024-A" added', timestamp: new Date(Date.now() - 250 * 60000).toISOString(), status: 'Success', icon: 'users' },
+            { action: 'System Notice', detail: 'Server uptime > 99.9% this month', timestamp: new Date(Date.now() - 300 * 60000).toISOString(), status: 'Info', icon: 'info' },
+        ];
+
+        // Merge real + mock, sort by timestamp desc
+        const combined = [...mockLogs, ...realLogs]
+            .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+            .slice(0, 20);
+
+        res.json(combined);
+    } catch (err) {
+        console.error('Admin Logs Error:', err);
+        res.status(500).json({ error: 'Server error fetching logs.' });
+    }
+});
+
 module.exports = router;
+
