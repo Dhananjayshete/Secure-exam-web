@@ -70,9 +70,8 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
   activeExamTitle: string = '';
   examQuestions: any[] = [];
   currentQuestionIndex: number = 0;
-  selectedAnswers: Map<string, any> = new Map(); // questionId -> { selectedOptionId, textAnswer }
+  selectedAnswers: Map<string, any> = new Map();
 
-  // NEW: UX state
   isScheduledModalOpen: boolean = false;
   scheduledExam: any = null;
   isCompletionView: boolean = false;
@@ -82,9 +81,22 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
   warningCount: number = 0;
   private cameraCheckInterval: any;
 
-  constructor(private apiService: ApiService, private authService: AuthService) { }
-
+  // =============================================================
+  // FIX 1: ViewChild reference to the <video> element in the template
+  // The stream must be assigned to videoRef.nativeElement.srcObject
+  // =============================================================
+  @ViewChild('proctoringVideo') proctoringVideoRef?: ElementRef<HTMLVideoElement>;
   @ViewChild('resultCard') resultCardRef?: ElementRef;
+
+  // =============================================================
+  // FIX 2: Flag to pause proctoring listeners during intentional
+  // UI interactions (submit confirm dialog, fullscreen exit, etc.)
+  // Without this flag, the confirm() dialog causes window blur
+  // which fires focus_loss -> warning -> disqualification loop
+  // =============================================================
+  private isProctoringPaused: boolean = false;
+
+  constructor(private apiService: ApiService, private authService: AuthService) { }
 
   ngOnInit() {
     this.loadProfile();
@@ -111,13 +123,11 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
   loadExams() {
     this.apiService.getExams().subscribe({
       next: (exams) => {
-        // Filter out completed exams for upcoming list
         this.upcomingExams = exams
           .filter(e => e.status !== 'Completed')
           .map(e => {
             const start = e.startTime ? new Date(e.startTime) : null;
             const end = e.endTime ? new Date(e.endTime) : null;
-
             return {
               id: e.id,
               name: e.title,
@@ -128,8 +138,6 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
               displayDate: start ? start.toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'TBD',
               displayEndDate: end ? end.toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : null,
               time: start ? start.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : 'TBD',
-
-              // Initial status calc
               isStartable: false,
               displayStatus: 'Locked',
               countdown: ''
@@ -137,7 +145,6 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
           });
 
         this.updateExamStatuses();
-        // Start countdown timer
         setInterval(() => this.updateExamStatuses(), 1000);
 
         this.stats.total = exams.length;
@@ -156,26 +163,21 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
         exam.displayStatus = 'TBD';
         return;
       }
-
       if (now < exam.startTime) {
         exam.isStartable = false;
         exam.displayStatus = 'Scheduled';
-        // Calc countdown
         const diff = exam.startTime.getTime() - now.getTime();
         const d = Math.floor(diff / (1000 * 60 * 60 * 24));
         const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const s = Math.floor((diff % (1000 * 60)) / 1000);
-
         if (d > 0) exam.countdown = `Opens in ${d}d ${h}h`;
         else exam.countdown = `Opens in ${h}h ${m}m ${s}s`;
-
       } else if (exam.endTime && now > exam.endTime) {
         exam.isStartable = false;
         exam.displayStatus = 'Expired';
         exam.countdown = 'Exam Ended';
       } else {
-        // Live
         exam.isStartable = true;
         exam.displayStatus = 'Live';
         exam.countdown = 'Active Now';
@@ -186,7 +188,6 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
   loadResults() {
     this.apiService.getStudentResults().subscribe({
       next: (data: any[]) => {
-        // Map raw API rows into display-friendly objects
         this.results = data.map(r => ({
           exam: r.exam_name,
           subject: r.subject,
@@ -195,7 +196,6 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
           date: r.start_time ? new Date(r.start_time).toLocaleDateString() : 'N/A',
           raw: r
         }));
-
         this.examHistory = data.map(r => ({
           name: r.exam_name,
           subject: r.subject,
@@ -203,8 +203,6 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
           status: r.status || 'Completed',
           score: r.score != null ? r.score + '%' : 'N/A'
         }));
-
-        // Update latest result card — data is already sorted by created_at DESC
         if (data.length > 0 && data[0].score != null) {
           this.stats.latestScore = `${data[0].score}% (${data[0].grade || 'Pending'})`;
         } else {
@@ -228,9 +226,7 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
 
   markNotificationRead(notification: any) {
     this.apiService.markNotificationRead(notification.id).subscribe({
-      next: () => {
-        this.notifications = this.notifications.filter(n => n.id !== notification.id);
-      }
+      next: () => { this.notifications = this.notifications.filter(n => n.id !== notification.id); }
     });
   }
 
@@ -255,13 +251,11 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
         <hr style="margin-top: 24px;" />
         <p style="font-size:11px; color:#64748b;">Generated by SecureTake Academic Portal</p>
       </div>`;
-
     const el = document.createElement('div');
     el.innerHTML = content;
     el.style.position = 'fixed';
     el.style.left = '-9999px';
     document.body.appendChild(el);
-
     html2canvas(el, { scale: 2 }).then((canvas: any) => {
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
@@ -276,7 +270,6 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
   // =============================================================
   // 5. FUNCTIONS
   // =============================================================
-
   switchView(viewName: string) {
     this.currentView = viewName;
     if (viewName === 'results' || viewName === 'history') {
@@ -287,15 +280,12 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
   // =============================================================
   // 6. EXAM SECURITY LOGIC
   // =============================================================
-
-  // Verification State
   isVerificationModalOpen: boolean = false;
   verificationStep: 'password' | 'system-check' = 'password';
   verificationPassword: string = '';
   verificationError: string = '';
   systemCheckStatus = { camera: false, mic: false, error: '' };
   private activeMediaStream: MediaStream | null = null;
-
   targetExam: any = null;
 
   startExam(exam: any) {
@@ -305,12 +295,10 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
       this.isScheduledModalOpen = true;
       return;
     }
-
     if (exam.displayStatus === 'Expired') {
       alert("This exam has already ended.");
       return;
     }
-
     this.targetExam = exam;
     this.isVerificationModalOpen = true;
     this.verificationStep = 'password';
@@ -359,7 +347,19 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
       .then(stream => {
         this.systemCheckStatus.camera = true;
         this.systemCheckStatus.mic = true;
-        this.activeMediaStream = stream; // Keep it active
+        this.activeMediaStream = stream;
+
+        // =============================================================
+        // FIX 1A: Attach stream to the system-check preview <video> element
+        // Use setTimeout to allow Angular to render the video element first
+        // =============================================================
+        setTimeout(() => {
+          const videoEl = document.getElementById('systemCheckVideo') as HTMLVideoElement;
+          if (videoEl) {
+            videoEl.srcObject = stream;
+            videoEl.play().catch(e => console.warn('Preview play error:', e));
+          }
+        }, 100);
       })
       .catch(err => {
         console.error('System check failed:', err);
@@ -374,7 +374,6 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
       alert('Cannot start exam without System Check pass.');
       return;
     }
-
     if (!this.targetExam) return;
 
     this.apiService.startExamSession(this.targetExam.id).subscribe({
@@ -386,8 +385,16 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
         this.warningCount = 0;
         this.enterFullscreen();
         this.startTimer(res.candidate?.duration_minutes || this.targetExam.duration || 60);
-        this.setupProctoringListeners();
-        this.isVerificationModalOpen = false; // Don't call closeVerificationModal to keep stream
+        this.isVerificationModalOpen = false;
+
+        // =============================================================
+        // FIX 1B: Attach the SAME stream to the in-exam proctoring <video>
+        // Must wait for Angular to render the exam view and video element
+        // =============================================================
+        setTimeout(() => {
+          this.attachStreamToVideo();
+          this.setupProctoringListeners();
+        }, 300);
       },
       error: (err: any) => {
         console.error('Start Exam Error:', err);
@@ -395,6 +402,31 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
         this.closeVerificationModal();
       }
     });
+  }
+
+  // =============================================================
+  // FIX 1C: Dedicated method to attach stream to video element
+  // Uses both ViewChild ref and direct DOM query as fallback
+  // =============================================================
+  private attachStreamToVideo() {
+    if (!this.activeMediaStream) return;
+
+    // Try ViewChild reference first
+    if (this.proctoringVideoRef?.nativeElement) {
+      const video = this.proctoringVideoRef.nativeElement;
+      video.srcObject = this.activeMediaStream;
+      video.muted = true; // Prevent audio feedback
+      video.play().catch(e => console.warn('Video play error (ViewChild):', e));
+      return;
+    }
+
+    // Fallback: direct DOM query
+    const videoEl = document.getElementById('proctoringVideo') as HTMLVideoElement;
+    if (videoEl) {
+      videoEl.srcObject = this.activeMediaStream;
+      videoEl.muted = true;
+      videoEl.play().catch(e => console.warn('Video play error (DOM):', e));
+    }
   }
 
   loadExamQuestions() {
@@ -454,8 +486,27 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
     return this.selectedAnswers.has(questionId);
   }
 
+  // =============================================================
+  // FIX 2: submitExam — pause proctoring BEFORE showing confirm()
+  // The native confirm() dialog steals window focus, which fires
+  // onWindowBlur -> focus_loss warning -> instant disqualification.
+  // We pause the proctoring listeners for the duration of the dialog.
+  // =============================================================
   submitExam(isAuto: boolean = false) {
-    if (!isAuto && !confirm(`Are you sure you want to submit? You've answered ${this.selectedAnswers.size} of ${this.examQuestions.length} question(s).`)) return;
+    if (!isAuto) {
+      // PAUSE proctoring before showing the confirm dialog
+      this.isProctoringPaused = true;
+
+      const confirmed = confirm(
+        `Are you sure you want to submit? You've answered ${this.selectedAnswers.size} of ${this.examQuestions.length} question(s).`
+      );
+
+      // Re-enable proctoring after dialog is dismissed (regardless of choice)
+      // Use a small delay so any residual blur/focus events settle first
+      setTimeout(() => { this.isProctoringPaused = false; }, 500);
+
+      if (!confirmed) return;
+    }
 
     const answers = Array.from(this.selectedAnswers.entries()).map(([questionId, ans]) => ({
       questionId,
@@ -466,8 +517,6 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
     this.apiService.submitAnswers(this.activeExamId, answers).subscribe({
       next: (result) => {
         this.endExamSession();
-
-        // Show completion view
         this.completionData = {
           title: this.activeExamTitle,
           date: new Date().toLocaleDateString(),
@@ -489,6 +538,8 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
   }
 
   private endExamSession() {
+    // Pause proctoring immediately so no false events fire during cleanup
+    this.isProctoringPaused = true;
     this.isExamActive = false;
     this.exitFullscreen();
     clearInterval(this.timerInterval);
@@ -498,32 +549,37 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
     window.removeEventListener('blur', this.onWindowBlur);
   }
 
-  // --- Proctoring Event Logging ---
+  // =============================================================
+  // PROCTORING LISTENERS
+  // =============================================================
   setupProctoringListeners() {
-    // Tab visibility change
+    this.isProctoringPaused = false;
     document.addEventListener('visibilitychange', this.onVisibilityChange);
-    // Window blur
     window.addEventListener('blur', this.onWindowBlur);
 
-    // Persistent Camera check
+    // Persistent camera health check
+    // FIX 3: Use 'face_warning' instead of 'camera_off' to match DB constraint:
+    // event_type CHECK IN ('tab_switch','focus_loss','face_warning','copy_attempt','right_click','devtools')
     this.cameraCheckInterval = setInterval(() => {
       if (this.activeMediaStream) {
         const videoTrack = this.activeMediaStream.getVideoTracks()[0];
         if (!videoTrack || videoTrack.readyState === 'ended' || !videoTrack.enabled) {
-          this.logProctoringEvent('camera_off', 'Camera track lost or disabled');
+          this.logProctoringEvent('face_warning', 'Camera track lost or disabled');
         }
       }
     }, 5000);
   }
 
   private onVisibilityChange = () => {
-    if (this.isExamActive && document.hidden) {
+    // FIX 2: Check isProctoringPaused before firing warning
+    if (this.isExamActive && !this.isProctoringPaused && document.hidden) {
       this.logProctoringEvent('tab_switch', 'Student switched tabs');
     }
   }
 
   private onWindowBlur = () => {
-    if (this.isExamActive) {
+    // FIX 2: Check isProctoringPaused before firing warning
+    if (this.isExamActive && !this.isProctoringPaused) {
       this.logProctoringEvent('focus_loss', 'Window lost focus');
     }
   }
@@ -545,19 +601,33 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
   }
 
   logProctoringEvent(eventType: string, details: string) {
-    if (!this.activeExamId) return;
+    if (!this.activeExamId || !this.isExamActive) return;
 
     // Increment warnings for serious violations
-    if (['tab_switch', 'focus_loss', 'camera_off'].includes(eventType)) {
+    if (['tab_switch', 'focus_loss', 'face_warning'].includes(eventType)) {
       this.warningCount++;
+
+      // =============================================================
+      // FIX 2: Pause proctoring while the alert dialog is showing
+      // alert() also causes window blur in some browsers
+      // =============================================================
+      this.isProctoringPaused = true;
+
       if (this.warningCount === 1) {
-        alert("Warning 1 of 3: Do not leave the exam window. Your session is being monitored.");
+        alert('⚠️ Warning 1 of 3: Do not leave the exam window. Your session is being monitored.');
       } else if (this.warningCount === 2) {
-        alert("Warning 2 of 3: Next violation will result in automatic disqualification!");
+        alert('⚠️ Warning 2 of 3: Next violation will result in automatic disqualification!');
       } else if (this.warningCount >= 3) {
-        alert("Warning 3 of 3: Disqualified! Your exam has been terminated.");
-        this.submitExam(true); // Auto-submit
+        alert('🚫 Warning 3 of 3: Disqualified! Your exam has been terminated.');
+        // Log the event first, then auto-submit
+        this.apiService.logProctoringEvent(this.activeExamId, eventType, details).subscribe({
+          complete: () => this.submitExam(true)
+        });
+        return; // Don't re-enable proctoring — we're submitting
       }
+
+      // Re-enable proctoring after alert is dismissed (with delay for blur events to settle)
+      setTimeout(() => { this.isProctoringPaused = false; }, 500);
     }
 
     this.apiService.logProctoringEvent(this.activeExamId, eventType, details).subscribe({
@@ -567,8 +637,10 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     clearInterval(this.timerInterval);
+    clearInterval(this.cameraCheckInterval);
     document.removeEventListener('visibilitychange', this.onVisibilityChange);
     window.removeEventListener('blur', this.onWindowBlur);
+    this.stopMediaStream();
   }
 
   // --- Timer & Fullscreen ---
@@ -579,7 +651,7 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
       let s = time % 60;
       this.timerDisplay = `${m}:${s < 10 ? '0' : ''}${s}`;
       time--;
-      if (time < 0) this.submitExam();
+      if (time < 0) this.submitExam(true); // Auto-submit — pass true to skip confirm
     }, 1000);
   }
 
@@ -589,25 +661,24 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
   }
 
   exitFullscreen() {
-    if (document.exitFullscreen) document.exitFullscreen();
+    if (document.fullscreenElement && document.exitFullscreen) {
+      document.exitFullscreen();
+    }
   }
 
   // --- Form Handlers ---
   updateProfile() {
     const user = this.authService.getCurrentUser();
     if (!user) return;
-
     const data = {
       name: this.studentProfile.name,
       phone: this.studentProfile.phone,
       batch: this.studentProfile.batch,
       department: this.studentProfile.dept
     };
-
     this.apiService.updateProfile(user.id, data).subscribe({
       next: (res: any) => {
         alert("Profile updated successfully.");
-        // Update local storage user info
         const updatedUser = { ...user, ...res.user };
         this.authService.updateUser(updatedUser);
         this.loadProfile();
@@ -623,7 +694,6 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
       alert("Passwords do not match!");
       return;
     }
-
     const user = this.authService.getCurrentUser();
     if (user) {
       this.apiService.updatePassword(user.id, this.passwordForm.old, this.passwordForm.new).subscribe({
