@@ -1,861 +1,893 @@
-/* =========================================================
-   1. VARIABLES (Colors & Settings)
-   ========================================================= */
-:host {
-  /* -- Brand Colors -- */
-  --primary: #ff7a00;
-  /* The main SecureTake Orange */
-  --primary-soft: #fff2e5;
-  /* Light orange background for active buttons */
+/*
+  ================================================================
+  STUDENT DASHBOARD - student-dashboard.component.scss
 
-  /* -- Accent Colors -- */
-  --accent-purple: #8b5cf6;
-  --accent-blue: #3b82f6;
-  --accent-green: #10b981;
+  Sections in this file:
+    1.  CSS Variables    (all colors in one place)
+    2.  Main layout      (the sidebar + content side-by-side setup)
+    3.  Sidebar          (left panel with nav links)
+    4.  Top header       (header bar with bell, profile, logout)
+    5.  Page content     (the scrollable right side)
+    6.  Dashboard page   (hero banner + stat cards)
+    7.  Tables & buttons (shared styles used across pages)
+    8.  Exam interface   (fullscreen exam mode)
+    9.  Admit card       (printable card styling)
+    10. Modals           (verification + scheduled exam popups)
+  ================================================================
+*/
 
-  /* -- Backgrounds -- */
-  --bg-body: #fdfbf7;
-  /* Warm creamy white for the main page */
-  --bg-card: #ffffff;
-  /* Pure white for cards */
 
-  /* -- Text & Borders -- */
-  --text-main: #1f2937;
-  /* Dark Grey */
-  --text-muted: #6b7280;
-  /* Light Grey */
-  --border: #f3f4f6;
-  /* Subtle border color */
+/* ================================================================
+   1. CSS VARIABLES
+   Change these to restyle the whole app at once.
+   ================================================================ */
+   :host {
+    /* Brand colors */
+    --primary:        #ff7a00;   /* SecureTake orange */
+    --primary-soft:   #fff2e5;   /* Light orange for hover/active backgrounds */
 
-  /* -- Shadows -- */
-  --shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.08);
+    /* Accent colors for icons and badges */
+    --accent-purple:  #8b5cf6;
+    --accent-blue:    #3b82f6;
+    --accent-green:   #10b981;
+
+    /* Background colors */
+    --bg-body:  #fdfbf7;  /* Warm creamy white for the main page */
+    --bg-card:  #ffffff;  /* Pure white for cards */
+
+    /* Text and borders */
+    --text-main:  #1f2937;  /* Dark grey for headings */
+    --text-muted: #6b7280;  /* Light grey for secondary text */
+    --border:     #f3f4f6;  /* Very subtle border color */
+
+    /* Box shadow used on cards */
+    --shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.08);
 }
 
-/* =========================================================
-     2. MAIN LAYOUT (Fixes the Blank Screen)
-     ========================================================= */
-/* This ensures the component takes up the whole screen */
+
+/* ================================================================
+   2. MAIN LAYOUT
+   :host display:block fixes the blank screen on load.
+   .dashboard-container puts sidebar and content side by side.
+   ================================================================ */
+
+/* Makes the component fill its container (fixes blank screen) */
 :host {
-  display: block;
+    display: block;
 }
 
-/* This container holds the Sidebar (Left) and Content (Right) side-by-side */
+/* Side-by-side layout: sidebar on left, content on right */
 .dashboard-container {
-  display: flex;
-  height: 100vh;
-  /* Full Screen Height */
-  width: 100vw;
-  /* Full Screen Width */
-  font-family: 'Inter', sans-serif;
-  background-color: var(--bg-body);
-  color: var(--text-main);
-  overflow: hidden;
-  /* Prevents the whole page from scrolling */
+    display: flex;
+    height: 100vh;       /* Full screen height */
+    width: 100vw;        /* Full screen width */
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    overflow: hidden;    /* Prevents the whole page from scrolling */
 }
 
-/* =========================================================
-     3. SIDEBAR (Left Panel)
-     ========================================================= */
+
+/* ================================================================
+   3. SIDEBAR (Left Panel)
+   ================================================================ */
 .sidebar {
-  width: 250px;
-  /* Fixed width */
-  min-width: 250px;
-  /* Stops it from squishing */
-  background: var(--bg-card);
-  padding: 25px 20px;
-  display: flex;
-  flex-direction: column;
-  /* Stacks items vertically */
-  border-right: 1px solid var(--border);
-  z-index: 20;
-  /* Keeps it above the content */
+    width: 250px;
+    min-width: 250px;     /* Stops it from shrinking */
+    background: var(--bg-card);
+    padding: 25px 20px;
+    display: flex;
+    flex-direction: column;   /* Stacks items top to bottom */
+    border-right: 1px solid var(--border);
+    z-index: 20;
 }
 
-/* Logo Area */
+/* Logo at the top of sidebar */
 .brand {
-  font-family: 'DM Serif Display', serif;
-  font-size: 24px;
-  color: var(--text-main);
-  margin-bottom: 30px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding-left: 5px;
-
-  i {
-    color: var(--primary);
-    transform: rotate(-10deg);
-  }
-}
-
-/* Menu Headers (e.g. MENU, SETTINGS) */
-.nav-title {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #9ca3af;
-  margin: 15px 0 8px 15px;
-}
-
-/* Menu Buttons */
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: 12px;
-  color: var(--text-muted);
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-  transition: 0.2s;
-  margin-bottom: 4px;
-  text-decoration: none;
-
-  /* Hover Effect */
-  &:hover {
-    background: #f9fafb;
-    color: var(--primary);
-    transform: translateX(3px);
-  }
-
-  /* Active (Selected) Effect */
-  &.active {
-    background: var(--primary-soft);
-    color: var(--primary);
-  }
-}
-
-/* Purple Card at the Bottom */
-.motivation-card {
-  margin-top: auto;
-  /* Pushes to bottom */
-  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-  color: white;
-  padding: 20px;
-  border-radius: 16px;
-  text-align: center;
-
-  h4 {
-    margin-bottom: 5px;
-    font-size: 14px;
-    font-family: 'Fredoka', sans-serif;
-  }
-
-  p {
-    font-size: 11px;
-    opacity: 0.9;
-  }
-}
-
-/* =========================================================
-     4. CONTENT AREA (Right Panel)
-     ========================================================= */
-.main-wrapper {
-  flex: 1;
-  /* Takes up all remaining space */
-  display: flex;
-  flex-direction: column;
-  /* Stack Header and Content */
-  position: relative;
-  overflow: hidden;
-  /* Scrolls inside this box, not the body */
-}
-
-/* Top Header Bar */
-.top-bar {
-  height: 70px;
-  padding: 0 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.8);
-  /* Glass effect */
-  backdrop-filter: blur(10px);
-  z-index: 10;
-
-  .date-badge {
-    font-weight: 600;
-    color: var(--text-muted);
-    font-size: 13px;
-  }
-
-  /* Right Side Icons */
-  .actions-right {
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px;
+    color: var(--text-main);
+    margin-bottom: 30px;
     display: flex;
     align-items: center;
-    gap: 20px;
-  }
+    gap: 8px;
+    padding-left: 5px;
 
-  .notification-icon,
-  .logout-btn {
-    font-size: 18px;
+    /* The colored "Take" part of the logo */
+    span { color: var(--primary); }
+
+    i {
+        color: var(--primary);
+        transform: rotate(-10deg);
+    }
+}
+
+/* Section labels like "MENU" and "SETTINGS" */
+.nav-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #9ca3af;
+    margin: 15px 0 8px 15px;
+}
+
+/* Each nav link button */
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 12px;
     color: var(--text-muted);
+    font-weight: 600;
+    font-size: 13px;
     cursor: pointer;
     transition: 0.2s;
-
-    &:hover {
-      color: var(--primary);
-    }
-  }
-
-  // Notification Badge
-  .notif-badge {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    background: #ef4444;
-    color: white;
-    font-size: 10px;
-    font-weight: 700;
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-  }
-
-  // Notification Dropdown
-  .notif-dropdown {
-    position: absolute;
-    top: calc(100% + 12px);
-    right: 0;
-    width: 320px;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
-    overflow: hidden;
-    animation: popIn 0.2s ease-out;
-
-    .notif-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 18px;
-      border-bottom: 1px solid #f3f4f6;
-      font-size: 13px;
-    }
-
-    .mark-all-btn {
-      background: none;
-      border: none;
-      color: var(--primary);
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 0;
-    }
-
-    .notif-empty {
-      padding: 24px;
-      text-align: center;
-      color: #94a3b8;
-      font-size: 13px;
-
-      i {
-        margin-right: 6px;
-      }
-    }
-
-    .notif-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 13px 18px;
-      border-bottom: 1px solid #f9fafb;
-      cursor: pointer;
-      font-size: 13px;
-      transition: background 0.15s;
-
-      &:last-child {
-        border-bottom: none;
-      }
-
-      &:hover {
-        background: #f8fafc;
-      }
-
-      i {
-        color: var(--accent-blue);
-        margin-top: 2px;
-        flex-shrink: 0;
-      }
-    }
-  }
-
-
-  /* User Profile Pill */
-  .user-pill {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    background: white;
-    padding: 5px 6px 5px 15px;
-    border-radius: 30px;
-    box-shadow: var(--shadow);
-
-    .user-info {
-      text-align: right;
-
-      .name {
-        font-weight: 700;
-        font-size: 12px;
-      }
-
-      .role {
-        font-size: 10px;
-        color: var(--text-muted);
-      }
-    }
-
-    .avatar {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      overflow: hidden;
-
-      img {
-        width: 100%;
-      }
-    }
-  }
-}
-
-/* The Scrollable Page Content */
-.content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 30px 40px 50px 40px;
-  max-width: 1200px;
-  /* Keeps content from getting too wide */
-  width: 100%;
-  margin: 0 auto;
-}
-
-/* Animation for switching tabs */
-.fade-in {
-  animation: slideUp 0.4s ease-out;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* =========================================================
-     5. DASHBOARD WIDGETS
-     ========================================================= */
-
-/* Welcome Banner */
-.hero-banner {
-  background: white;
-  border-radius: 20px;
-  padding: 30px 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: var(--shadow);
-  margin-bottom: 30px;
-  position: relative;
-  overflow: hidden;
-
-  .hero-text h1 {
-    font-family: 'DM Serif Display';
-    font-size: 32px;
-    margin-bottom: 8px;
-  }
-
-  .hero-img {
-    height: 120px;
-    position: relative;
-    z-index: 2;
-  }
-}
-
-/* 4-Box Stats Grid */
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-bottom: 40px;
-}
-
-.stat-card {
-  background: white;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: var(--shadow);
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  transition: 0.3s;
-
-  &:hover {
-    transform: translateY(-5px);
-  }
-
-  .icon-circle {
-    width: 45px;
-    height: 45px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-
-    &.orange {
-      background: #fff7ed;
-      color: var(--primary);
-    }
-
-    &.blue {
-      background: #eff6ff;
-      color: var(--accent-blue);
-    }
-
-    &.green {
-      background: #f0fdf4;
-      color: var(--accent-green);
-    }
-
-    &.purple {
-      background: #f5f3ff;
-      color: var(--accent-purple);
-    }
-  }
-}
-
-/* =========================================================
-     6. TABLES & BUTTONS
-     ========================================================= */
-.table-container {
-  background: white;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: var(--shadow);
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th {
-  text-align: left;
-  padding: 15px;
-  color: #9ca3af;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-td {
-  padding: 15px;
-  border-top: 1px solid #f3f4f6;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-/* Status Badges */
-.status-pass {
-  color: var(--accent-green);
-  background: #dcfce7;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.status-badge {
-  padding: 4px 10px;
-  border-radius: 8px;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.status-badge.ready {
-  background: #dcfce7;
-  color: #10b981;
-}
-
-.status-badge.locked {
-  background: #f3f4f6;
-  color: #9ca3af;
-}
-
-/* Buttons */
-.btn {
-  padding: 10px 20px;
-  border-radius: 30px;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 13px;
-  transition: 0.2s;
-}
-
-.btn-sm {
-  padding: 6px 14px;
-  font-size: 12px;
-}
-
-.btn-primary {
-  background: var(--primary);
-  color: white;
-  box-shadow: 0 4px 10px rgba(255, 122, 0, 0.3);
-
-  &:hover {
-    background: #e66e00;
-  }
-}
-
-.btn-disabled {
-  background: #f3f4f6;
-  color: #9ca3af;
-  cursor: not-allowed;
-}
-
-.btn-outline {
-  border: 1px solid #e5e7eb;
-  background: white;
-
-  &:hover {
-    background: #f9fafb;
-  }
-}
-
-.full-width {
-  width: 100%;
-}
-
-/* =========================================================
-     7. EXAM INTERFACE (The Fullscreen Mode)
-     ========================================================= */
-#exam-interface {
-  position: fixed;
-  inset: 0;
-  /* Covers entire screen */
-  background: #f8fafc;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-}
-
-.exam-navbar {
-  height: 70px;
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
-  padding: 0 40px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  .timer-pill {
-    background: #fee2e2;
-    color: #dc2626;
-    padding: 8px 16px;
-    border-radius: 30px;
-    font-weight: 700;
-    font-family: monospace;
-    font-size: 16px;
-  }
-}
-
-.exam-layout {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
-}
-
-/* Question Area */
-.question-panel {
-  flex: 1;
-  padding: 40px;
-  overflow-y: auto;
-}
-
-.q-card {
-  background: white;
-  padding: 40px;
-  border-radius: 20px;
-  box-shadow: var(--shadow);
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.option-box {
-  display: flex;
-  align-items: center;
-  padding: 15px;
-  border: 2px solid #f3f4f6;
-  border-radius: 12px;
-  margin-bottom: 12px;
-  cursor: pointer;
-
-  &:hover {
-    border-color: var(--primary);
-    background: #fff7ed;
-  }
-
-  input {
-    margin-right: 15px;
-    accent-color: var(--primary);
-  }
-}
-
-/* Right Side (Camera) */
-.sidebar-right {
-  width: 300px;
-  background: white;
-  border-left: 1px solid #e5e7eb;
-  padding: 20px;
-}
-
-.cam-preview {
-  width: 100%;
-  height: 180px;
-  background: black;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  position: relative;
-}
-
-.q-palette {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-}
-
-.q-dot {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: #f3f4f6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  cursor: pointer;
-
-  &.current {
-    background: var(--primary);
-    color: white;
-  }
-
-  &.solved {
-    background: var(--accent-green);
-    color: white;
-  }
-}
-
-/* =========================================================
-     8. ADMIT CARD
-     ========================================================= */
-.admit-card-modern {
-  background: white;
-  max-width: 500px;
-  margin: 0 auto;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-
-  .admit-top {
-    background: #1f2937;
-    color: white;
-    padding: 25px;
-    text-align: center;
-  }
-
-  .admit-body {
-    padding: 30px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-
-  .info-group label {
-    display: block;
-    font-size: 10px;
-    text-transform: uppercase;
-    color: #9ca3af;
     margin-bottom: 4px;
-  }
+    text-decoration: none;
 
-  .info-group div {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text-main);
-  }
+    /* Hover: slight right nudge + orange text */
+    &:hover {
+        background: #f9fafb;
+        color: var(--primary);
+        transform: translateX(3px);
+    }
+
+    /* Active/selected: soft orange background */
+    &.active {
+        background: var(--primary-soft);
+        color: var(--primary);
+    }
 }
 
-/* =========================================================
-     9. VERIFICATION MODAL
-     ========================================================= */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(5px);
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.verification-modal {
-  background: white;
-  width: 100%;
-  max-width: 450px;
-  border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-  animation: popIn 0.3s ease-out;
-
-  .modal-header {
-    background: #f8fafc;
+/* Motivation card pushed to the very bottom of sidebar */
+.motivation-card {
+    margin-top: auto;    /* Pushes to bottom */
+    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+    color: white;
     padding: 20px;
+    border-radius: 16px;
+    text-align: center;
+
+    h4 {
+        margin-bottom: 5px;
+        font-size: 14px;
+        font-family: 'Fredoka', sans-serif;
+    }
+    p {
+        font-size: 11px;
+        opacity: 0.9;
+    }
+}
+
+
+/* ================================================================
+   4. TOP HEADER BAR
+   ================================================================ */
+.top-bar {
+    height: 70px;
+    padding: 0 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #e2e8f0;
+    background: rgba(255, 255, 255, 0.8);  /* Semi-transparent glass effect */
+    backdrop-filter: blur(10px);
+    z-index: 10;
 
-    h3 {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 700;
-    }
-
-    .close-btn {
-      background: none;
-      border: none;
-      font-size: 24px;
-      cursor: pointer;
-      color: #64748b;
-    }
-  }
-
-  .modal-body {
-    padding: 30px;
-    text-align: center;
-
-    .verify-icon {
-      width: 60px;
-      height: 60px;
-      background: #eff6ff;
-      color: var(--accent-blue);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      margin: 0 auto 15px;
-    }
-
-    h4 {
-      margin: 0 0 5px;
-      font-size: 18px;
-    }
-
-    p {
-      margin: 0 0 20px;
-      color: var(--text-muted);
-      font-size: 13px;
-    }
-
-    .form-group {
-      text-align: left;
-      margin-bottom: 20px;
-    }
-
-    .form-control {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      font-family: inherit;
-      font-size: 14px;
-
-      &:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px var(--primary-soft);
-      }
-    }
-
-    .error-msg {
-      color: #ef4444;
-      font-size: 12px;
-      margin-top: 5px;
-      font-weight: 600;
-    }
-
-    .check-list {
-      text-align: left;
-      margin-bottom: 20px;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    .check-item {
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #f3f4f6;
-
-      &:last-child {
-        border-bottom: none;
-      }
-
-      span i {
-        margin-right: 8px;
+    /* "Academic Portal" label on the left */
+    .date-badge {
+        font-weight: 600;
         color: var(--text-muted);
-      }
-
-      .success {
-        color: var(--accent-green);
-      }
-
-      .fail {
-        color: #ef4444;
-      }
+        font-size: 13px;
     }
 
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-
-      button {
-        flex: 1;
-      }
+    /* Bell, profile pill, logout icons on the right */
+    .actions-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
     }
-  }
+
+    /* Bell and logout icons */
+    .notification-icon,
+    .logout-btn {
+        font-size: 18px;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: 0.2s;
+        &:hover { color: var(--primary); }
+    }
+
+    /* Red unread count badge on the bell */
+    .notif-badge {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        background: #ef4444;
+        color: white;
+        font-size: 10px;
+        font-weight: 700;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
+
+    /* Notification dropdown panel */
+    .notif-dropdown {
+        position: absolute;
+        top: calc(100% + 12px);
+        right: 0;
+        width: 320px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        z-index: 1000;
+        overflow: hidden;
+        animation: popIn 0.2s ease-out;
+
+        .notif-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 13px;
+        }
+
+        .mark-all-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 0;
+        }
+
+        .notif-empty {
+            padding: 24px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            i { margin-right: 6px; }
+        }
+
+        .notif-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 13px 18px;
+            border-bottom: 1px solid #f9fafb;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.15s;
+
+            &:last-child { border-bottom: none; }
+            &:hover { background: #f8fafc; }
+            i { color: var(--accent-blue); margin-top: 2px; flex-shrink: 0; }
+        }
+    }
+
+    /* User profile pill (name + avatar) */
+    .user-pill {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        background: white;
+        padding: 5px 6px 5px 15px;
+        border-radius: 30px;
+        box-shadow: var(--shadow);
+
+        .user-info {
+            text-align: right;
+            .name { font-weight: 700; font-size: 12px; }
+            .role { font-size: 10px; color: var(--text-muted); }
+        }
+
+        .avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            overflow: hidden;
+            img { width: 100%; }
+        }
+    }
 }
 
-@keyframes popIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
 
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+/* ================================================================
+   5. PAGE CONTENT AREA
+   FIX: Removed max-width and margin:auto so content fills
+   the full available width after the sidebar.
+   ================================================================ */
+
+/* Takes all remaining height, scrolls internally */
+.main-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;   /* Prevents flex overflow on smaller screens */
+}
+
+.content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 30px 40px 50px 40px;
+    /* NO max-width here — content fills full remaining width */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Smooth animation when switching between pages */
+.fade-in {
+    animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Page title used on Upcoming Exams, Results, etc. */
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+
+/* ================================================================
+   6. DASHBOARD HOME PAGE
+   Welcome banner + 4 stat cards
+   ================================================================ */
+
+/* Welcome banner with illustration on the right */
+.hero-banner {
+    background: white;
+    border-radius: 20px;
+    padding: 30px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+
+    .hero-text h1 {
+        font-family: 'DM Serif Display';
+        font-size: 32px;
+        margin-bottom: 8px;
+    }
+
+    /* Illustration image on the right side */
+    .hero-img {
+        height: 120px;
+        position: relative;
+        z-index: 2;
+    }
+}
+
+/* 4 stat cards in a row — stretch to fill full width */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+    width: 100%;
+}
+
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: 0.3s;
+
+    /* Lift on hover */
+    &:hover { transform: translateY(-5px); }
+
+    /* Colored icon circles: different color per card */
+    .icon-circle {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+
+        &.orange { background: #fff7ed; color: var(--primary); }
+        &.blue   { background: #eff6ff; color: var(--accent-blue); }
+        &.green  { background: #f0fdf4; color: var(--accent-green); }
+        &.purple { background: #f5f3ff; color: var(--accent-purple); }
+    }
+}
+
+
+/* ================================================================
+   7. TABLES & BUTTONS
+   Shared styles used on multiple pages.
+   ================================================================ */
+
+/* White card wrapping any table — fills full width */
+.table-container {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Table header row */
+th {
+    text-align: left;
+    padding: 15px;
+    color: #9ca3af;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Table data cells */
+td {
+    padding: 15px;
+    border-top: 1px solid #f3f4f6;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* Green badge used in results table */
+.status-pass {
+    color: var(--accent-green);
+    background: #dcfce7;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* Status badge: green if exam is live, grey if locked/scheduled */
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+
+    &.ready  { background: #dcfce7; color: #10b981; }
+    &.locked { background: #f3f4f6; color: #9ca3af; }
+}
+
+/* ----------------------------
+   BUTTONS
+   Base .btn class + modifier classes
+   ---------------------------- */
+.btn {
+    padding: 10px 20px;
+    border-radius: 30px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.btn-sm {
+    padding: 6px 14px;
+    font-size: 12px;
+}
+
+/* Orange primary button */
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 10px rgba(255, 122, 0, 0.3);
+    &:hover { background: #e66e00; }
+}
+
+/* Red danger button (Submit Exam) */
+.btn-danger {
+    background: #ef4444;
+    color: white;
+    &:hover { background: #dc2626; }
+}
+
+/* Grey disabled button */
+.btn-disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+/* Outline/ghost button */
+.btn-outline {
+    border: 1px solid #e5e7eb;
+    background: white;
+    &:hover { background: #f9fafb; }
+}
+
+/* Stretches button to full width of container */
+.full-width { width: 100%; }
+
+
+/* ================================================================
+   8. FULLSCREEN EXAM INTERFACE
+   Covers the entire screen during an active exam.
+   ================================================================ */
+
+#exam-interface {
+    position: fixed;
+    inset: 0;           /* Covers entire screen */
+    background: #f8fafc;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Top navbar: exam name, timer, submit button */
+.exam-navbar {
+    height: 70px;
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    /* Timer pill in the center */
+    .timer-pill {
+        background: #fee2e2;
+        color: #dc2626;
+        padding: 8px 16px;
+        border-radius: 30px;
+        font-weight: 700;
+        font-family: monospace;
+        font-size: 16px;
+    }
+}
+
+/* Question panel (left) + sidebar (right) side by side */
+.exam-layout {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+/* LEFT: Question area (takes most of the width) */
+.question-panel {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+/* White card holding the question */
+.q-card {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Question number label e.g. "QUESTION 3 OF 10 · 5 pts" */
+.q-meta {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+}
+
+/* The question text */
+.q-text {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+/* MCQ option box: click to select */
+.option-box {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border: 2px solid #f3f4f6;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: 0.15s;
+
+    /* Hover state */
+    &:hover {
+        border-color: var(--primary);
+        background: #fff7ed;
+    }
+
+    /* Selected state: orange border + light background */
+    &.selected {
+        border-color: var(--primary);
+        background: var(--primary-soft);
+        font-weight: 600;
+    }
+
+    input {
+        margin-right: 15px;
+        accent-color: var(--primary);
+    }
+}
+
+/* Previous/Next/Submit buttons row */
+.q-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+    border-top: 1px solid #f3f4f6;
+    padding-top: 20px;
+}
+
+/* RIGHT SIDEBAR: camera + question palette */
+.sidebar-right {
+    width: 300px;
+    background: white;
+    border-left: 1px solid #e5e7eb;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+/* Camera feed box */
+.cam-preview {
+    width: 100%;
+    height: 180px;
+    background: black;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+/* Pulsing REC dot animation */
+@keyframes pulse {
+    0%   { opacity: 1; }
+    50%  { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+/* QUESTION PALETTE
+   Green = answered, Orange = current, Gold border = bookmarked */
+.q-palette {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+
+.q-dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #f3f4f6;   /* Default: not answered */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: transform 0.1s;
+
+    &:hover { transform: scale(1.1); }
+
+    /* Current question: orange */
+    &.current {
+        background: var(--primary);
+        color: white;
+    }
+
+    /* Answered question: green */
+    &.solved {
+        background: var(--accent-green);
+        color: white;
+    }
+}
+
+
+/* ================================================================
+   9. ADMIT CARD
+   ================================================================ */
+.admit-card-modern {
+    background: white;
+    max-width: 500px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    /* No margin:auto — aligns left within the full-width content area */
+
+    /* Dark header strip */
+    .admit-top {
+        background: #1f2937;
+        color: white;
+        padding: 25px;
+        text-align: center;
+    }
+
+    /* 2-column grid of details */
+    .admit-body {
+        padding: 30px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .info-group label {
+        display: block;
+        font-size: 10px;
+        text-transform: uppercase;
+        color: #9ca3af;
+        margin-bottom: 4px;
+    }
+
+    .info-group div {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+}
+
+
+/* ================================================================
+   10. MODALS (Verification + Scheduled Exam)
+   ================================================================ */
+
+/* Semi-transparent dark overlay behind the modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* The white modal box */
+.verification-modal {
+    background: white;
+    width: 100%;
+    max-width: 450px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    animation: popIn 0.3s ease-out;
+
+    /* Modal title bar */
+    .modal-header {
+        background: #f8fafc;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #e2e8f0;
+
+        h3 { margin: 0; font-size: 16px; font-weight: 700; }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #64748b;
+        }
+    }
+
+    /* Modal content area */
+    .modal-body {
+        padding: 30px;
+        text-align: center;
+
+        /* Blue circle icon at top of modal */
+        .verify-icon {
+            width: 60px;
+            height: 60px;
+            background: #eff6ff;
+            color: var(--accent-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 15px;
+        }
+
+        h4 { margin: 0 0 5px; font-size: 18px; }
+        p  { margin: 0 0 20px; color: var(--text-muted); font-size: 13px; }
+
+        /* Password input group */
+        .form-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            box-sizing: border-box;
+
+            &:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px var(--primary-soft);
+            }
+        }
+
+        /* Red error message */
+        .error-msg {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        /* Camera/mic/face detection checklist */
+        .check-list {
+            text-align: left;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .check-item {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 14px;
+
+            &:last-child { border-bottom: none; }
+            span i { margin-right: 8px; color: var(--text-muted); }
+
+            /* Green tick when check passes */
+            .success { color: var(--accent-green); font-weight: 700; }
+            /* Red X when check fails */
+            .fail    { color: #ef4444; font-weight: 700; }
+        }
+
+        /* Two buttons side by side at bottom of modal */
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            button { flex: 1; }
+        }
+    }
+}
+
+/* Pop-in animation for modals */
+@keyframes popIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
 }

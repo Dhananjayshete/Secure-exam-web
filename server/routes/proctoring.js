@@ -5,26 +5,13 @@ const router = express.Router();
 
 router.use(authMiddleware);
 
-// ============================================
-// ALLOWED EVENT TYPES — must match DB CHECK constraint exactly:
-// CHECK (event_type IN ('tab_switch','focus_loss','face_warning',
-//                       'copy_attempt','right_click','devtools'))
-//
-// FIX 3: 'camera_off' was being logged from frontend but is NOT
-// in the DB constraint → causes 500 errors on every camera check.
-// Map it to 'face_warning' here as a safe fallback.
-// ============================================
+// Valid event types matching DB constraint exactly
 const ALLOWED_EVENT_TYPES = new Set([
-  'tab_switch',
-  'focus_loss',
-  'face_warning',
-  'copy_attempt',
-  'right_click',
-  'devtools'
+  'tab_switch', 'focus_loss', 'face_warning',
+  'copy_attempt', 'right_click', 'devtools'
 ]);
 
 const normalizeEventType = (eventType) => {
-  // Map legacy/incorrect event types to valid DB values
   if (eventType === 'camera_off') return 'face_warning';
   return ALLOWED_EVENT_TYPES.has(eventType) ? eventType : null;
 };
@@ -40,17 +27,15 @@ router.post('/events', async (req, res) => {
       return res.status(400).json({ error: 'examId and eventType are required.' });
     }
 
-    // FIX 3: Normalize and validate event type before inserting
     const safeEventType = normalizeEventType(eventType);
     if (!safeEventType) {
       console.warn(`Unknown proctoring event type ignored: ${eventType}`);
       return res.status(400).json({ error: `Invalid event type: ${eventType}` });
     }
 
-    // Find the active attempt for this student
+    // Verify student has an active attempt
     const attemptResult = await pool.query(
-      `SELECT id FROM exam_candidates 
-       WHERE exam_id = $1 AND student_id = $2`,
+      `SELECT id FROM exam_candidates WHERE exam_id = $1 AND student_id = $2`,
       [examId, req.user.id]
     );
 
@@ -58,18 +43,18 @@ router.post('/events', async (req, res) => {
       return res.status(404).json({ error: 'Exam attempt not found.' });
     }
 
-    // Log the event using the normalized/safe event type
+    // Log the event
     await pool.query(
       `INSERT INTO proctoring_events (exam_id, student_id, event_type, details)
        VALUES ($1, $2, $3, $4)`,
       [examId, req.user.id, safeEventType, details]
     );
 
-    // Count total warnings for this student in this exam
+    // Count serious warnings for this student
     const countResult = await pool.query(
-      `SELECT COUNT(*) FROM proctoring_events 
-       WHERE exam_id = $1 AND student_id = $2 
-       AND event_type IN ('tab_switch', 'focus_loss', 'face_warning', 'copy_attempt', 'right_click', 'devtools')`,
+      `SELECT COUNT(*) FROM proctoring_events
+       WHERE exam_id = $1 AND student_id = $2
+       AND event_type IN ('tab_switch', 'focus_loss', 'face_warning')`,
       [examId, req.user.id]
     );
 
@@ -84,52 +69,7 @@ router.post('/events', async (req, res) => {
 });
 
 // ============================================
-// GET /api/proctoring/monitor/:examId — Live Monitor
-// ============================================
-router.get('/monitor/:examId', requireRole('teacher', 'admin'), async (req, res) => {
-  try {
-    const { examId } = req.params;
-
-    const query = `
-      SELECT 
-        u.id as student_id,
-        u.name, u.email, u.photo_url,
-        ec.status, ec.score,
-        (SELECT COUNT(*) FROM proctoring_events pe 
-         WHERE pe.exam_id = ec.exam_id AND pe.student_id = ec.student_id
-         AND pe.event_type IN ('tab_switch', 'focus_loss', 'face_warning', 'copy_attempt', 'right_click', 'devtools')
-        ) as flag_count,
-        (SELECT MAX(created_at) FROM proctoring_events pe 
-         WHERE pe.exam_id = ec.exam_id AND pe.student_id = ec.student_id
-        ) as last_event_at
-      FROM exam_candidates ec
-      JOIN users u ON ec.student_id = u.id
-      WHERE ec.exam_id = $1
-      ORDER BY flag_count DESC, ec.status
-    `;
-
-    const result = await pool.query(query, [examId]);
-
-    const students = result.rows.map(r => ({
-      name: r.name,
-      email: r.email,
-      photo: r.photo_url,
-      status: r.flag_count > 0 ? 'flagged' : 'good',
-      examStatus: r.status,
-      flagCount: parseInt(r.flag_count, 10),
-      lastActivity: r.last_event_at
-    }));
-
-    res.json(students);
-
-  } catch (err) {
-    console.error('Monitor Error:', err);
-    res.status(500).json({ error: 'Server error fetching monitor data.' });
-  }
-});
-
-// ============================================
-// GET /api/proctoring/events/:examId — Get all events (admin/teacher)
+// GET /api/proctoring/events/:examId — Get events (teacher/admin)
 // ============================================
 router.get('/events/:examId', requireRole('teacher', 'admin'), async (req, res) => {
   try {
@@ -145,6 +85,48 @@ router.get('/events/:examId', requireRole('teacher', 'admin'), async (req, res) 
   } catch (err) {
     console.error('Get Events Error:', err);
     res.status(500).json({ error: 'Server error.' });
+  }
+});
+
+// ============================================
+// GET /api/proctoring/monitor/:examId — Live Monitor
+// ============================================
+router.get('/monitor/:examId', requireRole('teacher', 'admin'), async (req, res) => {
+  try {
+    const { examId } = req.params;
+
+    const query = `
+      SELECT
+        u.id as student_id, u.name, u.email, u.photo_url,
+        ec.status, ec.score,
+        (SELECT COUNT(*) FROM proctoring_events pe
+         WHERE pe.exam_id = ec.exam_id AND pe.student_id = ec.student_id
+         AND pe.event_type IN ('tab_switch','focus_loss','face_warning','copy_attempt','right_click','devtools')
+        ) as flag_count,
+        (SELECT MAX(created_at) FROM proctoring_events pe
+         WHERE pe.exam_id = ec.exam_id AND pe.student_id = ec.student_id
+        ) as last_event_at
+      FROM exam_candidates ec
+      JOIN users u ON ec.student_id = u.id
+      WHERE ec.exam_id = $1
+      ORDER BY flag_count DESC, ec.status
+    `;
+
+    const result = await pool.query(query, [examId]);
+
+    const students = result.rows.map(r => ({
+      name: r.name, email: r.email, photo: r.photo_url,
+      status: r.flag_count > 0 ? 'flagged' : 'good',
+      examStatus: r.status,
+      flagCount: parseInt(r.flag_count, 10),
+      lastActivity: r.last_event_at
+    }));
+
+    res.json(students);
+
+  } catch (err) {
+    console.error('Monitor Error:', err);
+    res.status(500).json({ error: 'Server error fetching monitor data.' });
   }
 });
 
