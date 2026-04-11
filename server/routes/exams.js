@@ -13,10 +13,11 @@ router.post('/', requireRole('teacher', 'admin'), async (req, res) => {
     const { title, subject, scheduledAt, durationMinutes, securityLevel } = req.body;
     if (!title || !subject) return res.status(400).json({ error: 'Title and subject are required.' });
 
+    const examStatus = scheduledAt ? 'Scheduled' : 'Draft';
     const result = await pool.query(
-      `INSERT INTO exams (title, subject, scheduled_at, duration_minutes, security_level, created_by)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [title, subject, scheduledAt || null, durationMinutes || 60, securityLevel || 'High', req.user.id]
+      `INSERT INTO exams (title, subject, scheduled_at, duration_minutes, security_level, created_by, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [title, subject, scheduledAt || null, durationMinutes || 60, securityLevel || 'High', req.user.id, examStatus]
     );
 
     const exam = result.rows[0];
@@ -49,8 +50,7 @@ router.get('/', async (req, res) => {
     if (status) { query += ` AND e.status = $1`; params.push(status); }
 
     if (req.user.role === 'student') {
-      query += ` AND (e.status IN ('Live', 'Scheduled', 'Completed') OR EXISTS (SELECT 1 FROM exam_candidates ec WHERE ec.exam_id = e.id AND ec.student_id = $${params.length + 1}))`;
-      params.push(req.user.id);
+      query += ` AND e.status IN ('Live', 'Scheduled', 'Completed')`;
     }
 
     query += ' ORDER BY e.created_at DESC';
@@ -224,14 +224,79 @@ router.patch('/:id', requireRole('teacher', 'admin'), async (req, res) => {
 // ============================================
 router.post('/:id/submit', async (req, res) => {
   try {
-    const { score, grade } = req.body;
+    const examId = req.params.id;
+    const studentId = req.user.id;
+
+    // Get all questions with their correct option from question_options table
+    const questionsResult = await pool.query(
+      `SELECT eq.id, eq.points,
+              (SELECT qo.id FROM question_options qo 
+               WHERE qo.question_id = eq.id AND qo.is_correct = TRUE LIMIT 1) as correct_option_id
+       FROM exam_questions eq WHERE eq.exam_id = $1`,
+      [examId]
+    );
+    const questions = questionsResult.rows;
+
+    // Get student's answers
+    const answersResult = await pool.query(
+      `SELECT question_id, selected_option_id FROM student_answers
+       WHERE exam_id = $1 AND student_id = $2`,
+      [examId, studentId]
+    );
+    const answers = answersResult.rows;
+
+    // Mark each answer as correct or incorrect
+    for (const ans of answers) {
+      const question = questions.find(q => q.id === ans.question_id);
+      if (question) {
+        const isCorrect = ans.selected_option_id === question.correct_option_id;
+        await pool.query(
+          `UPDATE student_answers SET is_correct = $1
+           WHERE exam_id = $2 AND student_id = $3 AND question_id = $4`,
+          [isCorrect, examId, studentId, ans.question_id]
+        );
+      }
+    }
+
+    // Calculate score
+    const totalPoints = questions.reduce((sum, q) => sum + (q.points || 1), 0);
+    let earnedPoints = 0;
+    for (const ans of answers) {
+      const question = questions.find(q => q.id === ans.question_id);
+      if (question && ans.selected_option_id === question.correct_option_id) {
+        earnedPoints += question.points || 1;
+      }
+    }
+    const percentage = totalPoints > 0 ? Math.round((earnedPoints / totalPoints) * 100) : 0;
+
+    // Calculate grade
+    let grade = 'F';
+    if (percentage >= 90) grade = 'A+';
+    else if (percentage >= 80) grade = 'A';
+    else if (percentage >= 70) grade = 'B';
+    else if (percentage >= 60) grade = 'C';
+    else if (percentage >= 50) grade = 'D';
+
+    // Save final result
     const result = await pool.query(
       `UPDATE exam_candidates SET status = 'Completed', score = $1, grade = $2
        WHERE exam_id = $3 AND student_id = $4 RETURNING *`,
-      [score || 0, grade || 'Pending', req.params.id, req.user.id]
+      [percentage, grade, examId, studentId]
     );
-    if (result.rows.length === 0) return res.status(404).json({ error: 'You are not registered for this exam.' });
-    res.json({ message: 'Exam submitted successfully.', result: result.rows[0] });
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'You are not registered for this exam.' });
+    }
+
+    res.json({
+      message: 'Exam submitted successfully.',
+      percentage,
+      grade,
+      score: percentage,
+      earnedPoints,
+      totalPoints,
+      result: result.rows[0]
+    });
   } catch (err) {
     console.error('Submit Exam Error:', err);
     res.status(500).json({ error: 'Server error.' });
@@ -246,12 +311,18 @@ router.get('/student/results', async (req, res) => {
     const result = await pool.query(
       `SELECT ec.*, e.title as exam_name, e.subject, e.scheduled_at as start_time
        FROM exam_candidates ec JOIN exams e ON ec.exam_id = e.id
-       WHERE ec.student_id = $1 ORDER BY ec.created_at DESC`,
+       WHERE ec.student_id = $1 AND ec.status = 'Completed'
+       ORDER BY ec.created_at DESC`,
       [req.user.id]
     );
     res.json(result.rows.map(r => ({
-      examId: r.exam_id, exam_name: r.exam_name, subject: r.subject,
-      start_time: r.start_time, status: r.status, score: r.score, grade: r.grade
+      examId: r.exam_id,
+      exam_name: r.exam_name,
+      subject: r.subject,
+      start_time: r.start_time,
+      status: r.status,
+      score: r.score,
+      grade: r.grade
     })));
   } catch (err) {
     console.error('Get Results Error:', err);

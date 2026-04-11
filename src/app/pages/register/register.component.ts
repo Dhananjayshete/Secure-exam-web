@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, TitleCasePipe } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
@@ -7,7 +7,7 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, TitleCasePipe, RouterLink, FormsModule],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
@@ -51,7 +51,6 @@ export class RegisterComponent implements OnInit {
     event.preventDefault();
     this.errorMessage = '';
 
-    // 1. Frontend CAPTCHA validation
     const input = this.captchaInput.trim().toLowerCase();
     const actual = this.captchaData?.text?.trim().toLowerCase();
 
@@ -77,7 +76,6 @@ export class RegisterComponent implements OnInit {
       next: (response) => {
         this.isLoading = false;
         this.showSuccessPopup = true;
-
         setTimeout(() => {
           this.showSuccessPopup = false;
         }, 2000);
@@ -85,8 +83,6 @@ export class RegisterComponent implements OnInit {
       error: (err) => {
         this.isLoading = false;
         this.errorMessage = err.error?.error || 'Registration failed. Please try again.';
-
-        // Refresh captcha if it was a captcha error or if we want to be safe
         if (this.errorMessage.toLowerCase().includes('captcha')) {
           this.refreshCaptcha();
         }

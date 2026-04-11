@@ -1,0 +1,91 @@
+// .how-page {
+//     min-height: 100vh;
+//     padding: 80px 48px;
+//     background: #fde9c9;
+//   }
+  
+//   .header {
+//     text-align: center;
+//     margin-bottom: 64px;
+//   }
+  
+//   .header h1 {
+//     font-size: 42px;
+//     font-weight: 700;
+//   }
+  
+//   .header p {
+//     margin-top: 12px;
+//     color: #555;
+//   }
+  
+//   .roles {
+//     display: grid;
+//     grid-template-columns: repeat(3, 1fr);
+//     gap: 32px;
+//   }
+  
+//   .role-card {
+//     background: #ffffff;
+//     padding: 36px 28px;
+//     border-radius: 20px;
+//     box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+//     transition: transform 0.3s ease, box-shadow 0.3s ease;
+//     animation: fadeUp 0.8s ease forwards;
+//   }
+  
+//   .role-card:hover {
+//     transform: translateY(-10px);
+//     box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+//   }
+  
+//   .role-icon {
+//     font-size: 48px;
+//     margin-bottom: 16px;
+//   }
+  
+//   .role-card h2 {
+//     font-size: 24px;
+//     margin-bottom: 8px;
+//   }
+  
+//   .role-card p {
+//     font-size: 14px;
+//     color: #666;
+//     margin-bottom: 16px;
+//   }
+  
+//   .role-card ul {
+//     list-style: none;
+//     padding: 0;
+//   }
+  
+//   .role-card li {
+//     margin: 10px 0;
+//     color: #444;
+//   }
+  
+//   /* Role accents */
+//   .admin .role-icon { color: #ff7a00; }
+//   .teacher .role-icon { color: #3b82f6; }
+//   .student .role-icon { color: #22c55e; }
+  
+//   /* Animation */
+//   @keyframes fadeUp {
+//     from {
+//       opacity: 0;
+//       transform: translateY(40px);
+//     }
+//     to {
+//       opacity: 1;
+//       transform: translateY(0);
+//     }
+//   }
+  
+//   /* Responsive */
+//   @media (max-width: 900px) {
+//     .roles {
+//       grid-template-columns: 1fr;
+//     }
+//   }
+  

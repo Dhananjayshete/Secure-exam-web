@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
@@ -139,7 +140,9 @@ export class ApiService {
     }
 
     submitAnswers(examId: string, answers: any[]): Observable<any> {
-        return this.http.post(`${this.baseUrl}/exams/${examId}/answers`, { answers }, { headers: this.getHeaders() });
+        return this.http.post(`${this.baseUrl}/exams/${examId}/autosave`, { answers }, { headers: this.getHeaders() }).pipe(
+            switchMap(() => this.http.post(`${this.baseUrl}/exams/${examId}/submit`, {}, { headers: this.getHeaders() }))
+        );
     }
 
     getAnswers(examId: string, studentId?: string): Observable<any[]> {
